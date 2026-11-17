@@ -1,453 +1,414 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIONS | RF Online Next</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-            align-items: center; background: radial-gradient(circle, #202b40, #090d16);
-            color: white; font-family: Arial, sans-serif;
-        }
-        .header { width: 100%; max-width: 1100px; margin: 30px auto 0; padding: 0 15px; }
-        .header img {
-            display: block; width: 100%; height: auto; max-height: 440px; object-fit: cover;
-            object-position: center; border: 1px solid #34445e; border-radius: 14px;
-            box-shadow: 0 0 35px #000;
-        }
-        .container {
-            width: 92%; max-width: 760px; margin: 30px auto; padding: 32px 28px;
-            text-align: center; background: #151d2b; border: 1px solid #34445e;
-            border-radius: 16px; box-shadow: 0 0 35px #000;
-        }
-        .description { margin: 0 0 22px; color: #d0d8e5; font-size: 17px; line-height: 1.6; }
-        h1 { margin: 0 0 8px; font-size: 25px; }
-        h2 { margin: 28px 0 14px; font-size: 20px; color: #dce7f7; }
-        p { margin: 8px 0; }
-        button, input, select {
-            width: 100%; padding: 13px; border-radius: 8px; font-size: 15px;
-        }
-        button {
-            border: none; background: #5865F2; color: white; font-weight: bold;
-            cursor: pointer; transition: .2s;
-        }
-        button:hover { background: #4752c4; }
-        button:disabled { opacity: .6; cursor: wait; }
-        .logout { margin-top: 10px; background: #34445e; }
-        .logout:hover { background: #455b7a; }
-        input, select {
-            color: white; background: #0d1420; border: 1px solid #40516c; outline: none;
-        }
-        input:focus, select:focus { border-color: #8292ff; }
-        label { display: block; text-align: left; margin: 14px 0 7px; color: #cbd6e6; font-size: 14px; }
-        .panel {
-            margin-top: 22px; padding: 22px; background: #101827;
-            border: 1px solid #34445e; border-radius: 12px; text-align: left;
-        }
-        .panel h2 { margin-top: 0; text-align: center; }
-        .muted { color: #aab8cc; font-size: 13px; }
-        .status { margin-top: 16px; color: #aab8cc; font-size: 13px; overflow-wrap: anywhere; }
-        .success { color: #73dfa0; }
-        .error { color: #ff9292; }
-        .hidden { display: none !important; }
-        .record {
-            padding: 12px; margin: 9px 0; border-radius: 8px;
-            background: #1a2638; border: 1px solid #34445e; font-size: 14px;
-        }
-        .record strong { color: #fff; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .admin-record { font-size: 13px; overflow-wrap: anywhere; }
-        footer { margin-top: 25px; font-size: 11px; color: #718096; }
-        @media (max-width: 600px) {
-            .header { margin-top: 15px; padding: 0 10px; }
-            .header img { border-radius: 8px; }
-            .container { margin-top: 20px; padding: 24px 16px; }
-            .admin-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIONS | RF Online Next</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; background: radial-gradient(circle, #202b40, #090d16);
+      color: #fff; font-family: Arial, sans-serif; padding-bottom: 35px;
+    }
+    .header { width: 100%; max-width: 1100px; margin: 30px auto 0; padding: 0 15px; }
+    .header img {
+      display: block; width: 100%; height: auto; max-height: 440px;
+      object-fit: cover; object-position: center; border: 1px solid #34445e;
+      border-radius: 14px; box-shadow: 0 0 35px #000;
+    }
+    .container { width: 92%; max-width: 900px; margin: 26px auto; }
+    .panel {
+      margin: 18px 0; padding: 25px; background: #151d2b;
+      border: 1px solid #34445e; border-radius: 16px; box-shadow: 0 0 25px #0008;
+    }
+    h1, h2, h3 { margin-top: 0; }
+    h1 { font-size: 25px; text-align: center; }
+    h2 { font-size: 20px; color: #dce7ff; }
+    h3 { font-size: 16px; color: #c5d4ef; }
+    .description { text-align: center; color: #d0d8e5; font-size: 16px; line-height: 1.5; }
+    .muted { color: #aab8cc; font-size: 13px; }
+    .status { margin-top: 14px; color: #aab8cc; font-size: 13px; overflow-wrap: anywhere; text-align: center; }
+    .success { color: #70e0a0 !important; }
+    .error { color: #ff8585 !important; }
+    .warning { color: #ffd479 !important; }
+    button, input, select { font: inherit; }
+    button {
+      border: 0; border-radius: 8px; padding: 12px 16px; background: #5865f2;
+      color: white; font-weight: bold; cursor: pointer; transition: .2s;
+    }
+    button:hover { background: #4752c4; }
+    button:disabled { opacity: .55; cursor: wait; }
+    .secondary { background: #34445e; }
+    .secondary:hover { background: #455b7a; }
+    .danger { background: #8f3543; }
+    .danger:hover { background: #ad4051; }
+    .top-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    label { display: block; color: #cbd7e8; font-size: 13px; margin-bottom: 7px; }
+    input, select {
+      width: 100%; padding: 12px; color: white; background: #0d1420;
+      border: 1px solid #43536d; border-radius: 8px; outline: none;
+    }
+    input:focus, select:focus { border-color: #7f91ff; }
+    option { background: #151d2b; }
+    .field { min-width: 0; }
+    .form-actions { margin-top: 16px; }
+    .form-actions button { width: 100%; }
+    .hidden { display: none !important; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th, td { padding: 11px 9px; border-bottom: 1px solid #34445e; text-align: left; font-size: 13px; }
+    th { color: #aebfe0; font-weight: bold; }
+    td { color: #e4eaf4; }
+    .tag { display: inline-block; padding: 4px 8px; border-radius: 20px; background: #263a56; color: #d7e6ff; font-size: 11px; }
+    .record-lock { padding: 12px; background: #263a30; border: 1px solid #37664b; border-radius: 8px; color: #9be3b2; font-size: 13px; }
+    .admin-row { display: grid; grid-template-columns: 1.3fr .8fr .9fr 1fr auto; gap: 8px; align-items: end; padding: 12px 0; border-bottom: 1px solid #34445e; }
+    .admin-row input, .admin-row select { min-width: 0; padding: 9px; font-size: 12px; }
+    .admin-row button { padding: 10px; font-size: 12px; }
+    footer { margin-top: 25px; text-align: center; font-size: 11px; color: #718096; }
+    @media (max-width: 650px) {
+      .header { margin-top: 15px; padding: 0 10px; }
+      .header img { border-radius: 8px; }
+      .panel { padding: 18px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .admin-row { grid-template-columns: 1fr 1fr; }
+      .admin-row .member-id { grid-column: 1 / -1; }
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <img src="logo-lions.png" alt="LIONS - RF Online Next">
-    </div>
+  <div class="header">
+    <img src="logo-lions.png" alt="LIONS - RF Online Next">
+  </div>
 
-    <main class="container">
-        <div class="description">
-            <h1>Panel de gestión del clan</h1>
-            <p id="welcome">Bienvenido, guerrero.</p>
-        </div>
-
+  <main class="container">
+    <section class="panel">
+      <h1>Panel de gestión del clan</h1>
+      <p class="description" id="welcome">Bienvenido, guerrero.</p>
+      <div class="top-actions">
         <button id="loginButton">Acceder con Discord</button>
-        <button id="logoutButton" class="logout hidden">Cerrar sesión</button>
-        <div id="status" class="status">Conectate para acceder al clan.</div>
+        <button id="logoutButton" class="secondary hidden">Cerrar sesión</button>
+      </div>
+      <div id="status" class="status">Conectate para acceder al clan.</div>
+    </section>
 
-        <section id="memberPanel" class="panel hidden">
-            <h2>Carga semanal de CP</h2>
-            <p class="muted">Se permite una carga por semana. El registro vuelve a habilitarse el lunes.</p>
-            <form id="cpForm">
-                <label for="biotraje">Biotraje</label>
-                <select id="biotraje" required>
-                    <option value="">Seleccioná tu biotraje</option>
-                    <option value="Punisher">Punisher</option>
-                    <option value="Phantom">Phantom</option>
-                    <option value="Executor">Executor</option>
-                    <option value="Psypher">Psypher</option>
-                    <option value="Juggernaut">Juggernaut</option>
-                    <option value="Technician">Technician</option>
-                    <option value="Arbiter">Arbiter</option>
-                    <option value="Demolisher">Demolisher</option>
-                </select>
+    <section id="memberPanel" class="panel hidden">
+      <h2>Registro semanal de CP</h2>
+      <p class="muted">Cargá tu CP actual y seleccioná el biotraje que estás utilizando. Se permite un registro por semana; la semana comienza el lunes.</p>
+      <div id="weekLabel" class="muted"></div>
+      <div id="memberFormArea">
+        <form id="cpForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="cpInput">Poder de combate (CP)</label>
+              <input id="cpInput" type="number" min="1" step="1" placeholder="Ej.: 175000" required>
+            </div>
+            <div class="field">
+              <label for="bioInput">Biotraje</label>
+              <select id="bioInput" required>
+                <option value="">Seleccionar biotraje</option>
+                <option>Punisher</option>
+                <option>Phantom</option>
+                <option>Executor</option>
+                <option>Psypher</option>
+                <option>Juggernaut</option>
+                <option>Technician</option>
+                <option>Arbiter</option>
+                <option>Demolisher</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions"><button id="saveCpButton" type="submit">Guardar CP de esta semana</button></div>
+        </form>
+      </div>
+      <div id="lockedMessage" class="record-lock hidden"></div>
+      <div id="memberMessage" class="status"></div>
 
-                <label for="cp">Poder de combate (CP)</label>
-                <input id="cp" type="number" min="1" step="1" placeholder="Ingresá tu CP actual" required>
-                <button id="saveCpButton" type="submit" style="margin-top:16px">Guardar CP de esta semana</button>
-            </form>
-            <p id="weeklyLock" class="muted hidden"></p>
-        </section>
+      <h3 style="margin-top:28px">Mi historial de CP</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Semana</th><th>CP</th><th>Biotraje</th><th>Fecha de carga</th></tr></thead>
+          <tbody id="myHistory"><tr><td colspan="4">Cargando historial...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
 
-        <section id="historyPanel" class="panel hidden">
-            <h2>Mi historial de CP</h2>
-            <div id="myHistory"><p class="muted">Todavía no hay registros.</p></div>
-        </section>
+    <section id="adminPanel" class="panel hidden">
+      <h2>Administración de CP</h2>
+      <p class="muted">Vista de los registros de todos los miembros. Las correcciones quedan registradas en el historial de auditoría.</p>
+      <div id="adminMessage" class="status"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Usuario (UID de Discord/Supabase)</th><th>Semana</th><th>CP</th><th>Biotraje</th><th>Última carga</th><th>Acción</th></tr></thead>
+          <tbody id="allRecords"><tr><td colspan="6">Cargando registros...</td></tr></tbody>
+        </table>
+      </div>
+      <h3 style="margin-top:28px">Historial de correcciones administrativas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Registro</th><th>CP anterior</th><th>CP nuevo</th><th>Biotraje anterior</th><th>Biotraje nuevo</th><th>Modificado por</th><th>Fecha</th></tr></thead>
+          <tbody id="auditHistory"><tr><td colspan="7">Cargando auditoría...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
 
-        <section id="adminPanel" class="panel hidden">
-            <h2>Administración del clan</h2>
-            <p class="muted">Vista de registros de todos los miembros. Las correcciones quedan asentadas en el historial de auditoría.</p>
-            <div id="allRecords"><p class="muted">Cargando registros...</p></div>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM</footer>
+  </main>
 
-            <h2>Corregir un registro</h2>
-            <form id="adminForm">
-                <label for="adminTarget">Registro del miembro</label>
-                <select id="adminTarget" required>
-                    <option value="">Seleccioná un registro</option>
-                </select>
-                <div class="admin-grid">
-                    <div>
-                        <label for="adminBiotraje">Biotraje corregido</label>
-                        <select id="adminBiotraje" required>
-                            <option value="Punisher">Punisher</option>
-                            <option value="Phantom">Phantom</option>
-                            <option value="Executor">Executor</option>
-                            <option value="Psypher">Psypher</option>
-                            <option value="Juggernaut">Juggernaut</option>
-                            <option value="Technician">Technician</option>
-                            <option value="Arbiter">Arbiter</option>
-                            <option value="Demolisher">Demolisher</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="adminCp">CP corregido</label>
-                        <input id="adminCp" type="number" min="1" step="1" required>
-                    </div>
-                </div>
-                <button type="submit" style="margin-top:16px">Guardar corrección administrativa</button>
-            </form>
-        </section>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        <footer>LIONS CLAN MANAGEMENT SYSTEM</footer>
-    </main>
+    const SUPABASE_URL = 'https://itlooiobdrmfmxbxwggp.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const $ = (id) => document.getElementById(id);
+    const loginButton = $('loginButton');
+    const logoutButton = $('logoutButton');
+    const status = $('status');
+    const welcome = $('welcome');
+    const memberPanel = $('memberPanel');
+    const adminPanel = $('adminPanel');
+    const bios = ['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
+    let currentUser = null;
+    let isAdmin = false;
 
-        const SUPABASE_URL = 'https://itlooiobdrmfmxbxwggp.supabase.co';
-        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua';
-        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    function localDateParts(date = new Date()) {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(date);
+      return Object.fromEntries(parts.map(p => [p.type, p.value]));
+    }
 
-        const loginButton = document.getElementById('loginButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const statusBox = document.getElementById('status');
-        const welcome = document.getElementById('welcome');
-        const memberPanel = document.getElementById('memberPanel');
-        const historyPanel = document.getElementById('historyPanel');
-        const adminPanel = document.getElementById('adminPanel');
-        const cpForm = document.getElementById('cpForm');
-        const biotrajeInput = document.getElementById('biotraje');
-        const cpInput = document.getElementById('cp');
-        const saveCpButton = document.getElementById('saveCpButton');
-        const weeklyLock = document.getElementById('weeklyLock');
-        const myHistory = document.getElementById('myHistory');
-        const allRecords = document.getElementById('allRecords');
-        const adminForm = document.getElementById('adminForm');
-        const adminTarget = document.getElementById('adminTarget');
-        const adminBiotraje = document.getElementById('adminBiotraje');
-        const adminCp = document.getElementById('adminCp');
+    function currentWeekStart() {
+      const p = localDateParts();
+      const date = new Date(Date.UTC(Number(p.year), Number(p.month)-1, Number(p.day)));
+      const day = date.getUTCDay();
+      date.setUTCDate(date.getUTCDate() - ((day + 6) % 7));
+      return date.toISOString().slice(0,10);
+    }
 
-        let currentUser = null;
-        let adminRecords = [];
+    function formatDate(value) {
+      if (!value) return '—';
+      const d = new Date(value.length === 10 ? value + 'T12:00:00' : value);
+      return new Intl.DateTimeFormat('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        dateStyle: 'short', timeStyle: value.length === 10 ? undefined : 'short'
+      }).format(d);
+    }
 
-        function showStatus(message, kind = '') {
-            statusBox.textContent = message;
-            statusBox.className = 'status ' + kind;
-        }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      })[c]);
+    }
 
-        function getBuenosAiresDateParts() {
-            const parts = new Intl.DateTimeFormat('en-CA', {
-                timeZone: 'America/Argentina/Buenos_Aires',
-                year: 'numeric', month: '2-digit', day: '2-digit'
-            }).formatToParts(new Date());
-            const result = {};
-            for (const part of parts) {
-                if (part.type !== 'literal') result[part.type] = Number(part.value);
-            }
-            return result;
-        }
+    function setMessage(id, message, kind = '') {
+      const el = $(id);
+      el.textContent = message;
+      el.className = 'status ' + kind;
+    }
 
-        function currentWeekStartBuenosAires() {
-            const { year, month, day } = getBuenosAiresDateParts();
-            const date = new Date(Date.UTC(year, month - 1, day));
-            const dayOfWeek = date.getUTCDay();
-            const daysSinceMonday = (dayOfWeek + 6) % 7;
-            date.setUTCDate(date.getUTCDate() - daysSinceMonday);
-            return date.toISOString().slice(0, 10);
-        }
+    async function loadMemberData() {
+      if (!currentUser) return;
+      const week = currentWeekStart();
+      $('weekLabel').textContent = 'Semana actual desde el lunes ' + formatDate(week) + ' (hora de Argentina).';
+      $('myHistory').innerHTML = '<tr><td colspan="4">Cargando historial...</td></tr>';
 
-        function escapeHtml(value) {
-            return String(value ?? '').replace(/[&<>"']/g, char => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            })[char]);
-        }
+      const { data: current, error: currentError } = await supabase
+        .from('cp_records').select('*')
+        .eq('user_id', currentUser.id).eq('week_start', week).maybeSingle();
 
-        function formatDate(value) {
-            if (!value) return '—';
-            const [year, month, day] = value.split('-');
-            return `${day}/${month}/${year}`;
-        }
+      if (currentError) {
+        setMessage('memberMessage', 'No se pudo consultar tu registro: ' + currentError.message, 'error');
+        return;
+      }
 
-        async function loadMemberData() {
-            const weekStart = currentWeekStartBuenosAires();
-            const { data: thisWeek, error: weekError } = await supabase
-                .from('cp_records')
-                .select('user_id, biotraje, cp, week_start, created_at')
-                .eq('user_id', currentUser.id)
-                .eq('week_start', weekStart)
-                .maybeSingle();
+      if (current) {
+        $('memberFormArea').classList.add('hidden');
+        $('lockedMessage').classList.remove('hidden');
+        $('lockedMessage').textContent =
+          'Ya registraste esta semana: ' + Number(current.cp).toLocaleString('es-AR') +
+          ' CP · ' + current.biotraje + '. El registro queda bloqueado para miembros hasta el próximo lunes.';
+      } else {
+        $('memberFormArea').classList.remove('hidden');
+        $('lockedMessage').classList.add('hidden');
+      }
 
-            if (weekError) throw weekError;
+      const { data: history, error } = await supabase
+        .from('cp_records').select('cp,biotraje,week_start,created_at')
+        .eq('user_id', currentUser.id).order('week_start', { ascending: false });
 
-            if (thisWeek) {
-                biotrajeInput.value = thisWeek.biotraje;
-                cpInput.value = thisWeek.cp;
-                biotrajeInput.disabled = true;
-                cpInput.disabled = true;
-                saveCpButton.disabled = true;
-                weeklyLock.textContent = `Ya cargaste tus CP de esta semana (${formatDate(weekStart)}). El registro queda bloqueado hasta el próximo lunes.`;
-                weeklyLock.classList.remove('hidden');
-                saveCpButton.classList.add('hidden');
-            } else {
-                cpForm.reset();
-                biotrajeInput.disabled = false;
-                cpInput.disabled = false;
-                saveCpButton.disabled = false;
-                saveCpButton.classList.remove('hidden');
-                weeklyLock.classList.add('hidden');
-            }
+      if (error) {
+        $('myHistory').innerHTML = '<tr><td colspan="4">Error al cargar el historial.</td></tr>';
+        return;
+      }
+      $('myHistory').innerHTML = history.length
+        ? history.map(r => `<tr><td>${formatDate(r.week_start)}</td><td>${Number(r.cp).toLocaleString('es-AR')}</td><td>${escapeHtml(r.biotraje)}</td><td>${formatDate(r.created_at)}</td></tr>`).join('')
+        : '<tr><td colspan="4">Todavía no tenés registros.</td></tr>';
+    }
 
-            const { data: records, error: historyError } = await supabase
-                .from('cp_records')
-                .select('biotraje, cp, week_start, created_at')
-                .eq('user_id', currentUser.id)
-                .order('week_start', { ascending: false });
+    async function loadAdminData() {
+      const { data: records, error } = await supabase
+        .from('cp_records').select('*').order('week_start', { ascending: false })
+        .order('created_at', { ascending: false });
+      if (error) {
+        setMessage('adminMessage', 'No se pudieron cargar los registros: ' + error.message, 'error');
+        return;
+      }
+      $('allRecords').innerHTML = records.length ? records.map(r => `
+        <tr>
+          <td style="max-width:210px;overflow-wrap:anywhere">${escapeHtml(r.user_id)}</td>
+          <td>${formatDate(r.week_start)}</td>
+          <td>${Number(r.cp).toLocaleString('es-AR')}</td>
+          <td>${escapeHtml(r.biotraje)}</td>
+          <td>${formatDate(r.created_at)}</td>
+          <td><button class="editRecord" data-user="${escapeHtml(r.user_id)}" data-week="${escapeHtml(r.week_start)}" data-cp="${escapeHtml(r.cp)}" data-bio="${escapeHtml(r.biotraje)}">Corregir</button></td>
+        </tr>`).join('') : '<tr><td colspan="6">Todavía no hay registros.</td></tr>';
 
-            if (historyError) throw historyError;
+      $('allRecords').querySelectorAll('.editRecord').forEach(button => {
+        button.addEventListener('click', () => correctRecord(button.dataset.user, button.dataset.week, button.dataset.cp, button.dataset.bio));
+      });
 
-            if (!records || records.length === 0) {
-                myHistory.innerHTML = '<p class="muted">Todavía no hay registros.</p>';
-            } else {
-                myHistory.innerHTML = records.map(record => `
-                    <div class="record">
-                        <strong>${escapeHtml(formatDate(record.week_start))}</strong><br>
-                        CP: ${escapeHtml(record.cp)} · Biotraje: ${escapeHtml(record.biotraje)}
-                    </div>
-                `).join('');
-            }
-        }
+      const { data: audit, error: auditError } = await supabase
+        .from('cp_history').select('*').order('changed_at', { ascending: false }).limit(100);
+      if (auditError) {
+        $('auditHistory').innerHTML = `<tr><td colspan="7">No se pudo cargar la auditoría: ${escapeHtml(auditError.message)}</td></tr>`;
+      } else {
+        $('auditHistory').innerHTML = audit.length ? audit.map(a => `
+          <tr>
+            <td>${escapeHtml(a.record_id)}</td><td>${Number(a.old_cp).toLocaleString('es-AR')}</td>
+            <td>${Number(a.new_cp).toLocaleString('es-AR')}</td><td>${escapeHtml(a.old_biotraje)}</td>
+            <td>${escapeHtml(a.new_biotraje)}</td><td style="overflow-wrap:anywhere">${escapeHtml(a.changed_by)}</td>
+            <td>${formatDate(a.changed_at)}</td>
+          </tr>`).join('') : '<tr><td colspan="7">Todavía no hay correcciones registradas.</td></tr>';
+      }
+    }
 
-        async function loadAdminData() {
-            const { data: records, error } = await supabase
-                .from('cp_records')
-                .select('user_id, biotraje, cp, week_start, created_at')
-                .order('week_start', { ascending: false });
+    async function correctRecord(userId, week, oldCp, oldBio) {
+      const cpText = prompt('Nuevo valor de CP para este registro:', oldCp);
+      if (cpText === null) return;
+      const cp = Number(cpText);
+      if (!Number.isInteger(cp) || cp <= 0) {
+        setMessage('adminMessage', 'El CP debe ser un número entero mayor que cero.', 'error');
+        return;
+      }
+      const bioText = prompt('Biotraje (' + bios.join(', ') + '):', oldBio);
+      if (bioText === null) return;
+      if (!bios.includes(bioText)) {
+        setMessage('adminMessage', 'El nombre del biotraje no coincide con las opciones permitidas.', 'error');
+        return;
+      }
+      if (cp === Number(oldCp) && bioText === oldBio) {
+        setMessage('adminMessage', 'No se realizaron cambios.', 'warning');
+        return;
+      }
+      const { error } = await supabase.from('cp_records')
+        .update({ cp, biotraje: bioText })
+        .eq('user_id', userId).eq('week_start', week);
+      if (error) {
+        setMessage('adminMessage', 'No se pudo corregir el registro: ' + error.message, 'error');
+        return;
+      }
+      setMessage('adminMessage', 'Corrección guardada. La base de datos debe registrar el cambio en la auditoría.', 'success');
+      await loadAdminData();
+    }
 
-            if (error) throw error;
-            adminRecords = records || [];
+    async function updateInterface(session) {
+      currentUser = session?.user ?? null;
+      if (!currentUser) {
+        isAdmin = false;
+        welcome.textContent = 'Bienvenido, guerrero.';
+        status.textContent = 'Conectate para acceder al clan.';
+        loginButton.classList.remove('hidden');
+        logoutButton.classList.add('hidden');
+        memberPanel.classList.add('hidden');
+        adminPanel.classList.add('hidden');
+        return;
+      }
 
-            if (adminRecords.length === 0) {
-                allRecords.innerHTML = '<p class="muted">Todavía no hay cargas de CP.</p>';
-            } else {
-                allRecords.innerHTML = adminRecords.map(record => `
-                    <div class="record admin-record">
-                        <strong>Miembro:</strong> ${escapeHtml(record.user_id)}<br>
-                        <strong>Semana:</strong> ${escapeHtml(formatDate(record.week_start))}<br>
-                        <strong>CP:</strong> ${escapeHtml(record.cp)} · <strong>Biotraje:</strong> ${escapeHtml(record.biotraje)}
-                    </div>
-                `).join('');
-            }
+      const discordName = currentUser.user_metadata?.global_name ||
+        currentUser.user_metadata?.full_name || currentUser.user_metadata?.name ||
+        currentUser.user_metadata?.preferred_username || currentUser.email || 'Guerrero';
+      welcome.textContent = 'Bienvenido, ' + discordName;
+      status.textContent = 'Conectado como: ' + discordName;
+      loginButton.classList.add('hidden');
+      logoutButton.classList.remove('hidden');
+      memberPanel.classList.remove('hidden');
+      setMessage('memberMessage', 'Consultando tu registro semanal...');
 
-            adminTarget.innerHTML = '<option value="">Seleccioná un registro</option>';
-            adminRecords.forEach((record, index) => {
-                const option = document.createElement('option');
-                option.value = String(index);
-                option.textContent = `${record.user_id} · ${formatDate(record.week_start)} · CP ${record.cp}`;
-                adminTarget.appendChild(option);
-            });
-        }
+      const { data: adminResult, error: adminError } = await supabase.rpc('is_clan_admin');
+      isAdmin = !adminError && adminResult === true;
+      if (isAdmin) adminPanel.classList.remove('hidden');
+      else adminPanel.classList.add('hidden');
 
-        async function updateInterface(session) {
-            currentUser = session?.user || null;
-            memberPanel.classList.add('hidden');
-            historyPanel.classList.add('hidden');
-            adminPanel.classList.add('hidden');
+      await loadMemberData();
+      if (isAdmin) await loadAdminData();
+      if (adminError) setMessage('memberMessage', 'No se pudo verificar el permiso de administrador: ' + adminError.message, 'warning');
+    }
 
-            if (!currentUser) {
-                welcome.textContent = 'Bienvenido, guerrero.';
-                loginButton.classList.remove('hidden');
-                loginButton.disabled = false;
-                logoutButton.classList.add('hidden');
-                logoutButton.disabled = false;
-                showStatus('Conectate para acceder al clan.');
-                return;
-            }
+    loginButton.addEventListener('click', async () => {
+      loginButton.disabled = true;
+      status.textContent = 'Conectando con Discord...';
+      const redirectTo = window.location.origin + window.location.pathname;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'discord', options: { redirectTo }
+      });
+      if (error) {
+        status.textContent = 'No se pudo iniciar sesión: ' + error.message;
+        loginButton.disabled = false;
+      }
+    });
 
-            const discordName = currentUser.user_metadata?.full_name ||
-                currentUser.user_metadata?.name ||
-                currentUser.user_metadata?.preferred_username ||
-                currentUser.email || 'Guerrero';
+    logoutButton.addEventListener('click', async () => {
+      logoutButton.disabled = true;
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        status.textContent = 'Error al cerrar sesión: ' + error.message;
+        logoutButton.disabled = false;
+      }
+    });
 
-            welcome.textContent = 'Bienvenido, ' + discordName;
-            loginButton.classList.add('hidden');
-            logoutButton.classList.remove('hidden');
-            showStatus('Conectado como: ' + discordName);
-
-            memberPanel.classList.remove('hidden');
-            historyPanel.classList.remove('hidden');
-
-            try {
-                await loadMemberData();
-
-                const { data: isAdmin, error: adminError } = await supabase.rpc('is_clan_admin');
-                if (adminError) throw adminError;
-
-                if (isAdmin === true) {
-                    adminPanel.classList.remove('hidden');
-                    await loadAdminData();
-                    showStatus('Conectado como: ' + discordName + ' · Administrador del clan', 'success');
-                }
-            } catch (error) {
-                console.error(error);
-                showStatus('No se pudieron cargar los datos: ' + error.message, 'error');
-            }
-        }
-
-        loginButton.addEventListener('click', async () => {
-            loginButton.disabled = true;
-            showStatus('Conectando con Discord...');
-            const redirectTo = window.location.origin + window.location.pathname;
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'discord',
-                options: { redirectTo }
-            });
-            if (error) {
-                showStatus('No se pudo iniciar sesión: ' + error.message, 'error');
-                loginButton.disabled = false;
-            }
-        });
-
-        logoutButton.addEventListener('click', async () => {
-            logoutButton.disabled = true;
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-                showStatus('Error al cerrar sesión: ' + error.message, 'error');
-                logoutButton.disabled = false;
-            }
-        });
-
-        cpForm.addEventListener('submit', async event => {
-            event.preventDefault();
-            if (!currentUser) return;
-
-            const cp = Number(cpInput.value);
-            const biotraje = biotrajeInput.value;
-            if (!Number.isInteger(cp) || cp <= 0 || !biotraje) {
-                showStatus('Ingresá un CP entero mayor que cero y seleccioná tu biotraje.', 'error');
-                return;
-            }
-
-            saveCpButton.disabled = true;
-            showStatus('Guardando tu CP...');
-            const { error } = await supabase.from('cp_records').insert({
-                user_id: currentUser.id,
-                biotraje,
-                cp,
-                week_start: currentWeekStartBuenosAires()
-            });
-
-            if (error) {
-                if (error.code === '23505') {
-                    showStatus('Ya existe una carga para esta semana. El registro está bloqueado.', 'error');
-                } else {
-                    showStatus('No se pudo guardar el CP: ' + error.message, 'error');
-                }
-                saveCpButton.disabled = false;
-                return;
-            }
-
-            showStatus('¡CP semanal guardado correctamente!', 'success');
-            await loadMemberData();
-        });
-
-        adminTarget.addEventListener('change', () => {
-            const record = adminRecords[Number(adminTarget.value)];
-            if (!record) return;
-            adminBiotraje.value = record.biotraje;
-            adminCp.value = record.cp;
-        });
-
-        adminForm.addEventListener('submit', async event => {
-            event.preventDefault();
-            const record = adminRecords[Number(adminTarget.value)];
-            const cp = Number(adminCp.value);
-            const biotraje = adminBiotraje.value;
-
-            if (!record || !Number.isInteger(cp) || cp <= 0) {
-                showStatus('Seleccioná un registro e ingresá un CP válido.', 'error');
-                return;
-            }
-
-            const confirmed = window.confirm('¿Confirmás la corrección? El sistema guardará el cambio en el historial de auditoría.');
-            if (!confirmed) return;
-
-            const { error } = await supabase.from('cp_records')
-                .update({ cp, biotraje })
-                .eq('user_id', record.user_id)
-                .eq('week_start', record.week_start);
-
-            if (error) {
-                showStatus('No se pudo corregir el registro: ' + error.message, 'error');
-                return;
-            }
-
-            showStatus('Corrección guardada. El cambio quedó registrado en el historial.', 'success');
-            await loadAdminData();
-            await loadMemberData();
-        });
-
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' ||
-                event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' ||
-                event === 'USER_UPDATED') {
-                updateInterface(session);
-            }
-        });
-
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-            showStatus('No se pudo verificar la sesión: ' + error.message, 'error');
+    $('cpForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!currentUser) return;
+      const cp = Number($('cpInput').value);
+      const biotraje = $('bioInput').value;
+      if (!Number.isInteger(cp) || cp <= 0 || !bios.includes(biotraje)) {
+        setMessage('memberMessage', 'Ingresá un CP entero mayor que cero y seleccioná un biotraje.', 'error');
+        return;
+      }
+      const button = $('saveCpButton');
+      button.disabled = true;
+      setMessage('memberMessage', 'Guardando tu CP...');
+      const { error } = await supabase.from('cp_records').insert({
+        user_id: currentUser.id, cp, biotraje, week_start: currentWeekStart()
+      });
+      button.disabled = false;
+      if (error) {
+        if (error.code === '23505') {
+          setMessage('memberMessage', 'Ya existe un registro para esta semana. El formulario quedará bloqueado.', 'warning');
         } else {
-            await updateInterface(data.session);
+          setMessage('memberMessage', 'No se pudo guardar el CP: ' + error.message, 'error');
         }
-    </script>
+      } else {
+        $('cpInput').value = '';
+        $('bioInput').value = '';
+        setMessage('memberMessage', 'CP guardado correctamente.', 'success');
+      }
+      await loadMemberData();
+      if (isAdmin) await loadAdminData();
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setTimeout(() => updateInterface(session), 0);
+    });
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) status.textContent = 'No se pudo verificar la sesión: ' + error.message;
+    else await updateInterface(data.session);
+  </script>
 </body>
 </html>
