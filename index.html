@@ -15,17 +15,37 @@
             margin: 0;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             background: radial-gradient(circle, #202b40, #090d16);
             color: white;
             font-family: Arial, sans-serif;
         }
 
+        .header {
+            width: 100%;
+            max-width: 1100px;
+            margin: 30px auto 0;
+            padding: 0 15px;
+        }
+
+        .header img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 440px;
+            object-fit: cover;
+            object-position: center;
+            border: 1px solid #34445e;
+            border-radius: 14px;
+            box-shadow: 0 0 35px #000;
+        }
+
         .container {
             width: 90%;
             max-width: 420px;
-            padding: 45px 30px;
+            margin: 30px auto;
+            padding: 40px 30px;
             text-align: center;
             background: #151d2b;
             border: 1px solid #34445e;
@@ -33,16 +53,11 @@
             box-shadow: 0 0 35px #000;
         }
 
-        .logo {
-            font-size: 58px;
-            margin-bottom: 5px;
-        }
-
         h1 {
-            font-size: 42px;
-            letter-spacing: 8px;
+            font-size: 36px;
+            letter-spacing: 7px;
             color: #55aaff;
-            margin: 10px 0;
+            margin: 0 0 10px;
         }
 
         .subtitle {
@@ -52,8 +67,9 @@
         }
 
         .description {
-            margin: 35px 0;
+            margin: 30px 0;
             color: #d0d8e5;
+            line-height: 1.6;
         }
 
         button {
@@ -71,25 +87,62 @@
 
         button:hover {
             background: #4752c4;
-            transform: scale(1.03);
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        .logout {
+            margin-top: 12px;
+            background: #34445e;
+        }
+
+        .logout:hover {
+            background: #455b7a;
+        }
+
+        #status {
+            margin-top: 18px;
+            color: #aab8cc;
+            font-size: 13px;
+            overflow-wrap: anywhere;
         }
 
         footer {
-            margin-top: 30px;
+            margin-top: 25px;
             font-size: 11px;
             color: #718096;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                margin-top: 15px;
+                padding: 0 10px;
+            }
+
+            .header img {
+                border-radius: 8px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+    <div class="header">
+        <img src="logo-lions.png" alt="LIONS - RF Online Next">
+    </div>
 
-        <div class="logo">🦁</div>
-
+    <main class="container">
         <h1>LIONS</h1>
-
         <div class="subtitle">RF ONLINE NEXT</div>
 
         <div class="description">
@@ -97,15 +150,112 @@
             <p>Bienvenido, guerrero.</p>
         </div>
 
-        <button onclick="alert('El acceso con Discord se configurará en la próxima etapa.')">
+        <button id="loginButton">
             Acceder con Discord
         </button>
+
+        <button id="logoutButton" class="logout" hidden>
+            Cerrar sesión
+        </button>
+
+        <div id="status">Conectate para acceder al clan.</div>
 
         <footer>
             LIONS CLAN MANAGEMENT SYSTEM
         </footer>
+    </main>
 
-    </div>
+    <script type="module">
+        import { createClient } from
+            'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL =
+            'https://itlooiobdrmfmxbxwggp.supabase.co';
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua';
+
+        const supabase = createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const status = document.getElementById('status');
+
+        loginButton.addEventListener('click', async () => {
+            loginButton.disabled = true;
+            status.textContent = 'Conectando con Discord...';
+
+            const redirectTo =
+                window.location.origin + window.location.pathname;
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'discord',
+                options: {
+                    redirectTo: redirectTo
+                }
+            });
+
+            if (error) {
+                status.textContent =
+                    'No se pudo iniciar sesión: ' + error.message;
+                loginButton.disabled = false;
+            }
+        });
+
+        logoutButton.addEventListener('click', async () => {
+            logoutButton.disabled = true;
+
+            const { error } = await supabase.auth.signOut();
+
+            if (error) {
+                status.textContent =
+                    'Error al cerrar sesión: ' + error.message;
+                logoutButton.disabled = false;
+            }
+        });
+
+        async function updateSession() {
+            const { data, error } = await supabase.auth.getSession();
+
+            if (error) {
+                status.textContent =
+                    'No se pudo verificar la sesión: ' + error.message;
+                return;
+            }
+
+            const user = data.session?.user;
+
+            if (user) {
+                const discordName =
+                    user.user_metadata?.full_name ||
+                    user.user_metadata?.name ||
+                    user.user_metadata?.preferred_username ||
+                    user.email ||
+                    'Guerrero';
+
+                status.textContent = 'Conectado como: ' + discordName;
+
+                loginButton.hidden = true;
+                logoutButton.hidden = false;
+            } else {
+                status.textContent = 'Conectate para acceder al clan.';
+
+                loginButton.hidden = false;
+                loginButton.disabled = false;
+                logoutButton.hidden = true;
+                logoutButton.disabled = false;
+            }
+        }
+
+        supabase.auth.onAuthStateChange(() => {
+            updateSession();
+        });
+
+        updateSession();
+    </script>
 
 </body>
 </html>
