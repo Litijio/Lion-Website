@@ -56,11 +56,8 @@
     }
 
     h1, h2, h3 { margin-top: 0; }
-
     h1 { font-size: 25px; text-align: center; }
-
     h2 { font-size: 20px; color: #dce7ff; }
-
     h3 { font-size: 16px; color: #c5d4ef; }
 
     .description {
@@ -70,10 +67,7 @@
       line-height: 1.5;
     }
 
-    .muted {
-      color: #aab8cc;
-      font-size: 13px;
-    }
+    .muted { color: #aab8cc; font-size: 13px; }
 
     .status {
       margin-top: 14px;
@@ -84,12 +78,10 @@
     }
 
     .success { color: #70e0a0 !important; }
-
     .error { color: #ff8585 !important; }
-
     .warning { color: #ffd479 !important; }
 
-    button, input, select { font: inherit; }
+    button, input, select, textarea { font: inherit; }
 
     button {
       border: 0;
@@ -110,16 +102,16 @@
     }
 
     .secondary { background: #34445e; }
-
     .secondary:hover { background: #455b7a; }
-
     .danger { background: #8f3543; }
-
     .danger:hover { background: #ad4051; }
-
     .positive { background: #276643; }
-
     .positive:hover { background: #348455; }
+
+    .small-button {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
 
     .top-actions {
       display: flex;
@@ -141,7 +133,7 @@
       margin-bottom: 7px;
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 12px;
       color: white;
@@ -151,20 +143,20 @@
       outline: none;
     }
 
-    input:focus, select:focus {
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
       border-color: #7f91ff;
     }
 
     option { background: #151d2b; }
-
     .field { min-width: 0; }
-
     .form-actions { margin-top: 16px; }
-
     .form-actions button { width: 100%; }
-
     .hidden { display: none !important; }
-
     .table-wrap { overflow-x: auto; }
 
     table {
@@ -174,15 +166,18 @@
     }
 
     th, td {
-      padding: 11px 9px;
+      padding: 10px 8px;
       border-bottom: 1px solid #34445e;
       text-align: left;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     th { color: #aebfe0; font-weight: bold; }
-
     td { color: #e4eaf4; }
+
+    .compact-table tbody tr:hover {
+      background: #1c283c;
+    }
 
     .tag {
       display: inline-block;
@@ -236,9 +231,7 @@
       font-size: 14px;
     }
 
-    .identity-box strong {
-      color: #aebfe0;
-    }
+    .identity-box strong { color: #aebfe0; }
 
     .management-box {
       margin-top: 18px;
@@ -265,6 +258,100 @@
       border-color: #8f3543;
     }
 
+    .reason-box {
+      padding: 18px;
+      margin: 18px 0;
+      background: #30202a;
+      border: 1px solid #8f3543;
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    .reason-text {
+      color: #ffd5d5;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat-card {
+      padding: 16px 10px;
+      background: #101a29;
+      border: 1px solid #34445e;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 27px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #aab8cc;
+    }
+
+    .filters {
+      padding: 15px;
+      background: #101a29;
+      border-radius: 10px;
+      border: 1px solid #34445e;
+      margin: 16px 0;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pagination span {
+      font-size: 12px;
+      color: #b4c2d8;
+    }
+
+    details {
+      margin-top: 22px;
+      padding: 14px;
+      border: 1px solid #34445e;
+      border-radius: 10px;
+      background: #101a29;
+    }
+
+    summary {
+      cursor: pointer;
+      color: #c5d4ef;
+      font-weight: bold;
+    }
+
+    dialog {
+      width: 92%;
+      max-width: 480px;
+      border: 1px solid #52617a;
+      border-radius: 14px;
+      padding: 24px;
+      background: #151d2b;
+      color: white;
+      box-shadow: 0 0 40px #000;
+    }
+
+    dialog::backdrop {
+      background: rgba(0,0,0,.75);
+    }
+
     footer {
       margin-top: 25px;
       text-align: center;
@@ -273,18 +360,13 @@
     }
 
     @media (max-width: 650px) {
-      .header {
-        margin-top: 15px;
-        padding: 0 10px;
-      }
-
+      .header { margin-top: 15px; padding: 0 10px; }
       .header img { border-radius: 8px; }
-
       .panel { padding: 18px; }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+      .form-grid { grid-template-columns: 1fr; }
+      .stats-grid { gap: 6px; }
+      .stat-number { font-size: 21px; }
+      .stat-label { font-size: 10px; }
     }
   </style>
 </head>
@@ -298,6 +380,7 @@
   <main class="container">
 
     <section class="panel">
+
       <h1>Panel de gestión del clan</h1>
 
       <p class="description" id="welcome">
@@ -306,7 +389,6 @@
 
       <div class="top-actions">
         <button id="loginButton">Acceder con Discord</button>
-
         <button id="logoutButton" class="secondary hidden">
           Cerrar sesión
         </button>
@@ -315,20 +397,36 @@
       <div id="status" class="status">
         Conectate para acceder al clan.
       </div>
+
     </section>
 
     <section id="inactivePanel" class="panel inactive-panel hidden">
+
       <h2 class="error">Cuenta inactiva</h2>
 
       <p class="description">
-        Tu cuenta se encuentra inactiva dentro del clan LIONS.
+        Tu acceso a las funciones del clan LIONS
+        se encuentra deshabilitado.
       </p>
 
+      <div class="reason-box">
+
+        <strong>Motivo de desactivación:</strong>
+
+        <p id="inactiveReason" class="reason-text"></p>
+
+        <p class="muted">
+          Fecha:
+          <span id="inactiveDate">—</span>
+        </p>
+
+      </div>
+
       <p class="muted">
-        No tenés acceso a las funciones del clan.
-        Contactá al Maestro para solicitar tu reactivación.
         Tus registros anteriores se conservan.
+        Contactá al Maestro para solicitar tu reactivación.
       </p>
+
     </section>
 
     <section id="memberPanel" class="panel hidden">
@@ -338,26 +436,22 @@
         <h2>Registro de personaje</h2>
 
         <p class="muted">
-          Registrá el nombre de tu personaje de RF Online Next.
+          Registrá el nombre de tu personaje.
           Debe coincidir con tu alias dentro del servidor
-          de Discord LIONS. Una vez registrado, solamente
-          un administrador autorizado podrá modificarlo.
+          de Discord LIONS. Solamente un administrador
+          autorizado podrá modificarlo posteriormente.
         </p>
 
         <form id="characterForm">
 
-          <div class="field">
-            <label for="characterInput">
-              Nombre de tu personaje
-            </label>
+          <label for="characterInput">Nombre del personaje</label>
 
-            <input
-              id="characterInput"
-              type="text"
-              maxlength="40"
-              placeholder="Ingresá tu nombre de personaje"
-              required>
-          </div>
+          <input
+            id="characterInput"
+            type="text"
+            maxlength="40"
+            placeholder="Ingresá tu personaje"
+            required>
 
           <div class="form-actions">
             <button id="saveCharacterButton" type="submit">
@@ -376,7 +470,7 @@
         <div class="identity-box">
 
           <p>
-            <strong>Nick de Discord:</strong>
+            <strong>Discord:</strong>
             <span id="memberDiscordName">—</span>
           </p>
 
@@ -392,9 +486,7 @@
 
           <p>
             <strong>Estado:</strong>
-            <span id="memberState" class="tag tag-active">
-              Activo
-            </span>
+            <span class="tag tag-active">Activo</span>
           </p>
 
         </div>
@@ -402,9 +494,8 @@
         <h2>Registro semanal de CP</h2>
 
         <p class="muted">
-          Cargá tu CP actual y seleccioná el biotraje.
+          Cargá tu CP y seleccioná tu biotraje.
           Se permite un registro por semana.
-          La semana comienza el lunes.
         </p>
 
         <div id="weekLabel" class="muted"></div>
@@ -416,17 +507,17 @@
             <div class="form-grid">
 
               <div class="field">
-                <label for="cpInput">
-                  Poder de combate (CP)
-                </label>
+
+                <label for="cpInput">Poder de combate (CP)</label>
 
                 <input
                   id="cpInput"
                   type="number"
                   min="1"
                   step="1"
-                  placeholder="Ej.: 175000"
+                  placeholder="Ej.: 275000"
                   required>
+
               </div>
 
               <div class="field">
@@ -460,13 +551,14 @@
         </div>
 
         <div id="lockedMessage" class="record-lock hidden"></div>
-
         <div id="memberMessage" class="status"></div>
 
         <h3 style="margin-top:28px">Mi historial de CP</h3>
 
         <div class="table-wrap">
+
           <table>
+
             <thead>
               <tr>
                 <th>Semana</th>
@@ -476,12 +568,10 @@
               </tr>
             </thead>
 
-            <tbody id="myHistory">
-              <tr>
-                <td colspan="4">Cargando historial...</td>
-              </tr>
-            </tbody>
+            <tbody id="myHistory"></tbody>
+
           </table>
+
         </div>
 
       </div>
@@ -500,11 +590,6 @@
       <h3 style="margin-top:25px">
         Administración de integrantes
       </h3>
-
-      <p class="muted">
-        Seleccioná un integrante para gestionar su personaje,
-        estado y permisos según tu nivel de acceso.
-      </p>
 
       <div class="form-grid">
 
@@ -543,7 +628,7 @@
           </p>
 
           <p>
-            <strong>Personaje actual:</strong>
+            <strong>Personaje:</strong>
             <span id="selectedCharacter">—</span>
           </p>
 
@@ -559,19 +644,25 @@
 
         </div>
 
-        <div class="field">
+        <div id="selectedReasonBox" class="reason-box hidden">
 
-          <label for="adminCharacterInput">
-            Nombre del personaje
-          </label>
+          <strong>Motivo de desactivación:</strong>
 
-          <input
-            id="adminCharacterInput"
-            type="text"
-            maxlength="40"
-            placeholder="Nombre del personaje">
+          <p id="selectedReason" class="reason-text"></p>
+
+          <p class="muted">
+            Fecha:
+            <span id="selectedInactiveDate">—</span>
+          </p>
 
         </div>
+
+        <label for="adminCharacterInput">Nombre del personaje</label>
+
+        <input
+          id="adminCharacterInput"
+          type="text"
+          maxlength="40">
 
         <div class="management-actions">
 
@@ -593,26 +684,105 @@
 
       <div id="profileAdminMessage" class="status"></div>
 
-      <h3 style="margin-top:30px">
+      <h3 style="margin-top:35px">
         Registros semanales del clan
       </h3>
 
-      <p class="muted">
-        Las correcciones de CP y biotraje quedan registradas
-        en el historial de auditoría.
-      </p>
+      <div class="stats-grid">
+
+        <div class="stat-card">
+
+          <div id="statTotal" class="stat-number">—</div>
+          <div class="stat-label">Integrantes activos actuales</div>
+
+        </div>
+
+        <div class="stat-card">
+
+          <div id="statLoaded" class="stat-number success">—</div>
+          <div class="stat-label">Activos que cargaron CP</div>
+
+        </div>
+
+        <div class="stat-card">
+
+          <div id="statPending" class="stat-number warning">—</div>
+          <div class="stat-label">Activos pendientes</div>
+
+        </div>
+
+      </div>
+
+      <p id="statsNote" class="muted"></p>
+
+      <div class="filters">
+
+        <div class="form-grid">
+
+          <div class="field">
+
+            <label for="weekFilter">Semana</label>
+
+            <select id="weekFilter"></select>
+
+          </div>
+
+          <div class="field">
+
+            <label for="recordSort">Ordenar por</label>
+
+            <select id="recordSort">
+              <option value="cp_desc">Mayor CP</option>
+              <option value="cp_asc">Menor CP</option>
+              <option value="name">Personaje A-Z</option>
+              <option value="recent">Última carga</option>
+            </select>
+
+          </div>
+
+          <div class="field">
+
+            <label for="recordSearch">Buscar integrante</label>
+
+            <input
+              id="recordSearch"
+              type="search"
+              placeholder="Personaje o nickname de Discord">
+
+          </div>
+
+          <div class="field">
+
+            <label for="bioFilter">Filtrar biotraje</label>
+
+            <select id="bioFilter">
+              <option value="">Todos los biotrajes</option>
+              <option>Punisher</option>
+              <option>Phantom</option>
+              <option>Executor</option>
+              <option>Psypher</option>
+              <option>Juggernaut</option>
+              <option>Technician</option>
+              <option>Arbiter</option>
+              <option>Demolisher</option>
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
 
       <div id="adminMessage" class="status"></div>
 
       <div class="table-wrap">
 
-        <table>
+        <table class="compact-table">
 
           <thead>
             <tr>
-              <th>Nickname de Discord</th>
+              <th>Discord</th>
               <th>Personaje</th>
-              <th>Semana</th>
               <th>CP</th>
               <th>Biotraje</th>
               <th>Última carga</th>
@@ -620,89 +790,142 @@
             </tr>
           </thead>
 
-          <tbody id="allRecords">
-            <tr>
-              <td colspan="7">Cargando registros...</td>
-            </tr>
-          </tbody>
+          <tbody id="allRecords"></tbody>
 
         </table>
 
       </div>
 
-      <h3 style="margin-top:30px">
-        Historial de correcciones administrativas
-      </h3>
+      <div class="pagination">
 
-      <div class="table-wrap">
+        <button id="previousPage" class="secondary small-button">
+          Anterior
+        </button>
 
-        <table>
+        <span id="pageInfo">Página 1 de 1</span>
 
-          <thead>
-            <tr>
-              <th>Integrante corregido</th>
-              <th>CP anterior</th>
-              <th>CP nuevo</th>
-              <th>Biotraje anterior</th>
-              <th>Biotraje nuevo</th>
-              <th>Modificado por</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-
-          <tbody id="auditHistory">
-            <tr>
-              <td colspan="7">Cargando auditoría...</td>
-            </tr>
-          </tbody>
-
-        </table>
+        <button id="nextPage" class="secondary small-button">
+          Siguiente
+        </button>
 
       </div>
+
+      <details id="pendingDetails">
+
+        <summary>Integrantes pendientes de cargar CP</summary>
+
+        <p id="pendingList" class="muted"></p>
+
+      </details>
+
+      <details>
+
+        <summary>Historial de correcciones administrativas</summary>
+
+        <p class="muted">Últimas 100 correcciones registradas.</p>
+
+        <div class="table-wrap">
+
+          <table class="compact-table">
+
+            <thead>
+              <tr>
+                <th>Integrante corregido</th>
+                <th>CP anterior</th>
+                <th>CP nuevo</th>
+                <th>Biotraje anterior</th>
+                <th>Biotraje nuevo</th>
+                <th>Modificado por</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+
+            <tbody id="auditHistory"></tbody>
+
+          </table>
+
+        </div>
+
+      </details>
 
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V2.0</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V2.1</footer>
 
   </main>
+
+  <dialog id="deactivationDialog">
+
+    <h2 class="error">Desactivar integrante</h2>
+
+    <p id="deactivationTarget"></p>
+
+    <form id="deactivationForm">
+
+      <label for="deactivationReason">
+        Motivo de desactivación (obligatorio)
+      </label>
+
+      <textarea
+        id="deactivationReason"
+        maxlength="1000"
+        placeholder="Explicá el motivo de desactivación..."
+        required></textarea>
+
+      <p class="muted">
+        El integrante podrá leer este mensaje al iniciar sesión.
+        Sus datos e historial se conservarán.
+      </p>
+
+      <div id="deactivationMessage" class="status"></div>
+
+      <div class="management-actions">
+
+        <button
+          id="cancelDeactivation"
+          type="button"
+          class="secondary">
+          Cancelar
+        </button>
+
+        <button
+          id="confirmDeactivation"
+          type="submit"
+          class="danger">
+          Desactivar
+        </button>
+
+      </div>
+
+    </form>
+
+  </dialog>
 
   <script type="module">
 
     import { createClient } from
       'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const SUPABASE_URL =
-      'https://itlooiobdrmfmxbxwggp.supabase.co';
-
-    const SUPABASE_PUBLISHABLE_KEY =
-      'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua';
-
     const supabase = createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
+      'https://itlooiobdrmfmxbxwggp.supabase.co',
+      'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua'
     );
 
     const $ = id => document.getElementById(id);
 
     const bios = [
-      'Punisher',
-      'Phantom',
-      'Executor',
-      'Psypher',
-      'Juggernaut',
-      'Technician',
-      'Arbiter',
-      'Demolisher'
+      'Punisher', 'Phantom', 'Executor', 'Psypher',
+      'Juggernaut', 'Technician', 'Arbiter', 'Demolisher'
     ];
 
     const profileFields =
       'user_id,discord_nickname,character_name,is_active,' +
-      'deactivated_at,deactivated_by';
+      'deactivated_at,deactivated_by,deactivation_reason';
+
+    const PAGE_SIZE = 10;
 
     let currentUser = null;
     let currentProfile = null;
-    let currentDiscordName = 'Miembro';
-    let currentCharacterName = null;
 
     let isAdmin = false;
     let isMaster = false;
@@ -710,9 +933,16 @@
 
     let adminProfiles = [];
     let selectedProfile = null;
+    let deactivationTarget = null;
+
+    let weeklyRecords = [];
+    let currentPage = 1;
+    let selectedWeek = '';
 
     let interfaceVersion = 0;
+    let recordsVersion = 0;
     let adminBusy = false;
+    let checkingPermissions = false;
 
     function show(id) {
       $(id).classList.remove('hidden');
@@ -740,24 +970,22 @@
       );
     }
 
-    function localDateParts(date = new Date()) {
+    function formatNumber(value) {
+      return Number(value).toLocaleString('es-AR');
+    }
+
+    function currentWeekStart() {
 
       const parts = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'America/Argentina/Buenos_Aires',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
-      }).formatToParts(date);
+      }).formatToParts(new Date());
 
-      return Object.fromEntries(
-        parts.map(p => [p.type, p.value])
+      const p = Object.fromEntries(
+        parts.map(x => [x.type, x.value])
       );
-
-    }
-
-    function currentWeekStart() {
-
-      const p = localDateParts();
 
       const date = new Date(Date.UTC(
         Number(p.year),
@@ -765,14 +993,12 @@
         Number(p.day)
       ));
 
-      const day = date.getUTCDay();
-
       date.setUTCDate(
-        date.getUTCDate() - ((day + 6) % 7)
+        date.getUTCDate() -
+        ((date.getUTCDay() + 6) % 7)
       );
 
       return date.toISOString().slice(0, 10);
-
     }
 
     function formatDate(value) {
@@ -781,7 +1007,7 @@
 
       const dateOnly = value.length === 10;
 
-      const d = new Date(
+      const date = new Date(
         dateOnly ? value + 'T12:00:00Z' : value
       );
 
@@ -789,37 +1015,26 @@
         timeZone: 'America/Argentina/Buenos_Aires',
         dateStyle: 'short',
         timeStyle: dateOnly ? undefined : 'short'
-      }).format(d);
-
+      }).format(date);
     }
 
     function getDiscordNickname(user) {
 
-      const metadata = user?.user_metadata || {};
+      const m = user?.user_metadata || {};
 
       const candidates = [
-        metadata.global_name,
-        metadata.preferred_username,
-        metadata.user_name,
-        metadata.username,
-        metadata.full_name,
-        metadata.name,
-        metadata.nickname
+        m.global_name,
+        m.preferred_username,
+        m.user_name,
+        m.username,
+        m.full_name,
+        m.name,
+        m.nickname
       ];
 
-      for (const candidate of candidates) {
-
-        if (
-          typeof candidate === 'string' &&
-          candidate.trim()
-        ) {
-          return candidate.trim();
-        }
-
-      }
-
-      return null;
-
+      return candidates.find(
+        v => typeof v === 'string' && v.trim()
+      )?.trim() || 'Miembro';
     }
 
     async function fetchOwnProfile(userId) {
@@ -833,7 +1048,6 @@
       if (error) throw error;
 
       return data;
-
     }
 
     async function saveMemberProfile(user) {
@@ -845,8 +1059,7 @@
       if (profile) {
 
         if (
-          profile.is_active === true &&
-          nickname &&
+          profile.is_active &&
           nickname !== profile.discord_nickname
         ) {
 
@@ -860,21 +1073,18 @@
 
           if (!error) {
             profile = await fetchOwnProfile(user.id);
-          } else {
-            console.error(error);
           }
 
         }
 
         return profile;
-
       }
 
       const { error } = await supabase
         .from('member_profiles')
         .insert({
           user_id: user.id,
-          discord_nickname: nickname || 'Miembro'
+          discord_nickname: nickname
         });
 
       if (error && error.code !== '23505') {
@@ -882,7 +1092,6 @@
       }
 
       return await fetchOwnProfile(user.id);
-
     }
 
     async function readPermissions(userId) {
@@ -908,7 +1117,34 @@
         admin: admin.data === true,
         active: active.data === true
       };
+    }
 
+    function applyPermissions(permissions) {
+
+      isMaster = permissions.master;
+      isActive = permissions.active;
+
+      isAdmin = isMaster ||
+        (permissions.admin && isActive);
+    }
+
+    function displayInactive(profile) {
+
+      hide('memberPanel');
+      hide('adminPanel');
+
+      clearProtectedData();
+
+      $('inactiveReason').textContent =
+        profile?.deactivation_reason ||
+        'No se registró un motivo de desactivación.';
+
+      $('inactiveDate').textContent =
+        formatDate(profile?.deactivated_at);
+
+      show('inactivePanel');
+
+      setMessage('status', 'Cuenta inactiva.', 'error');
     }
 
     async function verifyAccess(requireAdmin = false) {
@@ -916,35 +1152,33 @@
       if (!currentUser) return false;
 
       const userId = currentUser.id;
+      const version = interfaceVersion;
 
       try {
 
         const permissions = await readPermissions(userId);
 
-        if (currentUser?.id !== userId) return false;
+        if (
+          currentUser?.id !== userId ||
+          version !== interfaceVersion
+        ) return false;
 
-        isMaster = permissions.master;
-        isActive = permissions.active;
-        isAdmin = isMaster || (
-          permissions.admin && isActive
-        );
+        applyPermissions(permissions);
 
         if (!isActive && !isMaster) {
 
-          hide('memberPanel');
-          hide('adminPanel');
+          const profile = await fetchOwnProfile(userId);
 
-          clearProtectedData();
-          show('inactivePanel');
+          if (version !== interfaceVersion) return false;
 
-          setMessage(
-            'status',
-            'Tu cuenta está inactiva.',
-            'error'
-          );
+          currentProfile = profile;
+          displayInactive(profile);
 
           return false;
+        }
 
+        if (!isActive) {
+          hide('memberPanel');
         }
 
         if (!isAdmin) {
@@ -952,19 +1186,16 @@
           clearAdminData();
         }
 
-        if (requireAdmin && !isAdmin) {
-          return false;
-        }
-
-        return true;
+        return !requireAdmin || isAdmin;
 
       } catch (error) {
+
+        if (version !== interfaceVersion) return false;
 
         console.error(error);
 
         hide('memberPanel');
         hide('adminPanel');
-
         clearProtectedData();
 
         setMessage(
@@ -974,15 +1205,20 @@
         );
 
         return false;
-
       }
-
     }
 
     function clearAdminData() {
 
+      recordsVersion++;
+
       adminProfiles = [];
+      weeklyRecords = [];
       selectedProfile = null;
+      deactivationTarget = null;
+
+      selectedWeek = '';
+      currentPage = 1;
 
       $('allRecords').innerHTML = '';
       $('auditHistory').innerHTML = '';
@@ -990,14 +1226,25 @@
       $('memberSelector').innerHTML =
         '<option value="">Seleccionar integrante</option>';
 
-      hide('selectedMemberPanel');
+      $('weekFilter').innerHTML = '';
+      $('pendingList').textContent = '';
+      $('statsNote').textContent = '';
+
+      ['statTotal', 'statLoaded', 'statPending'].forEach(
+        id => $(id).textContent = '—'
+      );
 
       $('selectedDiscord').textContent = '—';
       $('selectedCharacter').textContent = '—';
-      $('selectedRole').textContent = '—';
-      $('selectedState').textContent = '—';
+      $('selectedReason').textContent = '';
       $('adminCharacterInput').value = '';
+      $('deactivationReason').value = '';
 
+      hide('selectedMemberPanel');
+
+      if ($('deactivationDialog').open) {
+        $('deactivationDialog').close();
+      }
     }
 
     function clearProtectedData() {
@@ -1007,12 +1254,13 @@
       $('myHistory').innerHTML = '';
       $('memberDiscordName').textContent = '—';
       $('memberCharacterName').textContent = '—';
-
       $('lockedMessage').textContent = '';
 
       $('cpInput').value = '';
       $('bioInput').value = '';
-
+      $('characterInput').value = '';
+      $('inactiveReason').textContent = '';
+      $('inactiveDate').textContent = '—';
     }
 
     function showCharacterRegistration() {
@@ -1021,142 +1269,107 @@
       hide('memberContent');
 
       $('characterInput').value = '';
-
-      setMessage('characterMessage', '');
-
     }
 
     function showMemberContent(profile) {
 
-      currentCharacterName = profile.character_name;
-
-      currentDiscordName =
-        profile.discord_nickname || currentDiscordName;
-
       $('memberDiscordName').textContent =
-        currentDiscordName;
+        profile.discord_nickname || 'Miembro';
 
       $('memberCharacterName').textContent =
-        currentCharacterName;
+        profile.character_name || 'Pendiente';
 
       const role = $('memberRole');
 
       role.textContent = isMaster
         ? 'Maestro'
-        : isAdmin
-          ? 'Administrador'
-          : 'Integrante';
+        : isAdmin ? 'Administrador' : 'Integrante';
 
       role.className = 'tag ' + (
-        isMaster
-          ? 'tag-master'
-          : isAdmin
-            ? 'tag-admin'
-            : ''
-      );
-
-      const state = $('memberState');
-
-      state.textContent = isActive ? 'Activo' : 'Inactivo';
-
-      state.className = 'tag ' + (
-        isActive ? 'tag-active' : 'tag-inactive'
+        isMaster ? 'tag-master' :
+        isAdmin ? 'tag-admin' : ''
       );
 
       hide('characterRegistration');
       show('memberContent');
-
     }
 
-    async function registerCharacter(event) {
+    $('characterForm').addEventListener(
+      'submit',
+      async event => {
 
-      event.preventDefault();
+        event.preventDefault();
 
-      if (!await verifyAccess() || !isActive) return;
+        if (!await verifyAccess() || !isActive) return;
 
-      const characterName =
-        $('characterInput').value.trim();
+        const name = $('characterInput').value.trim();
+        const userId = currentUser.id;
+        const version = interfaceVersion;
 
-      if (
-        !characterName ||
-        characterName.length > 40
-      ) {
+        if (!name || name.length > 40) return;
 
-        setMessage(
-          'characterMessage',
-          'Ingresá un nombre válido de hasta 40 caracteres.',
-          'error'
-        );
+        const button = $('saveCharacterButton');
+        button.disabled = true;
 
-        return;
+        try {
 
-      }
+          const { data, error } = await supabase
+            .from('member_profiles')
+            .update({
+              character_name: name,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId)
+            .is('character_name', null)
+            .select(profileFields)
+            .maybeSingle();
 
-      const button = $('saveCharacterButton');
+          if (version !== interfaceVersion) return;
+          if (error) throw error;
 
-      button.disabled = true;
+          if (!data) {
+            throw new Error('No se confirmó el registro.');
+          }
 
-      try {
+          currentProfile = data;
 
-        const { data, error } = await supabase
-          .from('member_profiles')
-          .update({
-            character_name: characterName,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', currentUser.id)
-          .is('character_name', null)
-          .select(profileFields)
-          .maybeSingle();
+          showMemberContent(data);
+          await loadMemberData();
 
-        if (error) throw error;
-
-        if (!data) {
-          throw new Error(
-            'No se pudo confirmar el registro.'
+          setMessage(
+            'memberMessage',
+            'Personaje registrado correctamente.',
+            'success'
           );
+
+          if (isAdmin) {
+            await loadAdminProfiles();
+            await loadWeeklyRecords();
+          }
+
+        } catch (error) {
+
+          setMessage(
+            'characterMessage',
+            error.code === '23505'
+              ? 'Ese personaje ya está registrado.'
+              : error.message,
+            'error'
+          );
+
+        } finally {
+
+          button.disabled = false;
         }
-
-        currentProfile = data;
-
-        showMemberContent(data);
-
-        setMessage(
-          'memberMessage',
-          'Personaje registrado correctamente.',
-          'success'
-        );
-
-        await loadMemberData();
-
-        if (isAdmin) {
-          await loadAdminProfiles();
-          await loadAdminData();
-        }
-
-      } catch (error) {
-
-        setMessage(
-          'characterMessage',
-          error.code === '23505'
-            ? 'Ese personaje ya está registrado.'
-            : error.message,
-          'error'
-        );
-
-      } finally {
-
-        button.disabled = false;
 
       }
-
-    }
+    );
 
     async function loadMemberData() {
 
       if (
         !currentUser ||
-        !currentCharacterName ||
+        !currentProfile?.character_name ||
         !isActive
       ) return;
 
@@ -1165,9 +1378,7 @@
       const week = currentWeekStart();
 
       $('weekLabel').textContent =
-        'Semana actual desde el lunes ' +
-        formatDate(week) +
-        ' (hora de Argentina).';
+        'Semana desde el lunes ' + formatDate(week);
 
       const { data: current, error: currentError } =
         await supabase
@@ -1177,18 +1388,19 @@
           .eq('week_start', week)
           .maybeSingle();
 
-      if (version !== interfaceVersion) return;
+      if (version !== interfaceVersion || !isActive) return;
 
       if (currentError) {
 
+        hide('memberFormArea');
+
         setMessage(
           'memberMessage',
-          'No se pudo consultar el registro.',
+          currentError.message,
           'error'
         );
 
         return;
-
       }
 
       if (current) {
@@ -1198,75 +1410,132 @@
 
         $('lockedMessage').textContent =
           'Ya registraste esta semana: ' +
-          Number(current.cp).toLocaleString('es-AR') +
-          ' CP · ' + current.biotraje +
-          '. Podrás volver a cargar el próximo lunes.';
+          formatNumber(current.cp) + ' CP · ' +
+          current.biotraje +
+          '. Nueva carga disponible el próximo lunes.';
 
       } else {
 
         show('memberFormArea');
         hide('lockedMessage');
-
       }
 
-      const { data: history, error } = await supabase
+      const { data, error } = await supabase
         .from('cp_records')
         .select('cp,biotraje,week_start,created_at')
         .eq('user_id', userId)
         .order('week_start', { ascending: false });
 
-      if (version !== interfaceVersion) return;
+      if (version !== interfaceVersion || !isActive) return;
 
-      if (error) {
+      $('myHistory').innerHTML = error
 
-        $('myHistory').innerHTML =
-          '<tr><td colspan="4">Error al cargar historial.</td></tr>';
+        ? '<tr><td colspan="4">Error al cargar historial.</td></tr>'
 
-        return;
+        : (data || []).length
 
-      }
+          ? data.map(r => `
+            <tr>
+              <td>${formatDate(r.week_start)}</td>
+              <td>${formatNumber(r.cp)}</td>
+              <td>${escapeHtml(r.biotraje)}</td>
+              <td>${formatDate(r.created_at)}</td>
+            </tr>
+          `).join('')
 
-      $('myHistory').innerHTML = (history || []).length
-        ? history.map(r => `
-          <tr>
-            <td>${formatDate(r.week_start)}</td>
-            <td>${Number(r.cp).toLocaleString('es-AR')}</td>
-            <td>${escapeHtml(r.biotraje)}</td>
-            <td>${formatDate(r.created_at)}</td>
-          </tr>
-        `).join('')
-        : '<tr><td colspan="4">Todavía no tenés registros.</td></tr>';
-
+          : '<tr><td colspan="4">Sin registros.</td></tr>';
     }
 
-    async function loadProfiles(userIds) {
+    $('cpForm').addEventListener('submit', async event => {
 
-      const uniqueIds = [...new Set(
-        (userIds || []).filter(Boolean)
-      )];
+      event.preventDefault();
 
-      const profileMap = new Map();
+      if (
+        !await verifyAccess() ||
+        !isActive ||
+        !currentProfile?.character_name
+      ) return;
 
-      if (!uniqueIds.length) return profileMap;
+      const cp = Number($('cpInput').value);
+      const biotraje = $('bioInput').value;
+      const version = interfaceVersion;
 
-      const { data, error } = await supabase
-        .from('member_profiles')
-        .select(profileFields)
-        .in('user_id', uniqueIds);
+      if (!Number.isInteger(cp) || cp <= 0 || !bios.includes(biotraje)) {
 
-      if (error) {
-
-        console.error(error);
-        return profileMap;
-
+        setMessage('memberMessage', 'Ingresá datos válidos.', 'error');
+        return;
       }
 
-      (data || []).forEach(profile => {
-        profileMap.set(profile.user_id, profile);
-      });
+      const button = $('saveCpButton');
+      button.disabled = true;
 
-      return profileMap;
+      try {
 
+        const { error } = await supabase
+          .from('cp_records')
+          .insert({
+            user_id: currentUser.id,
+            cp,
+            biotraje,
+            week_start: currentWeekStart()
+          });
+
+        if (version !== interfaceVersion) return;
+
+        if (error) {
+
+          setMessage(
+            'memberMessage',
+            error.code === '23505'
+              ? 'Ya existe un registro para esta semana.'
+              : error.message,
+            'error'
+          );
+
+        } else {
+
+          $('cpInput').value = '';
+          $('bioInput').value = '';
+
+          setMessage(
+            'memberMessage',
+            'CP guardado correctamente.',
+            'success'
+          );
+        }
+
+        await loadMemberData();
+
+        if (isAdmin) {
+          await loadWeeks();
+          await loadWeeklyRecords();
+        }
+
+      } finally {
+
+        button.disabled = false;
+      }
+
+    });
+
+    async function fetchAllRows(buildQuery) {
+
+      const pageSize = 500;
+      const rows = [];
+
+      for (let offset = 0; ; offset += pageSize) {
+
+        const { data, error } = await buildQuery()
+          .range(offset, offset + pageSize - 1);
+
+        if (error) throw error;
+
+        rows.push(...(data || []));
+
+        if (!data || data.length < pageSize) break;
+      }
+
+      return rows;
     }
 
     async function loadAdminProfiles() {
@@ -1274,153 +1543,133 @@
       if (!isAdmin || !currentUser) return;
 
       const version = interfaceVersion;
+      const previousId = selectedProfile?.user_id || '';
 
-      const previousId =
-        selectedProfile?.user_id || '';
+      try {
 
-      const { data, error } = await supabase
-        .from('member_profiles')
-        .select(profileFields)
-        .order('discord_nickname', { ascending: true });
+        const profiles = await fetchAllRows(() =>
+          supabase
+            .from('member_profiles')
+            .select(profileFields)
+            .order('user_id')
+        );
 
-      if (version !== interfaceVersion) return;
+        const results = [];
 
-      if (error) {
+        for (let i = 0; i < profiles.length; i += 10) {
+
+          const batch = await Promise.all(
+            profiles.slice(i, i + 10).map(async p => {
+
+              const { data, error } = await supabase.rpc(
+                'is_clan_admin_user',
+                { p_user_id: p.user_id }
+              );
+
+              return {
+                ...p,
+                role_known: !error,
+                is_admin: data === true,
+                is_master: isMaster &&
+                  p.user_id === currentUser?.id
+              };
+
+            })
+          );
+
+          results.push(...batch);
+        }
+
+        if (version !== interfaceVersion || !isAdmin) return;
+
+        adminProfiles = results.sort((a, b) =>
+          (a.discord_nickname || '').localeCompare(
+            b.discord_nickname || ''
+          )
+        );
+
+        renderMemberSelector(previousId);
+        updateStatistics();
+
+      } catch (error) {
+
+        if (version !== interfaceVersion || !isAdmin) return;
+
+        adminProfiles = [];
+        renderMemberSelector();
+        updateStatistics();
 
         setMessage(
           'profileAdminMessage',
-          'No se pudieron cargar los integrantes.',
+          error.message,
           'error'
         );
-
-        return;
-
       }
+    }
 
-      const profiles = await Promise.all(
-        (data || []).map(async profile => {
+    function getRole(profile) {
 
-          const ownMaster =
-            isMaster &&
-            profile.user_id === currentUser?.id;
+      if (profile.is_master) return 'Maestro';
+      if (!profile.role_known) return 'Sin verificar';
+      if (profile.is_admin) return 'Administrador';
 
-          const { data: role, error: roleError } =
-            await supabase.rpc(
-              'is_clan_admin_user',
-              { p_user_id: profile.user_id }
-            );
-
-          return {
-            ...profile,
-            role_known: !roleError,
-            is_admin: role === true,
-            is_master: ownMaster
-          };
-
-        })
-      );
-
-      if (version !== interfaceVersion) return;
-
-      adminProfiles = profiles;
-
-      renderMemberSelector(previousId);
-
-      if (profiles.some(p => !p.role_known)) {
-
-        setMessage(
-          'profileAdminMessage',
-          'No se pudieron verificar algunos roles. Sus acciones quedaron bloqueadas.',
-          'warning'
-        );
-
-      }
-
+      return 'Integrante';
     }
 
     function renderMemberSelector(previousId = '') {
 
       const filter = $('memberFilter').value;
+      const selector = $('memberSelector');
 
-      const filtered = adminProfiles.filter(profile => {
+      const profiles = adminProfiles.filter(p => {
 
-        if (filter === 'active') {
-          return profile.is_active === true;
-        }
-
-        if (filter === 'inactive') {
-          return profile.is_active === false;
-        }
-
-        if (filter === 'admins') {
-          return profile.is_admin || profile.is_master;
-        }
+        if (filter === 'active') return p.is_active;
+        if (filter === 'inactive') return !p.is_active;
+        if (filter === 'admins') return p.is_admin || p.is_master;
 
         return true;
-
       });
-
-      const selector = $('memberSelector');
 
       selector.innerHTML = '';
 
       selector.add(new Option(
-        'Seleccionar integrante (' + filtered.length + ')',
+        'Seleccionar integrante (' + profiles.length + ')',
         ''
       ));
 
-      filtered.forEach(profile => {
+      profiles.forEach(p => {
 
-        const role = profile.is_master
-          ? 'Maestro'
-          : profile.is_admin
-            ? 'Admin'
-            : 'Integrante';
+        selector.add(new Option(
 
-        const label =
-          (profile.discord_nickname || 'Sin nickname') +
-          ' / ' +
-          (profile.character_name || 'Pendiente') +
-          ' · ' + role +
-          (
-            profile.is_active
-              ? ''
-              : ' · INACTIVO'
-          );
+          (p.discord_nickname || 'Sin nickname') +
+          ' / ' + (p.character_name || 'Pendiente') +
+          ' · ' + getRole(p) +
+          (p.is_active ? '' : ' · INACTIVO'),
 
-        const option = new Option(label, profile.user_id);
+          p.user_id
 
-        selector.add(option);
-
+        ));
       });
 
-      if (
-        previousId &&
-        filtered.some(p => p.user_id === previousId)
-      ) {
+      if (profiles.some(p => p.user_id === previousId)) {
         selector.value = previousId;
       }
 
       renderSelectedMember();
-
     }
 
     function renderSelectedMember() {
 
-      const userId = $('memberSelector').value;
-
       selectedProfile = adminProfiles.find(
-        p => p.user_id === userId
+        p => p.user_id === $('memberSelector').value
       ) || null;
 
-      if (!selectedProfile) {
+      const p = selectedProfile;
 
+      if (!p) {
         hide('selectedMemberPanel');
         return;
-
       }
-
-      const p = selectedProfile;
 
       show('selectedMemberPanel');
 
@@ -1433,22 +1682,11 @@
       $('adminCharacterInput').value =
         p.character_name || '';
 
-      const role = $('selectedRole');
+      $('selectedRole').textContent = getRole(p);
 
-      role.textContent = p.is_master
-        ? 'Maestro'
-        : !p.role_known
-          ? 'Sin verificar'
-          : p.is_admin
-            ? 'Administrador'
-            : 'Integrante';
-
-      role.className = 'tag ' + (
-        p.is_master
-          ? 'tag-master'
-          : p.is_admin
-            ? 'tag-admin'
-            : ''
+      $('selectedRole').className = 'tag ' + (
+        p.is_master ? 'tag-master' :
+        p.is_admin ? 'tag-admin' : ''
       );
 
       $('selectedState').textContent =
@@ -1458,12 +1696,28 @@
         p.is_active ? 'tag-active' : 'tag-inactive'
       );
 
-      const canManage =
-        p.role_known &&
-        (isMaster || !p.is_admin);
+      if (!p.is_active) {
 
-      const isSelf =
-        p.user_id === currentUser?.id;
+        $('selectedReason').textContent =
+          p.deactivation_reason || 'Sin motivo registrado.';
+
+        $('selectedInactiveDate').textContent =
+          formatDate(p.deactivated_at);
+
+        show('selectedReasonBox');
+
+      } else {
+
+        hide('selectedReasonBox');
+        $('selectedReason').textContent = '';
+      }
+
+      const self = p.user_id === currentUser?.id;
+
+      const canManage =
+        isAdmin &&
+        p.role_known &&
+        (isMaster || (!p.is_admin && !p.is_master));
 
       $('adminCharacterInput').disabled =
         !canManage || adminBusy;
@@ -1471,64 +1725,54 @@
       $('saveAdminCharacterButton').disabled =
         !canManage || adminBusy;
 
-      const toggle = $('toggleMemberButton');
+      const stateButton = $('toggleMemberButton');
 
-      toggle.textContent = p.is_active
+      stateButton.textContent = p.is_active
         ? 'Desactivar integrante'
         : 'Reactivar integrante';
 
-      toggle.className =
+      stateButton.className =
         p.is_active ? 'danger' : 'positive';
 
-      toggle.disabled =
-        !canManage || isSelf || p.is_master || adminBusy;
+      stateButton.disabled =
+        !canManage || self || p.is_master || adminBusy;
 
-      const roleButton = $('toggleAdminButton');
-
-      if (isMaster && !isSelf && !p.is_master) {
+      if (isMaster && !self) {
 
         show('toggleAdminButton');
 
-        roleButton.textContent = p.is_admin
+        $('toggleAdminButton').textContent = p.is_admin
           ? 'Quitar administrador'
           : 'Designar administrador';
 
-        roleButton.className =
-          p.is_admin ? 'danger' : 'secondary';
-
-        roleButton.disabled =
+        $('toggleAdminButton').disabled =
+          adminBusy ||
           !p.role_known ||
-          (!p.is_active && !p.is_admin) ||
-          adminBusy;
+          (!p.is_active && !p.is_admin);
 
       } else {
 
         hide('toggleAdminButton');
-
       }
-
     }
 
-    async function verifyTarget(profile) {
+    async function verifyTarget(target) {
 
-      if (!profile || !await verifyAccess(true)) {
-        return false;
-      }
+      if (!target || !await verifyAccess(true)) return false;
 
       const { data, error } = await supabase.rpc(
         'is_clan_admin_user',
-        { p_user_id: profile.user_id }
+        { p_user_id: target.user_id }
       );
 
       if (error) return false;
 
       return isMaster || data === false;
-
     }
 
     async function runAdminAction(action) {
 
-      if (adminBusy) return;
+      if (adminBusy) return false;
 
       adminBusy = true;
       renderSelectedMember();
@@ -1536,54 +1780,67 @@
       try {
 
         await action();
+        return true;
 
       } catch (error) {
 
         setMessage(
           'profileAdminMessage',
           error.code === '23505'
-            ? 'Ese personaje ya pertenece a otro integrante.'
-            : error.message || 'No se pudo realizar la operación.',
+            ? 'Ese personaje ya está registrado.'
+            : error.message,
           'error'
         );
+
+        return false;
 
       } finally {
 
         adminBusy = false;
         renderSelectedMember();
-
       }
-
     }
+
+    $('memberFilter').addEventListener('change', () => {
+
+      renderMemberSelector(selectedProfile?.user_id || '');
+    });
+
+    $('memberSelector').addEventListener('change', () => {
+
+      setMessage('profileAdminMessage', '');
+      renderSelectedMember();
+    });
 
     $('saveAdminCharacterButton').addEventListener(
       'click',
       async () => {
 
         const target = selectedProfile;
-
-        const characterName =
-          $('adminCharacterInput').value.trim();
+        const name = $('adminCharacterInput').value.trim();
 
         if (!target) return;
 
         await runAdminAction(async () => {
 
           if (!await verifyTarget(target)) {
-            throw new Error('No tenés permiso para modificar este perfil.');
+
+            throw new Error(
+              'No tenés permiso para modificar este integrante.'
+            );
           }
 
-          if (
-            !characterName ||
-            characterName.length > 40
-          ) {
-            throw new Error('Ingresá un nombre válido.');
+          if (!name || name.length > 40) {
+
+            throw new Error(
+              'Ingresá un nombre de hasta 40 caracteres.'
+            );
           }
 
           const { data, error } = await supabase
             .from('member_profiles')
             .update({
-              character_name: characterName,
+              character_name: name,
               updated_at: new Date().toISOString()
             })
             .eq('user_id', target.user_id)
@@ -1593,25 +1850,25 @@
           if (error) throw error;
 
           if (!data) {
-            throw new Error('La modificación no fue autorizada.');
+            throw new Error('Modificación no autorizada.');
           }
 
-          if (target.user_id === currentUser?.id) {
+          if (data.user_id === currentUser?.id) {
 
             currentProfile = data;
-            showMemberContent(data);
 
+            if (isActive) showMemberContent(data);
           }
 
           await loadAdminProfiles();
-          await loadAdminData();
+          await loadWeeklyRecords();
+          await loadAudit();
 
           setMessage(
             'profileAdminMessage',
             'Personaje actualizado correctamente.',
             'success'
           );
-
         });
 
       }
@@ -1623,248 +1880,490 @@
 
         const target = selectedProfile;
 
-        if (!target || !currentUser) return;
+        if (
+          !target ||
+          !currentUser ||
+          target.user_id === currentUser.id
+        ) return;
 
-        if (target.user_id === currentUser.id) return;
+        if (target.is_active) {
 
-        const newState = !target.is_active;
+          deactivationTarget = target;
 
-        const confirmed = confirm(
-          (newState ? '¿Reactivar a ' : '¿Desactivar a ') +
-          (target.discord_nickname || 'este integrante') +
-          '?' +
-          (
-            newState
-              ? ''
-              : '\nPerderá acceso al clan, pero conservará sus datos.'
-          )
-        );
+          $('deactivationTarget').textContent =
+            (target.discord_nickname || 'Integrante') +
+            ' / ' + (target.character_name || 'Pendiente');
 
-        if (!confirmed) return;
+          $('deactivationReason').value = '';
+          setMessage('deactivationMessage', '');
 
-        await runAdminAction(async () => {
-
-          if (!await verifyTarget(target)) {
-            throw new Error('No tenés permiso para modificar este integrante.');
-          }
-
-          const changes = {
-            is_active: newState,
-            updated_at: new Date().toISOString(),
-            deactivated_at: newState
-              ? null
-              : new Date().toISOString(),
-            deactivated_by: newState
-              ? null
-              : currentUser.id
-          };
-
-          const { data, error } = await supabase
-            .from('member_profiles')
-            .update(changes)
-            .eq('user_id', target.user_id)
-            .eq('is_active', target.is_active)
-            .select(profileFields)
-            .maybeSingle();
-
-          if (error) throw error;
-
-          if (!data || data.is_active !== newState) {
-            throw new Error(
-              'No se pudo confirmar el cambio de estado.'
-            );
-          }
-
-          await loadAdminProfiles();
-
-          setMessage(
-            'profileAdminMessage',
-            newState
-              ? 'Integrante reactivado correctamente.'
-              : 'Integrante desactivado correctamente.',
-            'success'
-          );
-
-        });
-
-      }
-    );
-
-    $('toggleAdminButton').addEventListener(
-      'click',
-      async () => {
-
-        const target = selectedProfile;
-
-        if (!target || !currentUser || !isMaster) return;
-
-        if (target.user_id === currentUser.id) return;
-
-        const makeAdmin = !target.is_admin;
-
-        if (makeAdmin && !target.is_active) return;
+          $('deactivationDialog').showModal();
+          return;
+        }
 
         if (!confirm(
-          (makeAdmin
-            ? '¿Designar administrador a '
-            : '¿Quitar permisos administrativos a ') +
-          (target.discord_nickname || 'este integrante') +
-          '?'
+          '¿Reactivar a ' + target.discord_nickname + '?'
         )) return;
 
         await runAdminAction(async () => {
 
-          if (!await verifyAccess(true) || !isMaster) {
-            throw new Error(
-              'Solo el Maestro puede gestionar administradores.'
-            );
-          }
-
-          const { error } = await supabase.rpc(
-            'set_clan_admin',
-            {
-              p_user_id: target.user_id,
-              p_make_admin: makeAdmin
-            }
-          );
-
-          if (error) throw error;
-
-          await loadAdminProfiles();
-
-          setMessage(
-            'profileAdminMessage',
-            makeAdmin
-              ? 'Administrador designado correctamente.'
-              : 'Permisos administrativos retirados.',
-            'success'
-          );
+          await changeMemberStatus(target, true, null);
 
         });
 
       }
     );
 
-    $('memberFilter').addEventListener('change', () => {
+    $('cancelDeactivation').addEventListener('click', () => {
 
-      renderMemberSelector(
-        selectedProfile?.user_id || ''
+      if (!adminBusy) {
+        $('deactivationDialog').close();
+      }
+    });
+
+    $('deactivationDialog').addEventListener('cancel', event => {
+
+      if (adminBusy) event.preventDefault();
+    });
+
+    $('deactivationDialog').addEventListener('close', () => {
+
+      deactivationTarget = null;
+      $('deactivationReason').value = '';
+    });
+
+    $('deactivationForm').addEventListener('submit', async event => {
+
+      event.preventDefault();
+
+      if (adminBusy) return;
+
+      const target = deactivationTarget;
+      const reason = $('deactivationReason').value.trim();
+
+      if (!target) return;
+
+      if (!reason || reason.length > 1000) {
+
+        setMessage(
+          'deactivationMessage',
+          'Debés ingresar un motivo válido.',
+          'error'
+        );
+
+        return;
+      }
+
+      $('confirmDeactivation').disabled = true;
+      $('cancelDeactivation').disabled = true;
+
+      try {
+
+        const success = await runAdminAction(async () => {
+
+          await changeMemberStatus(target, false, reason);
+        });
+
+        if (success) {
+
+          $('deactivationDialog').close();
+
+        } else {
+
+          setMessage(
+            'deactivationMessage',
+            $('profileAdminMessage').textContent,
+            'error'
+          );
+        }
+
+      } finally {
+
+        $('confirmDeactivation').disabled = false;
+        $('cancelDeactivation').disabled = false;
+      }
+
+    });
+
+    async function changeMemberStatus(target, active, reason) {
+
+      if (
+        !currentUser ||
+        target.user_id === currentUser.id
+      ) {
+        throw new Error('No podés modificar tu propio estado.');
+      }
+
+      if (!await verifyTarget(target)) {
+
+        throw new Error('No tenés permiso para modificar este estado.');
+      }
+
+      if (!active && (!reason || !reason.trim())) {
+
+        throw new Error('El motivo es obligatorio.');
+      }
+
+      const { data, error } = await supabase
+        .from('member_profiles')
+        .update({
+          is_active: active,
+          deactivation_reason: active ? null : reason.trim(),
+          deactivated_at: active ? null : new Date().toISOString(),
+          deactivated_by: active ? null : currentUser.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', target.user_id)
+        .eq('is_active', target.is_active)
+        .select(profileFields)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data || data.is_active !== active) {
+
+        throw new Error('No se confirmó el cambio de estado.');
+      }
+
+      if (!active && data.deactivation_reason !== reason.trim()) {
+
+        throw new Error(
+          'El estado cambió, pero no se confirmó el motivo. Revisá Supabase.'
+        );
+      }
+
+      await loadAdminProfiles();
+      await loadWeeklyRecords();
+
+      setMessage(
+        'profileAdminMessage',
+        active
+          ? 'Integrante reactivado correctamente.'
+          : 'Integrante desactivado. Motivo registrado.',
+        'success'
       );
+    }
+
+    $('toggleAdminButton').addEventListener('click', async () => {
+
+      const target = selectedProfile;
+
+      if (
+        !target ||
+        !isMaster ||
+        target.user_id === currentUser?.id
+      ) return;
+
+      const makeAdmin = !target.is_admin;
+
+      if (makeAdmin && !target.is_active) return;
+
+      if (!confirm(
+        (makeAdmin ? '¿Designar administrador a ' : '¿Quitar administrador a ') +
+        target.discord_nickname + '?'
+      )) return;
+
+      await runAdminAction(async () => {
+
+        if (!await verifyAccess(true) || !isMaster) {
+
+          throw new Error(
+            'Solo el Maestro puede gestionar administradores.'
+          );
+        }
+
+        const { error } = await supabase.rpc(
+          'set_clan_admin',
+          {
+            p_user_id: target.user_id,
+            p_make_admin: makeAdmin
+          }
+        );
+
+        if (error) throw error;
+
+        await loadAdminProfiles();
+
+        setMessage(
+          'profileAdminMessage',
+          makeAdmin
+            ? 'Administrador designado.'
+            : 'Permisos administrativos retirados.',
+          'success'
+        );
+
+      });
 
     });
 
-    $('memberSelector').addEventListener('change', () => {
-
-      setMessage('profileAdminMessage', '');
-      renderSelectedMember();
-
-    });
-
-    async function loadAdminData() {
+    async function loadWeeks() {
 
       if (!isAdmin) return;
 
       const version = interfaceVersion;
 
-      const { data: records, error } = await supabase
-        .from('cp_records')
-        .select('*')
-        .order('week_start', { ascending: false })
-        .order('created_at', { ascending: false });
+      try {
 
-      if (version !== interfaceVersion) return;
+        const rows = await fetchAllRows(() =>
+          supabase
+            .from('cp_records')
+            .select('week_start')
+            .order('week_start', { ascending: false })
+            .order('user_id')
+        );
 
-      if (error) {
+        if (version !== interfaceVersion || !isAdmin) return;
+
+        const thisWeek = currentWeekStart();
+
+        const weeks = [...new Set([
+          thisWeek,
+          ...rows.map(r => r.week_start)
+        ])].sort().reverse();
+
+        if (!selectedWeek || !weeks.includes(selectedWeek)) {
+          selectedWeek = thisWeek;
+        }
+
+        $('weekFilter').innerHTML = '';
+
+        weeks.forEach(week => {
+
+          $('weekFilter').add(new Option(
+
+            formatDate(week) +
+            (week === thisWeek ? ' · Semana actual' : ''),
+
+            week
+
+          ));
+
+        });
+
+        $('weekFilter').value = selectedWeek;
+
+      } catch (error) {
+
+        if (version !== interfaceVersion || !isAdmin) return;
+
+        setMessage('adminMessage', error.message, 'error');
+      }
+    }
+
+    async function loadWeeklyRecords() {
+
+      if (!isAdmin) return;
+
+      const request = ++recordsVersion;
+      const version = interfaceVersion;
+
+      const week = selectedWeek || currentWeekStart();
+
+      weeklyRecords = [];
+
+      $('allRecords').innerHTML =
+        '<tr><td colspan="6">Cargando registros...</td></tr>';
+
+      $('previousPage').disabled = true;
+      $('nextPage').disabled = true;
+
+      ['statTotal', 'statLoaded', 'statPending'].forEach(
+        id => $(id).textContent = '—'
+      );
+
+      $('pendingList').textContent = 'Cargando...';
+
+      try {
+
+        const data = await fetchAllRows(() =>
+          supabase
+            .from('cp_records')
+            .select('*')
+            .eq('week_start', week)
+            .order('user_id')
+        );
+
+        if (
+          version !== interfaceVersion ||
+          request !== recordsVersion ||
+          !isAdmin
+        ) return;
+
+        weeklyRecords = data;
+
+        updateStatistics();
+        renderWeeklyTable();
 
         setMessage(
           'adminMessage',
-          'No se pudieron cargar los registros: ' +
-          error.message,
-          'error'
+          data.length + ' registros en la semana seleccionada.',
+          'success'
         );
 
-        return;
+      } catch (error) {
 
+        if (
+          version !== interfaceVersion ||
+          request !== recordsVersion
+        ) return;
+
+        $('allRecords').innerHTML =
+          '<tr><td colspan="6">Error al cargar registros.</td></tr>';
+
+        $('pendingList').textContent =
+          'No se pudieron calcular los pendientes.';
+
+        setMessage('adminMessage', error.message, 'error');
       }
+    }
 
-      const adminRecords = records || [];
+    function updateStatistics() {
 
-      const { data: audit, error: auditError } =
-        await supabase
-          .from('cp_history')
-          .select('*')
-          .order('changed_at', { ascending: false })
-          .limit(100);
+      const activeMembers = adminProfiles.filter(
+        p => p.is_active === true
+      );
 
-      const allUserIds = [
-        ...adminRecords.map(r => r.user_id),
-        ...(audit || []).map(a => a.changed_by),
-        ...(audit || []).map(a => a.user_id)
-      ];
+      const loadedIds = new Set(
+        weeklyRecords.map(r => r.user_id)
+      );
 
-      const profileMap = await loadProfiles(allUserIds);
+      const loaded = activeMembers.filter(
+        p => loadedIds.has(p.user_id)
+      );
 
-      if (version !== interfaceVersion) return;
+      const pending = activeMembers.filter(
+        p => !loadedIds.has(p.user_id)
+      );
 
-      const recordOwnerMap = new Map();
+      $('statTotal').textContent = activeMembers.length;
 
-      adminRecords.forEach(record => {
+      $('statLoaded').textContent = loaded.length;
 
-        recordOwnerMap.set(
-          record.id,
-          profileMap.get(record.user_id)
-        );
+      $('statPending').textContent = pending.length;
 
+      $('statsNote').textContent =
+        selectedWeek && selectedWeek !== currentWeekStart()
+          ? 'Resumen histórico calculado sobre los integrantes activos actualmente.'
+          : 'Las cuentas inactivas no se incluyen en los pendientes.';
+
+      $('pendingList').textContent = pending.length
+
+        ? pending.map(p =>
+            p.character_name ||
+            p.discord_nickname ||
+            'Personaje pendiente'
+          ).join(' · ')
+
+        : 'No hay integrantes activos pendientes.';
+    }
+
+    function renderWeeklyTable() {
+
+      const profileMap = new Map(
+        adminProfiles.map(p => [p.user_id, p])
+      );
+
+      const search = $('recordSearch').value
+        .trim().toLowerCase();
+
+      const bio = $('bioFilter').value;
+      const sort = $('recordSort').value;
+
+      let records = weeklyRecords.filter(r => {
+
+        const p = profileMap.get(r.user_id);
+
+        const text = (
+          (p?.discord_nickname || '') + ' ' +
+          (p?.character_name || '')
+        ).toLowerCase();
+
+        return (!search || text.includes(search)) &&
+          (!bio || r.biotraje === bio);
       });
 
-      $('allRecords').innerHTML =
-        adminRecords.length
-          ? adminRecords.map(r => {
+      records.sort((a, b) => {
 
-            const profile = profileMap.get(r.user_id);
+        if (sort === 'cp_asc') {
+          return Number(a.cp) - Number(b.cp);
+        }
 
-            return `
-              <tr>
-                <td>
-                  ${escapeHtml(
-                    profile?.discord_nickname || 'Perfil pendiente'
-                  )}
-                </td>
+        if (sort === 'name') {
 
-                <td>
-                  ${escapeHtml(
-                    profile?.character_name || 'Pendiente'
-                  )}
-                </td>
+          const pa = profileMap.get(a.user_id);
+          const pb = profileMap.get(b.user_id);
 
-                <td>${formatDate(r.week_start)}</td>
+          return (
+            pa?.character_name || pa?.discord_nickname || ''
+          ).localeCompare(
+            pb?.character_name || pb?.discord_nickname || ''
+          );
+        }
 
-                <td>
-                  ${Number(r.cp).toLocaleString('es-AR')}
-                </td>
+        if (sort === 'recent') {
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
 
-                <td>${escapeHtml(r.biotraje)}</td>
+        return Number(b.cp) - Number(a.cp);
+      });
 
-                <td>${formatDate(r.created_at)}</td>
+      const pages = Math.max(
+        1,
+        Math.ceil(records.length / PAGE_SIZE)
+      );
 
-                <td>
-                  <button
-                    class="editRecord"
-                    data-user="${escapeHtml(r.user_id)}"
-                    data-week="${escapeHtml(r.week_start)}"
-                    data-cp="${escapeHtml(r.cp)}"
-                    data-bio="${escapeHtml(r.biotraje)}">
-                    Corregir
-                  </button>
-                </td>
-              </tr>
-            `;
+      currentPage = Math.min(
+        Math.max(currentPage, 1),
+        pages
+      );
 
-          }).join('')
-          : '<tr><td colspan="7">Todavía no hay registros.</td></tr>';
+      const start = (currentPage - 1) * PAGE_SIZE;
 
-      $('allRecords')
-        .querySelectorAll('.editRecord')
+      const visible = records.slice(start, start + PAGE_SIZE);
+
+      $('allRecords').innerHTML = visible.length
+
+        ? visible.map(r => {
+
+          const p = profileMap.get(r.user_id);
+
+          return `
+            <tr>
+              <td>
+                ${escapeHtml(p?.discord_nickname || 'Perfil pendiente')}
+              </td>
+              <td>
+                ${escapeHtml(p?.character_name || 'Pendiente')}
+              </td>
+              <td>${formatNumber(r.cp)}</td>
+              <td>${escapeHtml(r.biotraje)}</td>
+              <td>${formatDate(r.created_at)}</td>
+              <td>
+                <button
+                  class="editRecord small-button"
+                  data-user="${escapeHtml(r.user_id)}"
+                  data-week="${escapeHtml(r.week_start)}"
+                  data-cp="${escapeHtml(r.cp)}"
+                  data-bio="${escapeHtml(r.biotraje)}">
+                  Corregir
+                </button>
+              </td>
+            </tr>
+          `;
+
+        }).join('')
+
+        : '<tr><td colspan="6">No hay registros para esta selección.</td></tr>';
+
+      $('pageInfo').textContent =
+        'Página ' + currentPage + ' de ' + pages +
+        ' · ' + records.length + ' registros';
+
+      $('previousPage').disabled = currentPage <= 1;
+
+      $('nextPage').disabled = currentPage >= pages;
+
+      $('allRecords').querySelectorAll('.editRecord')
         .forEach(button => {
 
           button.addEventListener('click', () => {
@@ -1875,87 +2374,129 @@
               button.dataset.cp,
               button.dataset.bio
             );
-
           });
-
         });
+    }
 
-      if (auditError) {
+    $('weekFilter').addEventListener('change', async () => {
+
+      if (!await verifyAccess(true)) return;
+
+      selectedWeek = $('weekFilter').value;
+      currentPage = 1;
+
+      await loadWeeklyRecords();
+    });
+
+    ['recordSearch', 'recordSort', 'bioFilter'].forEach(id => {
+
+      $(id).addEventListener('input', () => {
+
+        currentPage = 1;
+        renderWeeklyTable();
+      });
+
+    });
+
+    $('previousPage').addEventListener('click', () => {
+
+      currentPage--;
+      renderWeeklyTable();
+    });
+
+    $('nextPage').addEventListener('click', () => {
+
+      currentPage++;
+      renderWeeklyTable();
+    });
+
+    async function loadAudit() {
+
+      if (!isAdmin) return;
+
+      const version = interfaceVersion;
+
+      const { data, error } = await supabase
+        .from('cp_history')
+        .select('*')
+        .order('changed_at', { ascending: false })
+        .limit(100);
+
+      if (version !== interfaceVersion || !isAdmin) return;
+
+      if (error) {
 
         $('auditHistory').innerHTML =
-          '<tr><td colspan="7">' +
-          'No se pudo cargar la auditoría: ' +
-          escapeHtml(auditError.message) +
-          '</td></tr>';
+          '<tr><td colspan="7">Error al consultar auditoría.</td></tr>';
 
-      } else {
-
-        $('auditHistory').innerHTML =
-          (audit || []).length
-            ? audit.map(a => {
-
-              const profile =
-                recordOwnerMap.get(a.record_id) ||
-                profileMap.get(a.user_id);
-
-              const changedBy =
-                profileMap.get(a.changed_by);
-
-              return `
-                <tr>
-                  <td>
-                    ${escapeHtml(
-                      profile?.discord_nickname || 'Integrante'
-                    )}
-                    /
-                    ${escapeHtml(
-                      profile?.character_name || 'Pendiente'
-                    )}
-                  </td>
-
-                  <td>
-                    ${Number(a.old_cp).toLocaleString('es-AR')}
-                  </td>
-
-                  <td>
-                    ${Number(a.new_cp).toLocaleString('es-AR')}
-                  </td>
-
-                  <td>${escapeHtml(a.old_biotraje)}</td>
-
-                  <td>${escapeHtml(a.new_biotraje)}</td>
-
-                  <td>
-                    ${escapeHtml(
-                      changedBy?.discord_nickname || 'Administrador'
-                    )}
-                  </td>
-
-                  <td>${formatDate(a.changed_at)}</td>
-                </tr>
-              `;
-
-            }).join('')
-            : '<tr><td colspan="7">Todavía no hay correcciones.</td></tr>';
-
+        return;
       }
 
-      setMessage(
-        'adminMessage',
-        'Registros actualizados.',
-        'success'
+      const missingRecordIds = [...new Set(
+        (data || [])
+          .filter(a => !a.user_id && a.record_id)
+          .map(a => a.record_id)
+      )];
+
+      const owners = new Map();
+
+      if (missingRecordIds.length) {
+
+        const result = await supabase
+          .from('cp_records')
+          .select('id,user_id')
+          .in('id', missingRecordIds);
+
+        if (!result.error) {
+
+          (result.data || []).forEach(r => {
+            owners.set(r.id, r.user_id);
+          });
+        }
+      }
+
+      if (version !== interfaceVersion || !isAdmin) return;
+
+      const profiles = new Map(
+        adminProfiles.map(p => [p.user_id, p])
       );
 
+      $('auditHistory').innerHTML = (data || []).length
+
+        ? data.map(a => {
+
+          const owner = profiles.get(
+            a.user_id || owners.get(a.record_id)
+          );
+
+          const admin = profiles.get(a.changed_by);
+
+          return `
+            <tr>
+              <td>
+                ${escapeHtml(owner?.discord_nickname || 'Integrante')}
+                /
+                ${escapeHtml(owner?.character_name || 'Pendiente')}
+              </td>
+              <td>${formatNumber(a.old_cp)}</td>
+              <td>${formatNumber(a.new_cp)}</td>
+              <td>${escapeHtml(a.old_biotraje)}</td>
+              <td>${escapeHtml(a.new_biotraje)}</td>
+              <td>${escapeHtml(admin?.discord_nickname || 'Administrador')}</td>
+              <td>${formatDate(a.changed_at)}</td>
+            </tr>
+          `;
+
+        }).join('')
+
+        : '<tr><td colspan="7">No hay correcciones.</td></tr>';
     }
 
     async function correctRecord(userId, week, oldCp, oldBio) {
 
       if (!await verifyAccess(true)) return;
 
-      const cpText = prompt(
-        'Nuevo valor de CP para este registro:',
-        oldCp
-      );
+      const cpText = prompt('Nuevo valor de CP:', oldCp);
 
       if (cpText === null) return;
 
@@ -1963,58 +2504,34 @@
 
       if (!Number.isInteger(cp) || cp <= 0) {
 
-        setMessage(
-          'adminMessage',
-          'El CP debe ser un entero mayor que cero.',
-          'error'
-        );
-
+        setMessage('adminMessage', 'CP inválido.', 'error');
         return;
-
       }
 
-      const bioText = prompt(
+      const biotraje = prompt(
         'Biotraje (' + bios.join(', ') + '):',
         oldBio
       );
 
-      if (bioText === null) return;
+      if (biotraje === null) return;
 
-      if (!bios.includes(bioText)) {
+      if (!bios.includes(biotraje)) {
 
-        setMessage(
-          'adminMessage',
-          'El biotraje no es válido.',
-          'error'
-        );
-
+        setMessage('adminMessage', 'Biotraje inválido.', 'error');
         return;
-
       }
 
-      if (
-        cp === Number(oldCp) &&
-        bioText === oldBio
-      ) {
+      if (cp === Number(oldCp) && biotraje === oldBio) {
 
-        setMessage(
-          'adminMessage',
-          'No se realizaron cambios.',
-          'warning'
-        );
-
+        setMessage('adminMessage', 'No hay cambios.', 'warning');
         return;
-
       }
 
       if (!await verifyAccess(true)) return;
 
       const { data, error } = await supabase
         .from('cp_records')
-        .update({
-          cp,
-          biotraje: bioText
-        })
+        .update({ cp, biotraje })
         .eq('user_id', userId)
         .eq('week_start', week)
         .select('user_id')
@@ -2024,16 +2541,15 @@
 
         setMessage(
           'adminMessage',
-          error?.message || 'La corrección no fue autorizada.',
+          error?.message || 'Corrección no autorizada.',
           'error'
         );
 
         return;
-
       }
 
-      await loadAdminData();
-
+      await loadWeeklyRecords();
+      await loadAudit();
       await loadMemberData();
 
       setMessage(
@@ -2041,28 +2557,22 @@
         'Corrección guardada correctamente.',
         'success'
       );
-
     }
 
     async function updateInterface(session) {
 
       const version = ++interfaceVersion;
 
-      currentUser = session?.user ?? null;
-
+      currentUser = session?.user || null;
       currentProfile = null;
-      currentCharacterName = null;
 
       isAdmin = false;
       isMaster = false;
       isActive = false;
 
-      adminBusy = false;
-
       hide('memberPanel');
       hide('adminPanel');
       hide('inactivePanel');
-
       hide('characterRegistration');
       hide('memberContent');
 
@@ -2070,15 +2580,9 @@
 
       if (!currentUser) {
 
-        currentDiscordName = 'Miembro';
+        $('welcome').textContent = 'Bienvenido, guerrero.';
 
-        $('welcome').textContent =
-          'Bienvenido, guerrero.';
-
-        setMessage(
-          'status',
-          'Conectate para acceder al clan.'
-        );
+        setMessage('status', 'Conectate para acceder al clan.');
 
         show('loginButton');
         hide('logoutButton');
@@ -2087,20 +2591,15 @@
         $('logoutButton').disabled = false;
 
         return;
-
       }
 
       const user = currentUser;
 
       hide('loginButton');
       show('logoutButton');
-
       $('logoutButton').disabled = false;
 
-      setMessage(
-        'status',
-        'Verificando tu perfil y permisos...'
-      );
+      setMessage('status', 'Verificando perfil y permisos...');
 
       try {
 
@@ -2109,7 +2608,7 @@
         if (version !== interfaceVersion) return;
 
         if (!profile) {
-          throw new Error('No se pudo cargar tu perfil.');
+          throw new Error('No se pudo cargar el perfil.');
         }
 
         const permissions = await readPermissions(user.id);
@@ -2118,48 +2617,29 @@
 
         currentProfile = profile;
 
-        isMaster = permissions.master;
+        applyPermissions(permissions);
 
-        isActive =
-          permissions.active &&
-          profile.is_active === true;
+        const nickname = profile.discord_nickname ||
+          getDiscordNickname(user);
 
-        isAdmin = isMaster || (
-          permissions.admin && isActive
-        );
-
-        currentDiscordName =
-          profile.discord_nickname ||
-          getDiscordNickname(user) ||
-          'Miembro';
-
-        $('welcome').textContent =
-          'Bienvenido, ' + currentDiscordName;
+        $('welcome').textContent = 'Bienvenido, ' + nickname;
 
         if (!isActive && !isMaster) {
 
-          show('inactivePanel');
-
-          setMessage(
-            'status',
-            'Cuenta inactiva.',
-            'error'
+          displayInactive(
+            await fetchOwnProfile(user.id)
           );
 
           return;
-
         }
 
         const role = isMaster
           ? 'Maestro'
-          : isAdmin
-            ? 'Administrador'
-            : 'Integrante';
+          : isAdmin ? 'Administrador' : 'Integrante';
 
         setMessage(
           'status',
-          'Conectado como: ' +
-          currentDiscordName + ' | ' + role,
+          'Conectado como: ' + nickname + ' | ' + role,
           'success'
         );
 
@@ -2183,7 +2663,6 @@
             await loadMemberData();
 
           }
-
         }
 
         if (version !== interfaceVersion) return;
@@ -2192,10 +2671,9 @@
 
           $('adminRole').textContent = role;
 
-          $('adminRole').className =
-            'tag ' + (
-              isMaster ? 'tag-master' : 'tag-admin'
-            );
+          $('adminRole').className = 'tag ' + (
+            isMaster ? 'tag-master' : 'tag-admin'
+          );
 
           show('adminPanel');
 
@@ -2203,8 +2681,9 @@
 
           if (version !== interfaceVersion) return;
 
-          await loadAdminData();
-
+          await loadWeeks();
+          await loadWeeklyRecords();
+          await loadAudit();
         }
 
       } catch (error) {
@@ -2220,13 +2699,10 @@
 
         setMessage(
           'status',
-          'No se pudo verificar el acceso: ' +
-          error.message,
+          'No se pudo verificar el acceso: ' + error.message,
           'error'
         );
-
       }
-
     }
 
     $('loginButton').addEventListener('click', async () => {
@@ -2238,24 +2714,16 @@
       const redirectTo =
         window.location.origin + window.location.pathname;
 
-      const { error } =
-        await supabase.auth.signInWithOAuth({
-          provider: 'discord',
-          options: { redirectTo }
-        });
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: { redirectTo }
+      });
 
       if (error) {
 
-        setMessage(
-          'status',
-          'No se pudo iniciar sesión: ' + error.message,
-          'error'
-        );
-
+        setMessage('status', error.message, 'error');
         $('loginButton').disabled = false;
-
       }
-
     });
 
     $('logoutButton').addEventListener('click', async () => {
@@ -2266,104 +2734,9 @@
 
       if (error) {
 
-        setMessage(
-          'status',
-          'Error al cerrar sesión: ' + error.message,
-          'error'
-        );
-
+        setMessage('status', error.message, 'error');
         $('logoutButton').disabled = false;
-
       }
-
-    });
-
-    $('characterForm').addEventListener(
-      'submit',
-      registerCharacter
-    );
-
-    $('cpForm').addEventListener('submit', async event => {
-
-      event.preventDefault();
-
-      if (
-        !await verifyAccess() ||
-        !currentCharacterName ||
-        !isActive
-      ) return;
-
-      const cp = Number($('cpInput').value);
-      const biotraje = $('bioInput').value;
-
-      if (
-        !Number.isInteger(cp) ||
-        cp <= 0 ||
-        !bios.includes(biotraje)
-      ) {
-
-        setMessage(
-          'memberMessage',
-          'Ingresá un CP válido y seleccioná el biotraje.',
-          'error'
-        );
-
-        return;
-
-      }
-
-      const button = $('saveCpButton');
-
-      button.disabled = true;
-
-      try {
-
-        const { error } = await supabase
-          .from('cp_records')
-          .insert({
-            user_id: currentUser.id,
-            cp,
-            biotraje,
-            week_start: currentWeekStart()
-          });
-
-        if (error) {
-
-          setMessage(
-            'memberMessage',
-            error.code === '23505'
-              ? 'Ya existe un registro para esta semana.'
-              : 'No se pudo guardar: ' + error.message,
-            error.code === '23505'
-              ? 'warning'
-              : 'error'
-          );
-
-        } else {
-
-          $('cpInput').value = '';
-          $('bioInput').value = '';
-
-          setMessage(
-            'memberMessage',
-            'CP guardado correctamente.',
-            'success'
-          );
-
-        }
-
-        await loadMemberData();
-
-        if (isAdmin) {
-          await loadAdminData();
-        }
-
-      } finally {
-
-        button.disabled = false;
-
-      }
-
     });
 
     supabase.auth.onAuthStateChange((event, session) => {
@@ -2379,37 +2752,43 @@
       ) {
 
         setTimeout(() => updateInterface(session), 0);
-
       }
-
     });
-
-    // Revalidación periódica de permisos.
-    // Supabase RLS continúa siendo la autoridad de seguridad.
 
     setInterval(async () => {
 
-      if (!currentUser || adminBusy) return;
+      if (!currentUser || adminBusy || checkingPermissions) return;
 
-      const oldAdmin = isAdmin;
-      const oldMaster = isMaster;
-      const oldActive = isActive;
+      checkingPermissions = true;
 
-      const allowed = await verifyAccess();
+      try {
 
-      if (
-        allowed &&
-        (
-          oldAdmin !== isAdmin ||
-          oldMaster !== isMaster ||
-          oldActive !== isActive
-        )
-      ) {
+        const oldAdmin = isAdmin;
+        const oldMaster = isMaster;
+        const oldActive = isActive;
 
-        const { data } = await supabase.auth.getSession();
+        const allowed = await verifyAccess();
 
-        await updateInterface(data.session);
+        if (
+          allowed &&
+          (
+            oldAdmin !== isAdmin ||
+            oldMaster !== isMaster ||
+            oldActive !== isActive ||
+            $('inactivePanel').classList.contains('hidden') === false ||
+            (isActive && $('memberPanel').classList.contains('hidden')) ||
+            (isAdmin && $('adminPanel').classList.contains('hidden'))
+          )
+        ) {
 
+          const { data } = await supabase.auth.getSession();
+
+          await updateInterface(data.session);
+        }
+
+      } finally {
+
+        checkingPermissions = false;
       }
 
     }, 30000);
