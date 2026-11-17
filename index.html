@@ -5,152 +5,434 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LIONS | RF Online Next</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
-      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; background: radial-gradient(circle, #202b40, #090d16);
-      color: #fff; font-family: Arial, sans-serif; padding-bottom: 35px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: radial-gradient(circle, #202b40, #090d16);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding-bottom: 35px;
     }
-    .header { width: 100%; max-width: 1100px; margin: 30px auto 0; padding: 0 15px; }
+
+    .header {
+      width: 100%;
+      max-width: 1100px;
+      margin: 30px auto 0;
+      padding: 0 15px;
+    }
+
     .header img {
-      display: block; width: 100%; height: auto; max-height: 440px;
-      object-fit: cover; object-position: center; border: 1px solid #34445e;
-      border-radius: 14px; box-shadow: 0 0 35px #000;
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 440px;
+      object-fit: cover;
+      object-position: center;
+      border: 1px solid #34445e;
+      border-radius: 14px;
+      box-shadow: 0 0 35px #000;
     }
-    .container { width: 92%; max-width: 900px; margin: 26px auto; }
+
+    .container {
+      width: 92%;
+      max-width: 900px;
+      margin: 26px auto;
+    }
+
     .panel {
-      margin: 18px 0; padding: 25px; background: #151d2b;
-      border: 1px solid #34445e; border-radius: 16px; box-shadow: 0 0 25px #0008;
+      margin: 18px 0;
+      padding: 25px;
+      background: #151d2b;
+      border: 1px solid #34445e;
+      border-radius: 16px;
+      box-shadow: 0 0 25px #0008;
     }
+
     h1, h2, h3 { margin-top: 0; }
+
     h1 { font-size: 25px; text-align: center; }
+
     h2 { font-size: 20px; color: #dce7ff; }
+
     h3 { font-size: 16px; color: #c5d4ef; }
-    .description { text-align: center; color: #d0d8e5; font-size: 16px; line-height: 1.5; }
-    .muted { color: #aab8cc; font-size: 13px; }
-    .status { margin-top: 14px; color: #aab8cc; font-size: 13px; overflow-wrap: anywhere; text-align: center; }
+
+    .description {
+      text-align: center;
+      color: #d0d8e5;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .muted {
+      color: #aab8cc;
+      font-size: 13px;
+    }
+
+    .status {
+      margin-top: 14px;
+      color: #aab8cc;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
     .success { color: #70e0a0 !important; }
+
     .error { color: #ff8585 !important; }
+
     .warning { color: #ffd479 !important; }
+
     button, input, select { font: inherit; }
+
     button {
-      border: 0; border-radius: 8px; padding: 12px 16px; background: #5865f2;
-      color: white; font-weight: bold; cursor: pointer; transition: .2s;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      background: #5865f2;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
     }
+
     button:hover { background: #4752c4; }
-    button:disabled { opacity: .55; cursor: wait; }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
     .secondary { background: #34445e; }
+
     .secondary:hover { background: #455b7a; }
+
     .danger { background: #8f3543; }
+
     .danger:hover { background: #ad4051; }
-    .top-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    label { display: block; color: #cbd7e8; font-size: 13px; margin-bottom: 7px; }
+
+    .positive { background: #276643; }
+
+    .positive:hover { background: #348455; }
+
+    .top-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      color: #cbd7e8;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
     input, select {
-      width: 100%; padding: 12px; color: white; background: #0d1420;
-      border: 1px solid #43536d; border-radius: 8px; outline: none;
+      width: 100%;
+      padding: 12px;
+      color: white;
+      background: #0d1420;
+      border: 1px solid #43536d;
+      border-radius: 8px;
+      outline: none;
     }
-    input:focus, select:focus { border-color: #7f91ff; }
+
+    input:focus, select:focus {
+      border-color: #7f91ff;
+    }
+
     option { background: #151d2b; }
+
     .field { min-width: 0; }
+
     .form-actions { margin-top: 16px; }
+
     .form-actions button { width: 100%; }
+
     .hidden { display: none !important; }
+
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 560px; }
-    th, td { padding: 11px 9px; border-bottom: 1px solid #34445e; text-align: left; font-size: 13px; }
-    th { color: #aebfe0; font-weight: bold; }
-    td { color: #e4eaf4; }
-    .tag { display: inline-block; padding: 4px 8px; border-radius: 20px; background: #263a56; color: #d7e6ff; font-size: 11px; }
-    .record-lock { padding: 12px; background: #263a30; border: 1px solid #37664b; border-radius: 8px; color: #9be3b2; font-size: 13px; }
-    .identity-box {
-      padding: 14px; margin: 15px 0 22px; background: #101a29;
-      border: 1px solid #34445e; border-radius: 10px;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px;
     }
-    .identity-box p { margin: 6px 0; font-size: 14px; }
-    .identity-box strong { color: #aebfe0; }
-    .admin-row {
-      display: grid; grid-template-columns: 1.2fr 1.2fr .8fr .9fr 1fr auto;
-      gap: 8px; align-items: end; padding: 12px 0; border-bottom: 1px solid #34445e;
-    }
-    .admin-row input, .admin-row select { min-width: 0; padding: 9px; font-size: 12px; }
-    .admin-row button { padding: 10px; font-size: 12px; }
-    .profile-edit-row {
-      display: grid; grid-template-columns: 1fr 1fr auto;
-      gap: 10px; align-items: end; padding: 12px 0;
+
+    th, td {
+      padding: 11px 9px;
       border-bottom: 1px solid #34445e;
+      text-align: left;
+      font-size: 13px;
     }
-    .profile-edit-row input { min-width: 0; }
-    .profile-edit-row button { padding: 10px 12px; font-size: 12px; }
-    footer { margin-top: 25px; text-align: center; font-size: 11px; color: #718096; }
+
+    th { color: #aebfe0; font-weight: bold; }
+
+    td { color: #e4eaf4; }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #263a56;
+      color: #d7e6ff;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .tag-master {
+      background: #594621;
+      color: #ffda82;
+    }
+
+    .tag-admin {
+      background: #283c76;
+      color: #aebdff;
+    }
+
+    .tag-active {
+      background: #204b35;
+      color: #91efb1;
+    }
+
+    .tag-inactive {
+      background: #572b35;
+      color: #ffaaaa;
+    }
+
+    .record-lock {
+      padding: 12px;
+      background: #263a30;
+      border: 1px solid #37664b;
+      border-radius: 8px;
+      color: #9be3b2;
+      font-size: 13px;
+    }
+
+    .identity-box {
+      padding: 14px;
+      margin: 15px 0 22px;
+      background: #101a29;
+      border: 1px solid #34445e;
+      border-radius: 10px;
+    }
+
+    .identity-box p {
+      margin: 9px 0;
+      font-size: 14px;
+    }
+
+    .identity-box strong {
+      color: #aebfe0;
+    }
+
+    .management-box {
+      margin-top: 18px;
+      padding: 18px;
+      background: #101a29;
+      border: 1px solid #34445e;
+      border-radius: 12px;
+    }
+
+    .management-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .management-actions button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .inactive-panel {
+      text-align: center;
+      border-color: #8f3543;
+    }
+
+    footer {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #718096;
+    }
+
     @media (max-width: 650px) {
-      .header { margin-top: 15px; padding: 0 10px; }
+      .header {
+        margin-top: 15px;
+        padding: 0 10px;
+      }
+
       .header img { border-radius: 8px; }
+
       .panel { padding: 18px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .admin-row { grid-template-columns: 1fr 1fr; }
-      .admin-row .member-id { grid-column: 1 / -1; }
-      .profile-edit-row { grid-template-columns: 1fr; }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
+
   <div class="header">
     <img src="logo-lions.png" alt="LIONS - RF Online Next">
   </div>
 
   <main class="container">
+
     <section class="panel">
       <h1>Panel de gestión del clan</h1>
-      <p class="description" id="welcome">Bienvenido, guerrero.</p>
+
+      <p class="description" id="welcome">
+        Bienvenido, guerrero.
+      </p>
+
       <div class="top-actions">
         <button id="loginButton">Acceder con Discord</button>
-        <button id="logoutButton" class="secondary hidden">Cerrar sesión</button>
+
+        <button id="logoutButton" class="secondary hidden">
+          Cerrar sesión
+        </button>
       </div>
-      <div id="status" class="status">Conectate para acceder al clan.</div>
+
+      <div id="status" class="status">
+        Conectate para acceder al clan.
+      </div>
+    </section>
+
+    <section id="inactivePanel" class="panel inactive-panel hidden">
+      <h2 class="error">Cuenta inactiva</h2>
+
+      <p class="description">
+        Tu cuenta se encuentra inactiva dentro del clan LIONS.
+      </p>
+
+      <p class="muted">
+        No tenés acceso a las funciones del clan.
+        Contactá al Maestro para solicitar tu reactivación.
+        Tus registros anteriores se conservan.
+      </p>
     </section>
 
     <section id="memberPanel" class="panel hidden">
 
       <div id="characterRegistration" class="hidden">
+
         <h2>Registro de personaje</h2>
+
         <p class="muted">
-          Antes de utilizar el panel, registrá el nombre de tu personaje de RF Online Next.
-          Este nombre debe coincidir con tu alias dentro del servidor de Discord LIONS.
-          Una vez registrado, solamente un administrador podrá modificarlo.
+          Registrá el nombre de tu personaje de RF Online Next.
+          Debe coincidir con tu alias dentro del servidor
+          de Discord LIONS. Una vez registrado, solamente
+          un administrador autorizado podrá modificarlo.
         </p>
+
         <form id="characterForm">
+
           <div class="field">
-            <label for="characterInput">Nombre de tu personaje</label>
-            <input id="characterInput" type="text" maxlength="40"
-              placeholder="Ingresá tu nombre de personaje" required>
+            <label for="characterInput">
+              Nombre de tu personaje
+            </label>
+
+            <input
+              id="characterInput"
+              type="text"
+              maxlength="40"
+              placeholder="Ingresá tu nombre de personaje"
+              required>
           </div>
+
           <div class="form-actions">
-            <button id="saveCharacterButton" type="submit">Registrar personaje</button>
+            <button id="saveCharacterButton" type="submit">
+              Registrar personaje
+            </button>
           </div>
+
         </form>
+
         <div id="characterMessage" class="status"></div>
+
       </div>
 
       <div id="memberContent" class="hidden">
+
         <div class="identity-box">
-          <p><strong>Nick de Discord:</strong> <span id="memberDiscordName">—</span></p>
-          <p><strong>Personaje:</strong> <span id="memberCharacterName">—</span></p>
+
+          <p>
+            <strong>Nick de Discord:</strong>
+            <span id="memberDiscordName">—</span>
+          </p>
+
+          <p>
+            <strong>Personaje:</strong>
+            <span id="memberCharacterName">—</span>
+          </p>
+
+          <p>
+            <strong>Rol:</strong>
+            <span id="memberRole" class="tag">Integrante</span>
+          </p>
+
+          <p>
+            <strong>Estado:</strong>
+            <span id="memberState" class="tag tag-active">
+              Activo
+            </span>
+          </p>
+
         </div>
 
         <h2>Registro semanal de CP</h2>
-        <p class="muted">Cargá tu CP actual y seleccioná el biotraje que estás utilizando. Se permite un registro por semana; la semana comienza el lunes.</p>
+
+        <p class="muted">
+          Cargá tu CP actual y seleccioná el biotraje.
+          Se permite un registro por semana.
+          La semana comienza el lunes.
+        </p>
+
         <div id="weekLabel" class="muted"></div>
+
         <div id="memberFormArea">
+
           <form id="cpForm">
+
             <div class="form-grid">
+
               <div class="field">
-                <label for="cpInput">Poder de combate (CP)</label>
-                <input id="cpInput" type="number" min="1" step="1" placeholder="Ej.: 175000" required>
+                <label for="cpInput">
+                  Poder de combate (CP)
+                </label>
+
+                <input
+                  id="cpInput"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="Ej.: 175000"
+                  required>
               </div>
+
               <div class="field">
+
                 <label for="bioInput">Biotraje</label>
+
                 <select id="bioInput" required>
                   <option value="">Seleccionar biotraje</option>
                   <option>Punisher</option>
@@ -162,32 +444,170 @@
                   <option>Arbiter</option>
                   <option>Demolisher</option>
                 </select>
+
               </div>
+
             </div>
-            <div class="form-actions"><button id="saveCpButton" type="submit">Guardar CP de esta semana</button></div>
+
+            <div class="form-actions">
+              <button id="saveCpButton" type="submit">
+                Guardar CP de esta semana
+              </button>
+            </div>
+
           </form>
+
         </div>
+
         <div id="lockedMessage" class="record-lock hidden"></div>
+
         <div id="memberMessage" class="status"></div>
 
         <h3 style="margin-top:28px">Mi historial de CP</h3>
+
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Semana</th><th>CP</th><th>Biotraje</th><th>Fecha de carga</th></tr></thead>
-            <tbody id="myHistory"><tr><td colspan="4">Cargando historial...</td></tr></tbody>
+            <thead>
+              <tr>
+                <th>Semana</th>
+                <th>CP</th>
+                <th>Biotraje</th>
+                <th>Fecha de carga</th>
+              </tr>
+            </thead>
+
+            <tbody id="myHistory">
+              <tr>
+                <td colspan="4">Cargando historial...</td>
+              </tr>
+            </tbody>
           </table>
         </div>
+
       </div>
+
     </section>
 
     <section id="adminPanel" class="panel hidden">
-      <h2>Administración de CP</h2>
-      <p class="muted">Vista de los registros de todos los miembros. Las correcciones de CP y biotraje quedan registradas en el historial de auditoría.</p>
+
+      <h2>Panel de administración</h2>
+
+      <p>
+        Nivel de acceso:
+        <span id="adminRole" class="tag"></span>
+      </p>
+
+      <h3 style="margin-top:25px">
+        Administración de integrantes
+      </h3>
+
+      <p class="muted">
+        Seleccioná un integrante para gestionar su personaje,
+        estado y permisos según tu nivel de acceso.
+      </p>
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label for="memberFilter">Filtrar integrantes</label>
+
+          <select id="memberFilter">
+            <option value="all">Todos</option>
+            <option value="active">Activos</option>
+            <option value="inactive">Inactivos</option>
+            <option value="admins">Administradores</option>
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label for="memberSelector">Seleccionar integrante</label>
+
+          <select id="memberSelector">
+            <option value="">Seleccionar integrante</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div id="selectedMemberPanel" class="management-box hidden">
+
+        <div class="identity-box">
+
+          <p>
+            <strong>Discord:</strong>
+            <span id="selectedDiscord">—</span>
+          </p>
+
+          <p>
+            <strong>Personaje actual:</strong>
+            <span id="selectedCharacter">—</span>
+          </p>
+
+          <p>
+            <strong>Rol:</strong>
+            <span id="selectedRole" class="tag">—</span>
+          </p>
+
+          <p>
+            <strong>Estado:</strong>
+            <span id="selectedState" class="tag">—</span>
+          </p>
+
+        </div>
+
+        <div class="field">
+
+          <label for="adminCharacterInput">
+            Nombre del personaje
+          </label>
+
+          <input
+            id="adminCharacterInput"
+            type="text"
+            maxlength="40"
+            placeholder="Nombre del personaje">
+
+        </div>
+
+        <div class="management-actions">
+
+          <button id="saveAdminCharacterButton">
+            Guardar personaje
+          </button>
+
+          <button id="toggleMemberButton" class="danger">
+            Desactivar integrante
+          </button>
+
+          <button id="toggleAdminButton" class="secondary hidden">
+            Designar administrador
+          </button>
+
+        </div>
+
+      </div>
+
+      <div id="profileAdminMessage" class="status"></div>
+
+      <h3 style="margin-top:30px">
+        Registros semanales del clan
+      </h3>
+
+      <p class="muted">
+        Las correcciones de CP y biotraje quedan registradas
+        en el historial de auditoría.
+      </p>
+
       <div id="adminMessage" class="status"></div>
 
-      <h3 style="margin-top:24px">Registros semanales del clan</h3>
       <div class="table-wrap">
+
         <table>
+
           <thead>
             <tr>
               <th>Nickname de Discord</th>
@@ -199,89 +619,184 @@
               <th>Acción</th>
             </tr>
           </thead>
-          <tbody id="allRecords"><tr><td colspan="7">Cargando registros...</td></tr></tbody>
+
+          <tbody id="allRecords">
+            <tr>
+              <td colspan="7">Cargando registros...</td>
+            </tr>
+          </tbody>
+
         </table>
+
       </div>
 
-      <h3 style="margin-top:30px">Administración de personajes</h3>
-      <p class="muted">Desde acá podés modificar el nombre de personaje de cualquier integrante. Los cambios no generan historial.</p>
-      <div id="profileAdminMessage" class="status"></div>
-      <div id="profileAdminList">
-        <p class="muted">Cargando integrantes...</p>
-      </div>
+      <h3 style="margin-top:30px">
+        Historial de correcciones administrativas
+      </h3>
 
-      <h3 style="margin-top:30px">Historial de correcciones administrativas</h3>
       <div class="table-wrap">
+
         <table>
-          <thead><tr><th>Integrante corregido</th><th>CP anterior</th><th>CP nuevo</th><th>Biotraje anterior</th><th>Biotraje nuevo</th><th>Modificado por</th><th>Fecha</th></tr></thead>
-          <tbody id="auditHistory"><tr><td colspan="7">Cargando auditoría...</td></tr></tbody>
+
+          <thead>
+            <tr>
+              <th>Integrante corregido</th>
+              <th>CP anterior</th>
+              <th>CP nuevo</th>
+              <th>Biotraje anterior</th>
+              <th>Biotraje nuevo</th>
+              <th>Modificado por</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+
+          <tbody id="auditHistory">
+            <tr>
+              <td colspan="7">Cargando auditoría...</td>
+            </tr>
+          </tbody>
+
         </table>
+
       </div>
+
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V2.0</footer>
+
   </main>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const SUPABASE_URL = 'https://itlooiobdrmfmxbxwggp.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua';
-    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    import { createClient } from
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const $ = (id) => document.getElementById(id);
-    const loginButton = $('loginButton');
-    const logoutButton = $('logoutButton');
-    const status = $('status');
-    const welcome = $('welcome');
-    const memberPanel = $('memberPanel');
-    const adminPanel = $('adminPanel');
-    const bios = ['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
+    const SUPABASE_URL =
+      'https://itlooiobdrmfmxbxwggp.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua';
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const $ = id => document.getElementById(id);
+
+    const bios = [
+      'Punisher',
+      'Phantom',
+      'Executor',
+      'Psypher',
+      'Juggernaut',
+      'Technician',
+      'Arbiter',
+      'Demolisher'
+    ];
+
+    const profileFields =
+      'user_id,discord_nickname,character_name,is_active,' +
+      'deactivated_at,deactivated_by';
 
     let currentUser = null;
-    let isAdmin = false;
+    let currentProfile = null;
     let currentDiscordName = 'Miembro';
     let currentCharacterName = null;
 
-    function localDateParts(date = new Date()) {
-      const parts = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'America/Argentina/Buenos_Aires',
-        year: 'numeric', month: '2-digit', day: '2-digit'
-      }).formatToParts(date);
-      return Object.fromEntries(parts.map(p => [p.type, p.value]));
+    let isAdmin = false;
+    let isMaster = false;
+    let isActive = false;
+
+    let adminProfiles = [];
+    let selectedProfile = null;
+
+    let interfaceVersion = 0;
+    let adminBusy = false;
+
+    function show(id) {
+      $(id).classList.remove('hidden');
     }
 
-    function currentWeekStart() {
-      const p = localDateParts();
-      const date = new Date(Date.UTC(Number(p.year), Number(p.month)-1, Number(p.day)));
-      const day = date.getUTCDay();
-      date.setUTCDate(date.getUTCDate() - ((day + 6) % 7));
-      return date.toISOString().slice(0,10);
-    }
-
-    function formatDate(value) {
-      if (!value) return '—';
-      const d = new Date(value.length === 10 ? value + 'T12:00:00' : value);
-      return new Intl.DateTimeFormat('es-AR', {
-        timeZone: 'America/Argentina/Buenos_Aires',
-        dateStyle: 'short', timeStyle: value.length === 10 ? undefined : 'short'
-      }).format(d);
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? '').replace(/[&<>"']/g, c => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-      })[c]);
+    function hide(id) {
+      $(id).classList.add('hidden');
     }
 
     function setMessage(id, message, kind = '') {
-      const el = $(id);
-      el.textContent = message;
-      el.className = 'status ' + kind;
+      $(id).textContent = message;
+      $(id).className = 'status ' + kind;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(
+        /[&<>"']/g,
+        c => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[c]
+      );
+    }
+
+    function localDateParts(date = new Date()) {
+
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(date);
+
+      return Object.fromEntries(
+        parts.map(p => [p.type, p.value])
+      );
+
+    }
+
+    function currentWeekStart() {
+
+      const p = localDateParts();
+
+      const date = new Date(Date.UTC(
+        Number(p.year),
+        Number(p.month) - 1,
+        Number(p.day)
+      ));
+
+      const day = date.getUTCDay();
+
+      date.setUTCDate(
+        date.getUTCDate() - ((day + 6) % 7)
+      );
+
+      return date.toISOString().slice(0, 10);
+
+    }
+
+    function formatDate(value) {
+
+      if (!value) return '—';
+
+      const dateOnly = value.length === 10;
+
+      const d = new Date(
+        dateOnly ? value + 'T12:00:00Z' : value
+      );
+
+      return new Intl.DateTimeFormat('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        dateStyle: 'short',
+        timeStyle: dateOnly ? undefined : 'short'
+      }).format(d);
+
     }
 
     function getDiscordNickname(user) {
+
       const metadata = user?.user_metadata || {};
+
       const candidates = [
         metadata.global_name,
         metadata.preferred_username,
@@ -293,59 +808,457 @@
       ];
 
       for (const candidate of candidates) {
-        if (typeof candidate === 'string' && candidate.trim()) {
+
+        if (
+          typeof candidate === 'string' &&
+          candidate.trim()
+        ) {
           return candidate.trim();
         }
+
       }
 
       return null;
+
+    }
+
+    async function fetchOwnProfile(userId) {
+
+      const { data, error } = await supabase
+        .from('member_profiles')
+        .select(profileFields)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      return data;
+
     }
 
     async function saveMemberProfile(user) {
+
+      let profile = await fetchOwnProfile(user.id);
+
       const nickname = getDiscordNickname(user);
 
-      if (nickname) {
-        const { error } = await supabase
-          .from('member_profiles')
-          .upsert({
-            user_id: user.id,
-            discord_nickname: nickname,
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'user_id' });
+      if (profile) {
 
-        if (error) {
-          console.error('No se pudo guardar el perfil de Discord:', error);
+        if (
+          profile.is_active === true &&
+          nickname &&
+          nickname !== profile.discord_nickname
+        ) {
+
+          const { error } = await supabase
+            .from('member_profiles')
+            .update({
+              discord_nickname: nickname,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id);
+
+          if (!error) {
+            profile = await fetchOwnProfile(user.id);
+          } else {
+            console.error(error);
+          }
+
         }
+
+        return profile;
+
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('member_profiles')
-        .select('user_id, discord_nickname, character_name')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .insert({
+          user_id: user.id,
+          discord_nickname: nickname || 'Miembro'
+        });
+
+      if (error && error.code !== '23505') {
+        throw error;
+      }
+
+      return await fetchOwnProfile(user.id);
+
+    }
+
+    async function readPermissions(userId) {
+
+      const [master, admin, active] = await Promise.all([
+
+        supabase.rpc('is_clan_master'),
+
+        supabase.rpc('is_clan_admin'),
+
+        supabase.rpc('is_clan_member_active', {
+          p_user_id: userId
+        })
+
+      ]);
+
+      if (master.error) throw master.error;
+      if (admin.error) throw admin.error;
+      if (active.error) throw active.error;
+
+      return {
+        master: master.data === true,
+        admin: admin.data === true,
+        active: active.data === true
+      };
+
+    }
+
+    async function verifyAccess(requireAdmin = false) {
+
+      if (!currentUser) return false;
+
+      const userId = currentUser.id;
+
+      try {
+
+        const permissions = await readPermissions(userId);
+
+        if (currentUser?.id !== userId) return false;
+
+        isMaster = permissions.master;
+        isActive = permissions.active;
+        isAdmin = isMaster || (
+          permissions.admin && isActive
+        );
+
+        if (!isActive && !isMaster) {
+
+          hide('memberPanel');
+          hide('adminPanel');
+
+          clearProtectedData();
+          show('inactivePanel');
+
+          setMessage(
+            'status',
+            'Tu cuenta está inactiva.',
+            'error'
+          );
+
+          return false;
+
+        }
+
+        if (!isAdmin) {
+          hide('adminPanel');
+          clearAdminData();
+        }
+
+        if (requireAdmin && !isAdmin) {
+          return false;
+        }
+
+        return true;
+
+      } catch (error) {
+
+        console.error(error);
+
+        hide('memberPanel');
+        hide('adminPanel');
+
+        clearProtectedData();
+
+        setMessage(
+          'status',
+          'No se pudieron verificar tus permisos.',
+          'error'
+        );
+
+        return false;
+
+      }
+
+    }
+
+    function clearAdminData() {
+
+      adminProfiles = [];
+      selectedProfile = null;
+
+      $('allRecords').innerHTML = '';
+      $('auditHistory').innerHTML = '';
+
+      $('memberSelector').innerHTML =
+        '<option value="">Seleccionar integrante</option>';
+
+      hide('selectedMemberPanel');
+
+      $('selectedDiscord').textContent = '—';
+      $('selectedCharacter').textContent = '—';
+      $('selectedRole').textContent = '—';
+      $('selectedState').textContent = '—';
+      $('adminCharacterInput').value = '';
+
+    }
+
+    function clearProtectedData() {
+
+      clearAdminData();
+
+      $('myHistory').innerHTML = '';
+      $('memberDiscordName').textContent = '—';
+      $('memberCharacterName').textContent = '—';
+
+      $('lockedMessage').textContent = '';
+
+      $('cpInput').value = '';
+      $('bioInput').value = '';
+
+    }
+
+    function showCharacterRegistration() {
+
+      show('characterRegistration');
+      hide('memberContent');
+
+      $('characterInput').value = '';
+
+      setMessage('characterMessage', '');
+
+    }
+
+    function showMemberContent(profile) {
+
+      currentCharacterName = profile.character_name;
+
+      currentDiscordName =
+        profile.discord_nickname || currentDiscordName;
+
+      $('memberDiscordName').textContent =
+        currentDiscordName;
+
+      $('memberCharacterName').textContent =
+        currentCharacterName;
+
+      const role = $('memberRole');
+
+      role.textContent = isMaster
+        ? 'Maestro'
+        : isAdmin
+          ? 'Administrador'
+          : 'Integrante';
+
+      role.className = 'tag ' + (
+        isMaster
+          ? 'tag-master'
+          : isAdmin
+            ? 'tag-admin'
+            : ''
+      );
+
+      const state = $('memberState');
+
+      state.textContent = isActive ? 'Activo' : 'Inactivo';
+
+      state.className = 'tag ' + (
+        isActive ? 'tag-active' : 'tag-inactive'
+      );
+
+      hide('characterRegistration');
+      show('memberContent');
+
+    }
+
+    async function registerCharacter(event) {
+
+      event.preventDefault();
+
+      if (!await verifyAccess() || !isActive) return;
+
+      const characterName =
+        $('characterInput').value.trim();
+
+      if (
+        !characterName ||
+        characterName.length > 40
+      ) {
+
+        setMessage(
+          'characterMessage',
+          'Ingresá un nombre válido de hasta 40 caracteres.',
+          'error'
+        );
+
+        return;
+
+      }
+
+      const button = $('saveCharacterButton');
+
+      button.disabled = true;
+
+      try {
+
+        const { data, error } = await supabase
+          .from('member_profiles')
+          .update({
+            character_name: characterName,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', currentUser.id)
+          .is('character_name', null)
+          .select(profileFields)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+          throw new Error(
+            'No se pudo confirmar el registro.'
+          );
+        }
+
+        currentProfile = data;
+
+        showMemberContent(data);
+
+        setMessage(
+          'memberMessage',
+          'Personaje registrado correctamente.',
+          'success'
+        );
+
+        await loadMemberData();
+
+        if (isAdmin) {
+          await loadAdminProfiles();
+          await loadAdminData();
+        }
+
+      } catch (error) {
+
+        setMessage(
+          'characterMessage',
+          error.code === '23505'
+            ? 'Ese personaje ya está registrado.'
+            : error.message,
+          'error'
+        );
+
+      } finally {
+
+        button.disabled = false;
+
+      }
+
+    }
+
+    async function loadMemberData() {
+
+      if (
+        !currentUser ||
+        !currentCharacterName ||
+        !isActive
+      ) return;
+
+      const userId = currentUser.id;
+      const version = interfaceVersion;
+      const week = currentWeekStart();
+
+      $('weekLabel').textContent =
+        'Semana actual desde el lunes ' +
+        formatDate(week) +
+        ' (hora de Argentina).';
+
+      const { data: current, error: currentError } =
+        await supabase
+          .from('cp_records')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('week_start', week)
+          .maybeSingle();
+
+      if (version !== interfaceVersion) return;
+
+      if (currentError) {
+
+        setMessage(
+          'memberMessage',
+          'No se pudo consultar el registro.',
+          'error'
+        );
+
+        return;
+
+      }
+
+      if (current) {
+
+        hide('memberFormArea');
+        show('lockedMessage');
+
+        $('lockedMessage').textContent =
+          'Ya registraste esta semana: ' +
+          Number(current.cp).toLocaleString('es-AR') +
+          ' CP · ' + current.biotraje +
+          '. Podrás volver a cargar el próximo lunes.';
+
+      } else {
+
+        show('memberFormArea');
+        hide('lockedMessage');
+
+      }
+
+      const { data: history, error } = await supabase
+        .from('cp_records')
+        .select('cp,biotraje,week_start,created_at')
+        .eq('user_id', userId)
+        .order('week_start', { ascending: false });
+
+      if (version !== interfaceVersion) return;
 
       if (error) {
-        console.error('No se pudo consultar el perfil:', error);
-        return null;
+
+        $('myHistory').innerHTML =
+          '<tr><td colspan="4">Error al cargar historial.</td></tr>';
+
+        return;
+
       }
 
-      return data;
+      $('myHistory').innerHTML = (history || []).length
+        ? history.map(r => `
+          <tr>
+            <td>${formatDate(r.week_start)}</td>
+            <td>${Number(r.cp).toLocaleString('es-AR')}</td>
+            <td>${escapeHtml(r.biotraje)}</td>
+            <td>${formatDate(r.created_at)}</td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="4">Todavía no tenés registros.</td></tr>';
+
     }
 
     async function loadProfiles(userIds) {
-      const uniqueIds = [...new Set((userIds || []).filter(Boolean))];
+
+      const uniqueIds = [...new Set(
+        (userIds || []).filter(Boolean)
+      )];
+
       const profileMap = new Map();
 
-      if (uniqueIds.length === 0) return profileMap;
+      if (!uniqueIds.length) return profileMap;
 
       const { data, error } = await supabase
         .from('member_profiles')
-        .select('user_id, discord_nickname, character_name')
+        .select(profileFields)
         .in('user_id', uniqueIds);
 
       if (error) {
-        console.error('No se pudieron consultar los perfiles:', error);
+
+        console.error(error);
         return profileMap;
+
       }
 
       (data || []).forEach(profile => {
@@ -353,220 +1266,535 @@
       });
 
       return profileMap;
-    }
 
-    function showCharacterRegistration() {
-      $('characterRegistration').classList.remove('hidden');
-      $('memberContent').classList.add('hidden');
-      $('characterInput').value = '';
-      setMessage('characterMessage', '');
-    }
-
-    function showMemberContent(profile) {
-      currentCharacterName = profile.character_name;
-      currentDiscordName = profile.discord_nickname || currentDiscordName;
-
-      $('memberDiscordName').textContent = currentDiscordName;
-      $('memberCharacterName').textContent = currentCharacterName;
-
-      $('characterRegistration').classList.add('hidden');
-      $('memberContent').classList.remove('hidden');
-    }
-
-    async function registerCharacter(event) {
-      event.preventDefault();
-      if (!currentUser) return;
-
-      const characterName = $('characterInput').value.trim();
-
-      if (!characterName) {
-        setMessage('characterMessage', 'Ingresá el nombre de tu personaje.', 'error');
-        return;
-      }
-
-      if (characterName.length > 40) {
-        setMessage('characterMessage', 'El nombre no puede superar los 40 caracteres.', 'error');
-        return;
-      }
-
-      const button = $('saveCharacterButton');
-      button.disabled = true;
-      setMessage('characterMessage', 'Registrando tu personaje...');
-
-      const { error } = await supabase
-        .from('member_profiles')
-        .update({
-          character_name: characterName,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', currentUser.id)
-        .is('character_name', null);
-
-      button.disabled = false;
-
-      if (error) {
-        if (error.code === '23505') {
-          setMessage('characterMessage', 'Ese nombre ya está registrado por otro integrante. Elegí otro nombre.', 'error');
-        } else {
-          setMessage('characterMessage', 'No se pudo registrar el personaje: ' + error.message, 'error');
-        }
-        return;
-      }
-
-      const profile = await saveMemberProfile(currentUser);
-
-      if (!profile || !profile.character_name) {
-        setMessage('characterMessage', 'No se pudo confirmar el registro. Actualizá la página e intentá nuevamente.', 'error');
-        return;
-      }
-
-      showMemberContent(profile);
-      setMessage('memberMessage', 'Personaje registrado correctamente.', 'success');
-      await loadMemberData();
-    }
-
-    async function loadMemberData() {
-      if (!currentUser || !currentCharacterName) return;
-
-      const week = currentWeekStart();
-      $('weekLabel').textContent = 'Semana actual desde el lunes ' + formatDate(week) + ' (hora de Argentina).';
-      $('myHistory').innerHTML = '<tr><td colspan="4">Cargando historial...</td></tr>';
-
-      const { data: current, error: currentError } = await supabase
-        .from('cp_records').select('*')
-        .eq('user_id', currentUser.id).eq('week_start', week).maybeSingle();
-
-      if (currentError) {
-        setMessage('memberMessage', 'No se pudo consultar tu registro: ' + currentError.message, 'error');
-        return;
-      }
-
-      if (current) {
-        $('memberFormArea').classList.add('hidden');
-        $('lockedMessage').classList.remove('hidden');
-        $('lockedMessage').textContent =
-          'Ya registraste esta semana: ' + Number(current.cp).toLocaleString('es-AR') +
-          ' CP · ' + current.biotraje + '. El registro queda bloqueado para miembros hasta el próximo lunes.';
-      } else {
-        $('memberFormArea').classList.remove('hidden');
-        $('lockedMessage').classList.add('hidden');
-      }
-
-      const { data: history, error } = await supabase
-        .from('cp_records').select('cp,biotraje,week_start,created_at')
-        .eq('user_id', currentUser.id).order('week_start', { ascending: false });
-
-      if (error) {
-        $('myHistory').innerHTML = '<tr><td colspan="4">Error al cargar el historial.</td></tr>';
-        return;
-      }
-
-      $('myHistory').innerHTML = history.length
-        ? history.map(r => `<tr><td>${formatDate(r.week_start)}</td><td>${Number(r.cp).toLocaleString('es-AR')}</td><td>${escapeHtml(r.biotraje)}</td><td>${formatDate(r.created_at)}</td></tr>`).join('')
-        : '<tr><td colspan="4">Todavía no tenés registros.</td></tr>';
     }
 
     async function loadAdminProfiles() {
-      const { data: profiles, error } = await supabase
+
+      if (!isAdmin || !currentUser) return;
+
+      const version = interfaceVersion;
+
+      const previousId =
+        selectedProfile?.user_id || '';
+
+      const { data, error } = await supabase
         .from('member_profiles')
-        .select('user_id, discord_nickname, character_name')
+        .select(profileFields)
         .order('discord_nickname', { ascending: true });
 
+      if (version !== interfaceVersion) return;
+
       if (error) {
-        $('profileAdminList').innerHTML = '<p class="error">No se pudieron cargar los integrantes: ' + escapeHtml(error.message) + '</p>';
+
+        setMessage(
+          'profileAdminMessage',
+          'No se pudieron cargar los integrantes.',
+          'error'
+        );
+
         return;
+
       }
 
-      if (!profiles || profiles.length === 0) {
-        $('profileAdminList').innerHTML = '<p class="muted">Todavía no hay integrantes registrados.</p>';
-        return;
-      }
+      const profiles = await Promise.all(
+        (data || []).map(async profile => {
 
-      $('profileAdminList').innerHTML = profiles.map(profile => `
-        <div class="profile-edit-row">
-          <div>
-            <label>Nick de Discord</label>
-            <div>${escapeHtml(profile.discord_nickname || 'Sin nickname')}</div>
-          </div>
-          <div>
-            <label for="character-${escapeHtml(profile.user_id)}">Nombre del personaje</label>
-            <input
-              id="character-${escapeHtml(profile.user_id)}"
-              class="adminCharacterInput"
-              data-user="${escapeHtml(profile.user_id)}"
-              type="text"
-              maxlength="40"
-              value="${escapeHtml(profile.character_name || '')}"
-              placeholder="Personaje pendiente">
-          </div>
-          <button class="saveCharacterAdmin" data-user="${escapeHtml(profile.user_id)}">Guardar</button>
-        </div>
-      `).join('');
+          const ownMaster =
+            isMaster &&
+            profile.user_id === currentUser?.id;
 
-      $('profileAdminList').querySelectorAll('.saveCharacterAdmin').forEach(button => {
-        button.addEventListener('click', () => {
-          const userId = button.dataset.user;
-          const input = $('character-' + userId);
-          updateCharacterAsAdmin(userId, input.value, button);
-        });
-      });
-    }
+          const { data: role, error: roleError } =
+            await supabase.rpc(
+              'is_clan_admin_user',
+              { p_user_id: profile.user_id }
+            );
 
-    async function updateCharacterAsAdmin(userId, value, button) {
-      if (!isAdmin) return;
+          return {
+            ...profile,
+            role_known: !roleError,
+            is_admin: role === true,
+            is_master: ownMaster
+          };
 
-      const characterName = value.trim();
-
-      if (!characterName) {
-        setMessage('profileAdminMessage', 'El nombre del personaje no puede quedar vacío.', 'error');
-        return;
-      }
-
-      if (characterName.length > 40) {
-        setMessage('profileAdminMessage', 'El nombre no puede superar los 40 caracteres.', 'error');
-        return;
-      }
-
-      button.disabled = true;
-      setMessage('profileAdminMessage', 'Guardando nombre de personaje...');
-
-      const { error } = await supabase
-        .from('member_profiles')
-        .update({
-          character_name: characterName,
-          updated_at: new Date().toISOString()
         })
-        .eq('user_id', userId);
+      );
 
-      button.disabled = false;
+      if (version !== interfaceVersion) return;
 
-      if (error) {
-        if (error.code === '23505') {
-          setMessage('profileAdminMessage', 'Ese nombre ya pertenece a otro integrante. No se permiten nombres duplicados.', 'error');
-        } else {
-          setMessage('profileAdminMessage', 'No se pudo actualizar el personaje: ' + error.message, 'error');
-        }
-        return;
+      adminProfiles = profiles;
+
+      renderMemberSelector(previousId);
+
+      if (profiles.some(p => !p.role_known)) {
+
+        setMessage(
+          'profileAdminMessage',
+          'No se pudieron verificar algunos roles. Sus acciones quedaron bloqueadas.',
+          'warning'
+        );
+
       }
 
-      setMessage('profileAdminMessage', 'Nombre de personaje actualizado correctamente.', 'success');
-      await loadAdminProfiles();
-      await loadAdminData();
     }
+
+    function renderMemberSelector(previousId = '') {
+
+      const filter = $('memberFilter').value;
+
+      const filtered = adminProfiles.filter(profile => {
+
+        if (filter === 'active') {
+          return profile.is_active === true;
+        }
+
+        if (filter === 'inactive') {
+          return profile.is_active === false;
+        }
+
+        if (filter === 'admins') {
+          return profile.is_admin || profile.is_master;
+        }
+
+        return true;
+
+      });
+
+      const selector = $('memberSelector');
+
+      selector.innerHTML = '';
+
+      selector.add(new Option(
+        'Seleccionar integrante (' + filtered.length + ')',
+        ''
+      ));
+
+      filtered.forEach(profile => {
+
+        const role = profile.is_master
+          ? 'Maestro'
+          : profile.is_admin
+            ? 'Admin'
+            : 'Integrante';
+
+        const label =
+          (profile.discord_nickname || 'Sin nickname') +
+          ' / ' +
+          (profile.character_name || 'Pendiente') +
+          ' · ' + role +
+          (
+            profile.is_active
+              ? ''
+              : ' · INACTIVO'
+          );
+
+        const option = new Option(label, profile.user_id);
+
+        selector.add(option);
+
+      });
+
+      if (
+        previousId &&
+        filtered.some(p => p.user_id === previousId)
+      ) {
+        selector.value = previousId;
+      }
+
+      renderSelectedMember();
+
+    }
+
+    function renderSelectedMember() {
+
+      const userId = $('memberSelector').value;
+
+      selectedProfile = adminProfiles.find(
+        p => p.user_id === userId
+      ) || null;
+
+      if (!selectedProfile) {
+
+        hide('selectedMemberPanel');
+        return;
+
+      }
+
+      const p = selectedProfile;
+
+      show('selectedMemberPanel');
+
+      $('selectedDiscord').textContent =
+        p.discord_nickname || 'Sin nickname';
+
+      $('selectedCharacter').textContent =
+        p.character_name || 'Pendiente';
+
+      $('adminCharacterInput').value =
+        p.character_name || '';
+
+      const role = $('selectedRole');
+
+      role.textContent = p.is_master
+        ? 'Maestro'
+        : !p.role_known
+          ? 'Sin verificar'
+          : p.is_admin
+            ? 'Administrador'
+            : 'Integrante';
+
+      role.className = 'tag ' + (
+        p.is_master
+          ? 'tag-master'
+          : p.is_admin
+            ? 'tag-admin'
+            : ''
+      );
+
+      $('selectedState').textContent =
+        p.is_active ? 'Activo' : 'Inactivo';
+
+      $('selectedState').className = 'tag ' + (
+        p.is_active ? 'tag-active' : 'tag-inactive'
+      );
+
+      const canManage =
+        p.role_known &&
+        (isMaster || !p.is_admin);
+
+      const isSelf =
+        p.user_id === currentUser?.id;
+
+      $('adminCharacterInput').disabled =
+        !canManage || adminBusy;
+
+      $('saveAdminCharacterButton').disabled =
+        !canManage || adminBusy;
+
+      const toggle = $('toggleMemberButton');
+
+      toggle.textContent = p.is_active
+        ? 'Desactivar integrante'
+        : 'Reactivar integrante';
+
+      toggle.className =
+        p.is_active ? 'danger' : 'positive';
+
+      toggle.disabled =
+        !canManage || isSelf || p.is_master || adminBusy;
+
+      const roleButton = $('toggleAdminButton');
+
+      if (isMaster && !isSelf && !p.is_master) {
+
+        show('toggleAdminButton');
+
+        roleButton.textContent = p.is_admin
+          ? 'Quitar administrador'
+          : 'Designar administrador';
+
+        roleButton.className =
+          p.is_admin ? 'danger' : 'secondary';
+
+        roleButton.disabled =
+          !p.role_known ||
+          (!p.is_active && !p.is_admin) ||
+          adminBusy;
+
+      } else {
+
+        hide('toggleAdminButton');
+
+      }
+
+    }
+
+    async function verifyTarget(profile) {
+
+      if (!profile || !await verifyAccess(true)) {
+        return false;
+      }
+
+      const { data, error } = await supabase.rpc(
+        'is_clan_admin_user',
+        { p_user_id: profile.user_id }
+      );
+
+      if (error) return false;
+
+      return isMaster || data === false;
+
+    }
+
+    async function runAdminAction(action) {
+
+      if (adminBusy) return;
+
+      adminBusy = true;
+      renderSelectedMember();
+
+      try {
+
+        await action();
+
+      } catch (error) {
+
+        setMessage(
+          'profileAdminMessage',
+          error.code === '23505'
+            ? 'Ese personaje ya pertenece a otro integrante.'
+            : error.message || 'No se pudo realizar la operación.',
+          'error'
+        );
+
+      } finally {
+
+        adminBusy = false;
+        renderSelectedMember();
+
+      }
+
+    }
+
+    $('saveAdminCharacterButton').addEventListener(
+      'click',
+      async () => {
+
+        const target = selectedProfile;
+
+        const characterName =
+          $('adminCharacterInput').value.trim();
+
+        if (!target) return;
+
+        await runAdminAction(async () => {
+
+          if (!await verifyTarget(target)) {
+            throw new Error('No tenés permiso para modificar este perfil.');
+          }
+
+          if (
+            !characterName ||
+            characterName.length > 40
+          ) {
+            throw new Error('Ingresá un nombre válido.');
+          }
+
+          const { data, error } = await supabase
+            .from('member_profiles')
+            .update({
+              character_name: characterName,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', target.user_id)
+            .select(profileFields)
+            .maybeSingle();
+
+          if (error) throw error;
+
+          if (!data) {
+            throw new Error('La modificación no fue autorizada.');
+          }
+
+          if (target.user_id === currentUser?.id) {
+
+            currentProfile = data;
+            showMemberContent(data);
+
+          }
+
+          await loadAdminProfiles();
+          await loadAdminData();
+
+          setMessage(
+            'profileAdminMessage',
+            'Personaje actualizado correctamente.',
+            'success'
+          );
+
+        });
+
+      }
+    );
+
+    $('toggleMemberButton').addEventListener(
+      'click',
+      async () => {
+
+        const target = selectedProfile;
+
+        if (!target || !currentUser) return;
+
+        if (target.user_id === currentUser.id) return;
+
+        const newState = !target.is_active;
+
+        const confirmed = confirm(
+          (newState ? '¿Reactivar a ' : '¿Desactivar a ') +
+          (target.discord_nickname || 'este integrante') +
+          '?' +
+          (
+            newState
+              ? ''
+              : '\nPerderá acceso al clan, pero conservará sus datos.'
+          )
+        );
+
+        if (!confirmed) return;
+
+        await runAdminAction(async () => {
+
+          if (!await verifyTarget(target)) {
+            throw new Error('No tenés permiso para modificar este integrante.');
+          }
+
+          const changes = {
+            is_active: newState,
+            updated_at: new Date().toISOString(),
+            deactivated_at: newState
+              ? null
+              : new Date().toISOString(),
+            deactivated_by: newState
+              ? null
+              : currentUser.id
+          };
+
+          const { data, error } = await supabase
+            .from('member_profiles')
+            .update(changes)
+            .eq('user_id', target.user_id)
+            .eq('is_active', target.is_active)
+            .select(profileFields)
+            .maybeSingle();
+
+          if (error) throw error;
+
+          if (!data || data.is_active !== newState) {
+            throw new Error(
+              'No se pudo confirmar el cambio de estado.'
+            );
+          }
+
+          await loadAdminProfiles();
+
+          setMessage(
+            'profileAdminMessage',
+            newState
+              ? 'Integrante reactivado correctamente.'
+              : 'Integrante desactivado correctamente.',
+            'success'
+          );
+
+        });
+
+      }
+    );
+
+    $('toggleAdminButton').addEventListener(
+      'click',
+      async () => {
+
+        const target = selectedProfile;
+
+        if (!target || !currentUser || !isMaster) return;
+
+        if (target.user_id === currentUser.id) return;
+
+        const makeAdmin = !target.is_admin;
+
+        if (makeAdmin && !target.is_active) return;
+
+        if (!confirm(
+          (makeAdmin
+            ? '¿Designar administrador a '
+            : '¿Quitar permisos administrativos a ') +
+          (target.discord_nickname || 'este integrante') +
+          '?'
+        )) return;
+
+        await runAdminAction(async () => {
+
+          if (!await verifyAccess(true) || !isMaster) {
+            throw new Error(
+              'Solo el Maestro puede gestionar administradores.'
+            );
+          }
+
+          const { error } = await supabase.rpc(
+            'set_clan_admin',
+            {
+              p_user_id: target.user_id,
+              p_make_admin: makeAdmin
+            }
+          );
+
+          if (error) throw error;
+
+          await loadAdminProfiles();
+
+          setMessage(
+            'profileAdminMessage',
+            makeAdmin
+              ? 'Administrador designado correctamente.'
+              : 'Permisos administrativos retirados.',
+            'success'
+          );
+
+        });
+
+      }
+    );
+
+    $('memberFilter').addEventListener('change', () => {
+
+      renderMemberSelector(
+        selectedProfile?.user_id || ''
+      );
+
+    });
+
+    $('memberSelector').addEventListener('change', () => {
+
+      setMessage('profileAdminMessage', '');
+      renderSelectedMember();
+
+    });
 
     async function loadAdminData() {
+
+      if (!isAdmin) return;
+
+      const version = interfaceVersion;
+
       const { data: records, error } = await supabase
-        .from('cp_records').select('*').order('week_start', { ascending: false })
+        .from('cp_records')
+        .select('*')
+        .order('week_start', { ascending: false })
         .order('created_at', { ascending: false });
 
+      if (version !== interfaceVersion) return;
+
       if (error) {
-        setMessage('adminMessage', 'No se pudieron cargar los registros: ' + error.message, 'error');
+
+        setMessage(
+          'adminMessage',
+          'No se pudieron cargar los registros: ' +
+          error.message,
+          'error'
+        );
+
         return;
+
       }
 
       const adminRecords = records || [];
-      const { data: audit, error: auditError } = await supabase
-        .from('cp_history').select('*').order('changed_at', { ascending: false }).limit(100);
+
+      const { data: audit, error: auditError } =
+        await supabase
+          .from('cp_history')
+          .select('*')
+          .order('changed_at', { ascending: false })
+          .limit(100);
 
       const allUserIds = [
         ...adminRecords.map(r => r.user_id),
@@ -576,235 +1804,617 @@
 
       const profileMap = await loadProfiles(allUserIds);
 
+      if (version !== interfaceVersion) return;
+
       const recordOwnerMap = new Map();
+
       adminRecords.forEach(record => {
-        recordOwnerMap.set(record.id, profileMap.get(record.user_id));
+
+        recordOwnerMap.set(
+          record.id,
+          profileMap.get(record.user_id)
+        );
+
       });
 
-      $('allRecords').innerHTML = adminRecords.length ? adminRecords.map(r => {
-        const profile = profileMap.get(r.user_id);
-        return `
-          <tr>
-            <td>${escapeHtml(profile?.discord_nickname || 'Perfil pendiente')}</td>
-            <td>${escapeHtml(profile?.character_name || 'Pendiente')}</td>
-            <td>${formatDate(r.week_start)}</td>
-            <td>${Number(r.cp).toLocaleString('es-AR')}</td>
-            <td>${escapeHtml(r.biotraje)}</td>
-            <td>${formatDate(r.created_at)}</td>
-            <td><button class="editRecord" data-user="${escapeHtml(r.user_id)}" data-week="${escapeHtml(r.week_start)}" data-cp="${escapeHtml(r.cp)}" data-bio="${escapeHtml(r.biotraje)}">Corregir</button></td>
-          </tr>`;
-      }).join('') : '<tr><td colspan="7">Todavía no hay registros.</td></tr>';
+      $('allRecords').innerHTML =
+        adminRecords.length
+          ? adminRecords.map(r => {
 
-      $('allRecords').querySelectorAll('.editRecord').forEach(button => {
-        button.addEventListener('click', () => correctRecord(
-          button.dataset.user,
-          button.dataset.week,
-          button.dataset.cp,
-          button.dataset.bio
-        ));
-      });
+            const profile = profileMap.get(r.user_id);
+
+            return `
+              <tr>
+                <td>
+                  ${escapeHtml(
+                    profile?.discord_nickname || 'Perfil pendiente'
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    profile?.character_name || 'Pendiente'
+                  )}
+                </td>
+
+                <td>${formatDate(r.week_start)}</td>
+
+                <td>
+                  ${Number(r.cp).toLocaleString('es-AR')}
+                </td>
+
+                <td>${escapeHtml(r.biotraje)}</td>
+
+                <td>${formatDate(r.created_at)}</td>
+
+                <td>
+                  <button
+                    class="editRecord"
+                    data-user="${escapeHtml(r.user_id)}"
+                    data-week="${escapeHtml(r.week_start)}"
+                    data-cp="${escapeHtml(r.cp)}"
+                    data-bio="${escapeHtml(r.biotraje)}">
+                    Corregir
+                  </button>
+                </td>
+              </tr>
+            `;
+
+          }).join('')
+          : '<tr><td colspan="7">Todavía no hay registros.</td></tr>';
+
+      $('allRecords')
+        .querySelectorAll('.editRecord')
+        .forEach(button => {
+
+          button.addEventListener('click', () => {
+
+            correctRecord(
+              button.dataset.user,
+              button.dataset.week,
+              button.dataset.cp,
+              button.dataset.bio
+            );
+
+          });
+
+        });
 
       if (auditError) {
-        $('auditHistory').innerHTML = `<tr><td colspan="7">No se pudo cargar la auditoría: ${escapeHtml(auditError.message)}</td></tr>`;
+
+        $('auditHistory').innerHTML =
+          '<tr><td colspan="7">' +
+          'No se pudo cargar la auditoría: ' +
+          escapeHtml(auditError.message) +
+          '</td></tr>';
+
       } else {
-        $('auditHistory').innerHTML = audit.length ? audit.map(a => {
-          const profile = recordOwnerMap.get(a.record_id);
-          const changedBy = profileMap.get(a.changed_by);
-          return `
-            <tr>
-              <td>${escapeHtml(profile?.discord_nickname || 'Integrante')} / ${escapeHtml(profile?.character_name || 'Personaje pendiente')}</td>
-              <td>${Number(a.old_cp).toLocaleString('es-AR')}</td>
-              <td>${Number(a.new_cp).toLocaleString('es-AR')}</td>
-              <td>${escapeHtml(a.old_biotraje)}</td>
-              <td>${escapeHtml(a.new_biotraje)}</td>
-              <td>${escapeHtml(changedBy?.discord_nickname || 'Administrador')}</td>
-              <td>${formatDate(a.changed_at)}</td>
-            </tr>`;
-        }).join('') : '<tr><td colspan="7">Todavía no hay correcciones registradas.</td></tr>';
+
+        $('auditHistory').innerHTML =
+          (audit || []).length
+            ? audit.map(a => {
+
+              const profile =
+                recordOwnerMap.get(a.record_id) ||
+                profileMap.get(a.user_id);
+
+              const changedBy =
+                profileMap.get(a.changed_by);
+
+              return `
+                <tr>
+                  <td>
+                    ${escapeHtml(
+                      profile?.discord_nickname || 'Integrante'
+                    )}
+                    /
+                    ${escapeHtml(
+                      profile?.character_name || 'Pendiente'
+                    )}
+                  </td>
+
+                  <td>
+                    ${Number(a.old_cp).toLocaleString('es-AR')}
+                  </td>
+
+                  <td>
+                    ${Number(a.new_cp).toLocaleString('es-AR')}
+                  </td>
+
+                  <td>${escapeHtml(a.old_biotraje)}</td>
+
+                  <td>${escapeHtml(a.new_biotraje)}</td>
+
+                  <td>
+                    ${escapeHtml(
+                      changedBy?.discord_nickname || 'Administrador'
+                    )}
+                  </td>
+
+                  <td>${formatDate(a.changed_at)}</td>
+                </tr>
+              `;
+
+            }).join('')
+            : '<tr><td colspan="7">Todavía no hay correcciones.</td></tr>';
+
       }
 
-      setMessage('adminMessage', 'Registros y perfiles actualizados.', 'success');
+      setMessage(
+        'adminMessage',
+        'Registros actualizados.',
+        'success'
+      );
+
     }
 
     async function correctRecord(userId, week, oldCp, oldBio) {
-      const cpText = prompt('Nuevo valor de CP para este registro:', oldCp);
+
+      if (!await verifyAccess(true)) return;
+
+      const cpText = prompt(
+        'Nuevo valor de CP para este registro:',
+        oldCp
+      );
+
       if (cpText === null) return;
 
       const cp = Number(cpText);
+
       if (!Number.isInteger(cp) || cp <= 0) {
-        setMessage('adminMessage', 'El CP debe ser un número entero mayor que cero.', 'error');
+
+        setMessage(
+          'adminMessage',
+          'El CP debe ser un entero mayor que cero.',
+          'error'
+        );
+
         return;
+
       }
 
-      const bioText = prompt('Biotraje (' + bios.join(', ') + '):', oldBio);
+      const bioText = prompt(
+        'Biotraje (' + bios.join(', ') + '):',
+        oldBio
+      );
+
       if (bioText === null) return;
 
       if (!bios.includes(bioText)) {
-        setMessage('adminMessage', 'El nombre del biotraje no coincide con las opciones permitidas.', 'error');
+
+        setMessage(
+          'adminMessage',
+          'El biotraje no es válido.',
+          'error'
+        );
+
         return;
+
       }
 
-      if (cp === Number(oldCp) && bioText === oldBio) {
-        setMessage('adminMessage', 'No se realizaron cambios.', 'warning');
+      if (
+        cp === Number(oldCp) &&
+        bioText === oldBio
+      ) {
+
+        setMessage(
+          'adminMessage',
+          'No se realizaron cambios.',
+          'warning'
+        );
+
         return;
+
       }
 
-      const { error } = await supabase.from('cp_records')
-        .update({ cp, biotraje: bioText })
-        .eq('user_id', userId).eq('week_start', week);
+      if (!await verifyAccess(true)) return;
 
-      if (error) {
-        setMessage('adminMessage', 'No se pudo corregir el registro: ' + error.message, 'error');
+      const { data, error } = await supabase
+        .from('cp_records')
+        .update({
+          cp,
+          biotraje: bioText
+        })
+        .eq('user_id', userId)
+        .eq('week_start', week)
+        .select('user_id')
+        .maybeSingle();
+
+      if (error || !data) {
+
+        setMessage(
+          'adminMessage',
+          error?.message || 'La corrección no fue autorizada.',
+          'error'
+        );
+
         return;
+
       }
 
-      setMessage('adminMessage', 'Corrección guardada y enviada a la auditoría.', 'success');
       await loadAdminData();
+
+      await loadMemberData();
+
+      setMessage(
+        'adminMessage',
+        'Corrección guardada correctamente.',
+        'success'
+      );
+
     }
 
     async function updateInterface(session) {
+
+      const version = ++interfaceVersion;
+
       currentUser = session?.user ?? null;
 
+      currentProfile = null;
+      currentCharacterName = null;
+
+      isAdmin = false;
+      isMaster = false;
+      isActive = false;
+
+      adminBusy = false;
+
+      hide('memberPanel');
+      hide('adminPanel');
+      hide('inactivePanel');
+
+      hide('characterRegistration');
+      hide('memberContent');
+
+      clearProtectedData();
+
       if (!currentUser) {
-        isAdmin = false;
+
         currentDiscordName = 'Miembro';
-        currentCharacterName = null;
-        welcome.textContent = 'Bienvenido, guerrero.';
-        status.textContent = 'Conectate para acceder al clan.';
-        loginButton.classList.remove('hidden');
-        loginButton.disabled = false;
-        logoutButton.classList.add('hidden');
-        logoutButton.disabled = false;
-        memberPanel.classList.add('hidden');
-        adminPanel.classList.add('hidden');
-        $('characterRegistration').classList.add('hidden');
-        $('memberContent').classList.add('hidden');
+
+        $('welcome').textContent =
+          'Bienvenido, guerrero.';
+
+        setMessage(
+          'status',
+          'Conectate para acceder al clan.'
+        );
+
+        show('loginButton');
+        hide('logoutButton');
+
+        $('loginButton').disabled = false;
+        $('logoutButton').disabled = false;
+
         return;
+
       }
 
-      loginButton.classList.add('hidden');
-      logoutButton.classList.remove('hidden');
-      memberPanel.classList.remove('hidden');
+      const user = currentUser;
 
-      $('characterRegistration').classList.add('hidden');
-      $('memberContent').classList.add('hidden');
-      setMessage('memberMessage', 'Actualizando tu perfil...');
+      hide('loginButton');
+      show('logoutButton');
 
-      const profile = await saveMemberProfile(currentUser);
-      currentDiscordName =
-        profile?.discord_nickname ||
-        getDiscordNickname(currentUser) ||
-        'Miembro';
+      $('logoutButton').disabled = false;
 
-      welcome.textContent = 'Bienvenido, ' + currentDiscordName;
-      status.textContent = 'Conectado como: ' + currentDiscordName;
+      setMessage(
+        'status',
+        'Verificando tu perfil y permisos...'
+      );
 
-      const { data: adminResult, error: adminError } = await supabase.rpc('is_clan_admin');
-      isAdmin = !adminError && adminResult === true;
+      try {
 
-      if (isAdmin) adminPanel.classList.remove('hidden');
-      else adminPanel.classList.add('hidden');
+        const profile = await saveMemberProfile(user);
 
-      if (!profile) {
-        showCharacterRegistration();
-        setMessage('characterMessage', 'No se pudo cargar tu perfil. Actualizá la página o volvé a iniciar sesión.', 'error');
-      } else if (!profile.character_name) {
-        showCharacterRegistration();
-        setMessage('characterMessage', 'Para continuar, registrá el nombre de tu personaje.', 'warning');
-      } else {
-        showMemberContent(profile);
-        await loadMemberData();
+        if (version !== interfaceVersion) return;
+
+        if (!profile) {
+          throw new Error('No se pudo cargar tu perfil.');
+        }
+
+        const permissions = await readPermissions(user.id);
+
+        if (version !== interfaceVersion) return;
+
+        currentProfile = profile;
+
+        isMaster = permissions.master;
+
+        isActive =
+          permissions.active &&
+          profile.is_active === true;
+
+        isAdmin = isMaster || (
+          permissions.admin && isActive
+        );
+
+        currentDiscordName =
+          profile.discord_nickname ||
+          getDiscordNickname(user) ||
+          'Miembro';
+
+        $('welcome').textContent =
+          'Bienvenido, ' + currentDiscordName;
+
+        if (!isActive && !isMaster) {
+
+          show('inactivePanel');
+
+          setMessage(
+            'status',
+            'Cuenta inactiva.',
+            'error'
+          );
+
+          return;
+
+        }
+
+        const role = isMaster
+          ? 'Maestro'
+          : isAdmin
+            ? 'Administrador'
+            : 'Integrante';
+
+        setMessage(
+          'status',
+          'Conectado como: ' +
+          currentDiscordName + ' | ' + role,
+          'success'
+        );
+
+        if (isActive) {
+
+          show('memberPanel');
+
+          if (!profile.character_name) {
+
+            showCharacterRegistration();
+
+            setMessage(
+              'characterMessage',
+              'Registrá tu personaje para continuar.',
+              'warning'
+            );
+
+          } else {
+
+            showMemberContent(profile);
+            await loadMemberData();
+
+          }
+
+        }
+
+        if (version !== interfaceVersion) return;
+
+        if (isAdmin) {
+
+          $('adminRole').textContent = role;
+
+          $('adminRole').className =
+            'tag ' + (
+              isMaster ? 'tag-master' : 'tag-admin'
+            );
+
+          show('adminPanel');
+
+          await loadAdminProfiles();
+
+          if (version !== interfaceVersion) return;
+
+          await loadAdminData();
+
+        }
+
+      } catch (error) {
+
+        if (version !== interfaceVersion) return;
+
+        console.error(error);
+
+        hide('memberPanel');
+        hide('adminPanel');
+
+        clearProtectedData();
+
+        setMessage(
+          'status',
+          'No se pudo verificar el acceso: ' +
+          error.message,
+          'error'
+        );
+
       }
 
-      if (isAdmin) {
-        await loadAdminData();
-        await loadAdminProfiles();
-      }
-
-      if (adminError) {
-        setMessage('memberMessage', 'No se pudo verificar el permiso de administrador: ' + adminError.message, 'warning');
-      }
     }
 
-    loginButton.addEventListener('click', async () => {
-      loginButton.disabled = true;
-      status.textContent = 'Conectando con Discord...';
+    $('loginButton').addEventListener('click', async () => {
 
-      const redirectTo = window.location.origin + window.location.pathname;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'discord', options: { redirectTo }
-      });
+      $('loginButton').disabled = true;
+
+      setMessage('status', 'Conectando con Discord...');
+
+      const redirectTo =
+        window.location.origin + window.location.pathname;
+
+      const { error } =
+        await supabase.auth.signInWithOAuth({
+          provider: 'discord',
+          options: { redirectTo }
+        });
 
       if (error) {
-        status.textContent = 'No se pudo iniciar sesión: ' + error.message;
-        loginButton.disabled = false;
+
+        setMessage(
+          'status',
+          'No se pudo iniciar sesión: ' + error.message,
+          'error'
+        );
+
+        $('loginButton').disabled = false;
+
       }
+
     });
 
-    logoutButton.addEventListener('click', async () => {
-      logoutButton.disabled = true;
+    $('logoutButton').addEventListener('click', async () => {
+
+      $('logoutButton').disabled = true;
+
       const { error } = await supabase.auth.signOut();
 
       if (error) {
-        status.textContent = 'Error al cerrar sesión: ' + error.message;
-        logoutButton.disabled = false;
+
+        setMessage(
+          'status',
+          'Error al cerrar sesión: ' + error.message,
+          'error'
+        );
+
+        $('logoutButton').disabled = false;
+
       }
+
     });
 
-    $('characterForm').addEventListener('submit', registerCharacter);
+    $('characterForm').addEventListener(
+      'submit',
+      registerCharacter
+    );
 
-    $('cpForm').addEventListener('submit', async (event) => {
+    $('cpForm').addEventListener('submit', async event => {
+
       event.preventDefault();
-      if (!currentUser || !currentCharacterName) return;
+
+      if (
+        !await verifyAccess() ||
+        !currentCharacterName ||
+        !isActive
+      ) return;
 
       const cp = Number($('cpInput').value);
       const biotraje = $('bioInput').value;
 
-      if (!Number.isInteger(cp) || cp <= 0 || !bios.includes(biotraje)) {
-        setMessage('memberMessage', 'Ingresá un CP entero mayor que cero y seleccioná un biotraje.', 'error');
+      if (
+        !Number.isInteger(cp) ||
+        cp <= 0 ||
+        !bios.includes(biotraje)
+      ) {
+
+        setMessage(
+          'memberMessage',
+          'Ingresá un CP válido y seleccioná el biotraje.',
+          'error'
+        );
+
         return;
+
       }
 
       const button = $('saveCpButton');
+
       button.disabled = true;
-      setMessage('memberMessage', 'Guardando tu CP...');
 
-      const { error } = await supabase.from('cp_records').insert({
-        user_id: currentUser.id,
-        cp,
-        biotraje,
-        week_start: currentWeekStart()
-      });
+      try {
 
-      button.disabled = false;
+        const { error } = await supabase
+          .from('cp_records')
+          .insert({
+            user_id: currentUser.id,
+            cp,
+            biotraje,
+            week_start: currentWeekStart()
+          });
 
-      if (error) {
-        if (error.code === '23505') {
-          setMessage('memberMessage', 'Ya existe un registro para esta semana. El formulario quedará bloqueado.', 'warning');
+        if (error) {
+
+          setMessage(
+            'memberMessage',
+            error.code === '23505'
+              ? 'Ya existe un registro para esta semana.'
+              : 'No se pudo guardar: ' + error.message,
+            error.code === '23505'
+              ? 'warning'
+              : 'error'
+          );
+
         } else {
-          setMessage('memberMessage', 'No se pudo guardar el CP: ' + error.message, 'error');
+
+          $('cpInput').value = '';
+          $('bioInput').value = '';
+
+          setMessage(
+            'memberMessage',
+            'CP guardado correctamente.',
+            'success'
+          );
+
         }
-      } else {
-        $('cpInput').value = '';
-        $('bioInput').value = '';
-        setMessage('memberMessage', 'CP guardado correctamente.', 'success');
+
+        await loadMemberData();
+
+        if (isAdmin) {
+          await loadAdminData();
+        }
+
+      } finally {
+
+        button.disabled = false;
+
       }
 
-      await loadMemberData();
-      if (isAdmin) await loadAdminData();
     });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setTimeout(() => updateInterface(session), 0);
+    supabase.auth.onAuthStateChange((event, session) => {
+
+      if (
+        event === 'INITIAL_SESSION' ||
+        event === 'SIGNED_OUT' ||
+        event === 'USER_UPDATED' ||
+        (
+          event === 'SIGNED_IN' &&
+          session?.user?.id !== currentUser?.id
+        )
+      ) {
+
+        setTimeout(() => updateInterface(session), 0);
+
+      }
+
     });
 
-    const { data, error } = await supabase.auth.getSession();
+    // Revalidación periódica de permisos.
+    // Supabase RLS continúa siendo la autoridad de seguridad.
 
-    if (error) {
-      status.textContent = 'No se pudo verificar la sesión: ' + error.message;
-    } else {
-      await updateInterface(data.session);
-    }
+    setInterval(async () => {
+
+      if (!currentUser || adminBusy) return;
+
+      const oldAdmin = isAdmin;
+      const oldMaster = isMaster;
+      const oldActive = isActive;
+
+      const allowed = await verifyAccess();
+
+      if (
+        allowed &&
+        (
+          oldAdmin !== isAdmin ||
+          oldMaster !== isMaster ||
+          oldActive !== isActive
+        )
+      ) {
+
+        const { data } = await supabase.auth.getSession();
+
+        await updateInterface(data.session);
+
+      }
+
+    }, 30000);
+
   </script>
+
 </body>
 </html>
