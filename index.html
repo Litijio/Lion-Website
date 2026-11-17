@@ -368,6 +368,16 @@
       .stat-number { font-size: 21px; }
       .stat-label { font-size: 10px; }
     }
+
+    .event-dialog { max-width: 760px; max-height: 90vh; overflow-y: auto; }
+    .event-members { max-height: 240px; overflow-y: auto; border: 1px solid #34445e; border-radius: 8px; padding: 10px; background: #0d1420; }
+    .event-members label { display: flex; align-items: center; gap: 9px; padding: 7px; margin: 0; }
+    .event-members input[type=checkbox] { width: auto; }
+    .event-members div { padding: 5px; }
+    .event-drop { border: 1px solid #34445e; border-radius: 10px; margin: 12px 0; padding: 14px; background: #101a29; }
+    .event-drop input,.event-drop textarea { margin-top: 5px; }
+    .event-image { display: block; max-width: 100%; max-height: 450px; margin-top: 12px; object-fit: contain; }
+    .event-note { white-space: pre-wrap; overflow-wrap: anywhere; }
   </style>
 </head>
 
@@ -388,6 +398,7 @@
       </p>
 
       <div class="top-actions">
+        <button id="evView" class="hidden secondary">Ver eventos</button>
         <button id="loginButton">Acceder con Discord</button>
         <button id="logoutButton" class="secondary hidden">
           Cerrar sesión
@@ -578,6 +589,16 @@
 
     </section>
 
+    <section id="eventsPanel" class="panel hidden">
+      <h2>Eventos LIONS</h2>
+      <div class="form-grid"><input id="evSearch" type="search" placeholder="Buscar evento o código"><select id="evStatus"><option value="">Todos los estados</option><option value="open">Abiertos</option><option value="closed">Cerrados</option><option value="cancelled">Anulados</option></select></div>
+      <div class="management-actions"><button id="evRefresh" class="secondary">Actualizar</button><button id="evHide" class="secondary">Cerrar listado</button></div>
+      <div id="evMessage" class="status"></div>
+      <div class="table-wrap"><table><thead><tr><th>Código</th><th>Evento</th><th>Fecha</th><th>Puntos</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="evRows"></tbody></table></div>
+      <div class="pagination"><button id="evPrev" class="secondary small-button">Anterior</button><span id="evPage"></span><button id="evNext" class="secondary small-button">Siguiente</button></div>
+      <div id="evDetail" class="management-box hidden"></div>
+    </section>
+
     <section id="adminPanel" class="panel hidden">
 
       <h2>Panel de administración</h2>
@@ -586,6 +607,12 @@
         Nivel de acceso:
         <span id="adminRole" class="tag"></span>
       </p>
+
+      <div class="management-box">
+        <h3>Gestión de eventos</h3>
+        <div class="management-actions"><button id="evNew">Configurar evento nuevo</button><button id="evCatalog" class="secondary">Configurar tipos y puntos</button></div>
+        <div id="evAdminMessage" class="status"></div>
+      </div>
 
       <h3 style="margin-top:25px">
         Administración de integrantes
@@ -850,7 +877,7 @@
 
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V2.1</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V3.0</footer>
 
   </main>
 
@@ -899,6 +926,27 @@
 
     </form>
 
+  </dialog>
+
+  <dialog id="evDialog" class="event-dialog">
+    <h2 id="evDialogTitle">Nuevo evento</h2>
+    <form id="evForm">
+      <div id="evNewFields">
+        <div class="form-grid"><div><label for="evType">Tipo de evento</label><select id="evType" required></select></div><div><label for="evDate">Fecha</label><input id="evDate" type="date" required></div></div>
+        <p id="evPoints" class="muted"></p>
+        <label for="evNotes">Observaciones (opcional)</label><textarea id="evNotes" maxlength="3000"></textarea>
+      </div>
+      <label for="evMemberSearch">Participantes</label><input id="evMemberSearch" type="search" placeholder="Buscar personaje o Discord">
+      <div class="management-actions"><button id="evSelectAll" type="button" class="secondary small-button">Marcar visibles</button><button id="evClearAll" type="button" class="secondary small-button">Desmarcar todos</button></div>
+      <p id="evCount" class="muted"></p><div id="evMembers" class="event-members"></div>
+      <div id="evDropFields"><h3 style="margin-top:20px">Drops Tier S</h3><p class="muted">Si no agregás drops, el evento se cerrará al guardarse.</p><div id="evDrops"></div><button id="evAddDrop" type="button" class="secondary">+ Agregar drop</button></div>
+      <div id="evReasonFields" class="hidden"><label for="evReason">Motivo de corrección</label><textarea id="evReason" maxlength="1000"></textarea></div>
+      <div id="evFormMessage" class="status"></div><div class="management-actions"><button id="evFormClose" type="button" class="secondary">Cancelar</button><button id="evSave" type="submit">Guardar evento</button></div>
+    </form>
+  </dialog>
+  <dialog id="evCatalogDialog" class="event-dialog">
+    <h2>Tipos de eventos y puntajes</h2><p class="muted">Los cambios solo afectan eventos futuros.</p>
+    <form id="evCatalogForm"><label for="evCatalogSelect">Tipo</label><select id="evCatalogSelect"></select><label for="evCatalogName">Nombre</label><input id="evCatalogName" maxlength="100" required><label for="evCatalogPoints">Puntos por participante</label><input id="evCatalogPoints" type="number" min="0" max="2147483647" step="1" required><div id="evCatalogMessage" class="status"></div><div class="management-actions"><button id="evCatalogClose" type="button" class="secondary">Cerrar</button><button id="evCatalogSave" type="submit">Guardar tipo</button></div></form>
   </dialog>
 
   <script type="module">
@@ -1126,6 +1174,7 @@
 
       isAdmin = isMaster ||
         (permissions.admin && isActive);
+      evPermissions();
     }
 
     function displayInactive(profile) {
@@ -1248,6 +1297,7 @@
     }
 
     function clearProtectedData() {
+      evReset();
 
       clearAdminData();
 
@@ -2738,6 +2788,85 @@
         $('logoutButton').disabled = false;
       }
     });
+
+    // V3.0 — Eventos LIONS
+    let evList=[], evTypes=[], evRoster=[], evSelected=new Set(), evPageNumber=1, evEditing=null, evBusy=false, evRequest=0, evDetailRequest=0;
+    let evDetailId=null;
+    const evLabels={open:'Abierto',closed:'Cerrado',cancelled:'Anulado',pending:'Pendiente',sold:'Vendido'};
+    const evCode=e=>'LIONS-'+String(e.event_number).padStart(6,'0');
+    const evToday=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Argentina/Buenos_Aires'}).format(new Date());
+    const evName=id=>{const p=evRoster.find(x=>x.user_id===id);return p?.character_name||p?.discord_nickname||'Integrante'};
+    const evError=e=>e?.message||String(e);
+    function evReset(){
+      evRequest++;evDetailRequest++;evDetailId=null;evList=[];evRoster=[];evTypes=[];evSelected.clear();evEditing=null;
+      hide('evView');hide('eventsPanel');hide('evDetail');$('evRows').innerHTML='';$('evDetail').innerHTML='';$('evMembers').innerHTML='';$('evDrops').innerHTML='';$('evForm').reset();$('evCatalogForm').reset();
+      for(const id of ['evDialog','evCatalogDialog'])if($(id).open)$(id).close();
+    }
+    function evPermissions(){
+      if(isActive||isMaster)show('evView');else evReset();
+      if(!isAdmin){for(const id of ['evDialog','evCatalogDialog'])if($(id).open)$(id).close();}
+      if(!isMaster)document.querySelectorAll('.ev-master').forEach(el=>el.remove());
+    }
+    async function evRpc(name,args={}){const {data,error}=await supabase.rpc(name,args);if(error)throw error;return data;}
+    async function evLoadTypes(){return fetchAllRows(()=>supabase.from('event_types').select('*').order('name').order('id'));}
+    async function evLoadRoster(){return await evRpc('get_event_members')||[];}
+    function evGuard(version){if(version!==interfaceVersion||!currentUser||!(isActive||isMaster))throw new Error('La sesión cambió.');}
+    async function evLoad(){
+      if(!await verifyAccess())return;
+      const version=interfaceVersion,request=++evRequest;show('eventsPanel');setMessage('evMessage','Cargando eventos...');
+      try{const rows=await fetchAllRows(()=>supabase.from('events').select('*').order('event_date',{ascending:false}).order('event_number',{ascending:false}));evGuard(version);if(request!==evRequest)return;evList=rows;evPageNumber=1;evRender();setMessage('evMessage',rows.length+' eventos registrados.','success');}
+      catch(e){if(version===interfaceVersion&&request===evRequest)setMessage('evMessage',evError(e),'error');}
+    }
+    function evRender(){
+      const q=$('evSearch').value.toLowerCase().trim(),s=$('evStatus').value;
+      const rows=evList.filter(e=>(!s||e.status===s)&&(!q||(e.event_name+' '+evCode(e)).toLowerCase().includes(q)));
+      const pages=Math.max(1,Math.ceil(rows.length/10));evPageNumber=Math.min(pages,Math.max(1,evPageNumber));
+      $('evRows').innerHTML=rows.slice((evPageNumber-1)*10,evPageNumber*10).map(e=>`<tr><td>${escapeHtml(evCode(e))}</td><td>${escapeHtml(e.event_name)}</td><td>${formatDate(e.event_date)}</td><td>${formatNumber(e.points)}</td><td>${escapeHtml(evLabels[e.status]||e.status)}</td><td><button class="small-button secondary" data-event="${escapeHtml(e.id)}">Ver detalle</button></td></tr>`).join('')||'<tr><td colspan="6">Sin eventos.</td></tr>';
+      $('evPage').textContent=`Página ${evPageNumber} de ${pages}`;$('evPrev').disabled=evPageNumber===1;$('evNext').disabled=evPageNumber===pages;
+    }
+    async function evShowDetail(id){
+      if(!await verifyAccess())return;const version=interfaceVersion,request=++evDetailRequest;evDetailId=id;show('evDetail');$('evDetail').textContent='Cargando detalle...';
+      try{
+        const [result,attendance,drops,roster]=await Promise.all([supabase.from('events').select('*').eq('id',id).single(),fetchAllRows(()=>supabase.from('event_attendance').select('*').eq('event_id',id).order('user_id')),fetchAllRows(()=>supabase.from('event_drops').select('*').eq('event_id',id).order('id')),evLoadRoster()]);
+        if(result.error)throw result.error;evGuard(version);if(request!==evDetailRequest)return;evRoster=roster;const e=result.data;
+        const names=attendance.map(a=>evName(a.user_id)).sort((a,b)=>a.localeCompare(b));
+        $('evDetail').innerHTML=`<h3>${escapeHtml(e.event_name)} · ${escapeHtml(evCode(e))}</h3><p>${formatDate(e.event_date)} · ${escapeHtml(evLabels[e.status])} · ${formatNumber(e.points)} puntos por participante</p>${e.status==='cancelled'?`<p class="error">Puntos no válidos. Motivo: ${escapeHtml(e.cancellation_reason)}</p>`:''}<p class="event-note">${escapeHtml(e.observations||'Sin observaciones.')}</p><h3>Participantes (${names.length})</h3><div class="event-members">${names.map(n=>`<div>${escapeHtml(n)}</div>`).join('')||'Sin participantes'}</div><h3 style="margin-top:20px">Drops Tier S (${drops.length})</h3><div id="evDetailDrops"></div>`;
+        for(const d of drops){const node=document.createElement('div');node.className='event-drop';node.innerHTML=`<strong>${escapeHtml(d.item_name)}</strong><p class="event-note">${escapeHtml(d.description)}</p><p class="muted">${escapeHtml(evLabels[d.status]||d.status)}${d.status==='sold'?` · Comprador: ${escapeHtml(evName(d.buyer_id))} · ${formatNumber(d.sale_price)} diamantes · ${formatDate(d.sold_at)}`:''}</p>`;if(d.screenshot_path&&!d.screenshot_deleted_at){const b=document.createElement('button');b.className='secondary small-button';b.textContent='Ver captura';b.onclick=async()=>{if(!await verifyAccess())return;const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(d.screenshot_path,60);if(error){setMessage('evMessage',error.message,'error');return;}if(version!==interfaceVersion||request!==evDetailRequest)return;const img=document.createElement('img');img.className='event-image';img.alt='Captura del drop';img.src=data.signedUrl;img.onerror=()=>{img.remove();b.disabled=false;setMessage('evMessage','No se pudo cargar la captura.','error');};node.append(img);b.disabled=true;};node.append(b);}else{const p=document.createElement('p');p.className='muted';p.textContent='Captura no disponible.';node.append(p);}$('evDetailDrops').append(node);}
+        if(!drops.length)$('evDetailDrops').textContent='Sin drops.';
+        if(isMaster&&e.status!=='cancelled'){const actions=document.createElement('div');actions.className='management-actions ev-master';const edit=document.createElement('button');edit.textContent='Corregir asistencia';edit.onclick=()=>evOpenForm(e,attendance);const cancel=document.createElement('button');cancel.className='danger';cancel.textContent='Anular evento';cancel.onclick=()=>evCancel(e);actions.append(edit,cancel);$('evDetail').append(actions);}
+        if(isMaster){const audit=document.createElement('details');audit.className='ev-master';audit.innerHTML='<summary>Auditoría del evento</summary>';audit.addEventListener('toggle',async()=>{if(!audit.open||!await verifyAccess(true)||!isMaster)return;try{const rows=await fetchAllRows(()=>supabase.from('event_audit').select('*').eq('event_id',id).order('changed_at',{ascending:false}).order('id'));if(request!==evDetailRequest)return;audit.querySelectorAll('p').forEach(x=>x.remove());for(const a of rows){const p=document.createElement('p');p.className='muted';p.textContent=`${formatDate(a.changed_at)} · ${evName(a.changed_by)} · ${ {event_created:'Creación',attendance_corrected:'Corrección de asistencia',event_cancelled:'Anulación'}[a.action]||a.action}${a.reason?' · '+a.reason:''}`;if(a.action==='attendance_corrected'){const before=(a.previous_data||[]).map(x=>evName(x.user_id));const after=(a.new_data||[]).map(x=>evName(x.user_id));p.textContent+=' | Antes: '+before.join(', ')+' | Después: '+after.join(', ');}audit.append(p);}}catch(err){setMessage('evMessage',evError(err),'error');}});$('evDetail').append(audit);}
+        $('evDetail').scrollIntoView({block:'nearest'});
+      }catch(err){if(version===interfaceVersion&&request===evDetailRequest)$('evDetail').textContent=evError(err);}
+    }
+    function evEligible(){return evRoster.filter(p=>(p.is_active&&p.character_name)|| (evEditing&&evEditing.original.has(p.user_id)));}
+    function evVisibleMembers(){const q=$('evMemberSearch').value.toLowerCase().trim();return evEligible().filter(p=>((p.character_name||'')+' '+(p.discord_nickname||'')).toLowerCase().includes(q));}
+    function evRenderMembers(){
+      $('evMembers').innerHTML='';for(const p of evVisibleMembers()){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=evSelected.has(p.user_id);check.onchange=()=>{if(check.checked)evSelected.add(p.user_id);else evSelected.delete(p.user_id);$('evCount').textContent=evSelected.size+' participantes seleccionados';};label.append(check,document.createTextNode((p.character_name||p.discord_nickname||'Integrante')+(p.is_active?'':' · Inactivo')));$('evMembers').append(label);}$('evCount').textContent=evSelected.size+' participantes seleccionados';
+    }
+    function evRenderPoints(){const t=evTypes.find(x=>x.id===$('evType').value);$('evPoints').textContent=t?formatNumber(t.points)+' puntos por participante.':'';}
+    async function evOpenForm(e=null,attendance=[]){
+      if(evBusy||!await verifyAccess(true)||(e&&!isMaster))return;const version=interfaceVersion;
+      try{const [types,roster]=await Promise.all([evLoadTypes(),evLoadRoster()]);evGuard(version);if(!isAdmin||(e&&!isMaster))return;evTypes=types;evRoster=roster;evEditing=e?{id:e.id,original:new Set(attendance.map(a=>a.user_id))}:null;evSelected=new Set(evEditing?.original||[]);$('evForm').reset();$('evDrops').innerHTML='';$('evDialogTitle').textContent=e?'Corregir asistencia · '+evCode(e):'Configurar evento nuevo';$('evType').replaceChildren(...evTypes.filter(t=>t.is_active).map(t=>new Option(t.name,t.id)));$('evDate').value=evToday();$('evDate').max=evToday();$('evType').required=!e;$('evDate').required=!e;$('evReason').required=!!e;for(const id of ['evNewFields','evDropFields'])e?hide(id):show(id);e?show('evReasonFields'):hide('evReasonFields');$('evSave').textContent=e?'Guardar corrección':'Guardar evento';evRenderPoints();evRenderMembers();setMessage('evFormMessage','');if(!$('evDialog').open)$('evDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}
+    }
+    function evAddDrop(){const node=document.createElement('div');node.className='event-drop';node.innerHTML='<label>Nombre del objeto<input class="ev-item" maxlength="150" required></label><label>Descripción<textarea class="ev-description" maxlength="3000" required></textarea></label><label>Captura (JPG, PNG, WEBP, hasta 2 MB)<input class="ev-file" type="file" accept="image/jpeg,image/png,image/webp" required></label><button type="button" class="danger small-button">Quitar drop</button>';node.querySelector('button').onclick=()=>node.remove();$('evDrops').append(node);}
+    async function evSubmit(event){
+      event.preventDefault();if(evBusy)return;evBusy=true;$('evSave').disabled=true;$('evFormClose').disabled=true;const uploads=[];let rpcStarted=false;const version=interfaceVersion;
+      try{if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');evGuard(version);const editing=evEditing;const participants=[...evSelected];if(!participants.length)throw new Error('Seleccioná al menos un participante.');
+        if(editing){if(!isMaster)throw new Error('Solo el Maestro puede corregir asistencia.');const reason=$('evReason').value.trim();if(!reason)throw new Error('Indicá el motivo.');await evRpc('correct_event_attendance',{p_event_id:editing.id,p_participants:participants,p_reason:reason});evGuard(version);$('evDialog').close();await evLoad();await evShowDetail(editing.id);setMessage('evMessage','Asistencia corregida.','success');return;}
+        const type=$('evType').value,date=$('evDate').value,notes=$('evNotes').value.trim(),userId=currentUser.id;
+        if(!type||!date||date>evToday())throw new Error('Seleccioná tipo y fecha válidos.');
+        const entries=[...$('evDrops').children].map(n=>({item_name:n.querySelector('.ev-item').value.trim(),description:n.querySelector('.ev-description').value.trim(),file:n.querySelector('.ev-file').files[0]}));
+        for(const d of entries){if(!d.item_name||!d.description||!d.file||!['image/jpeg','image/png','image/webp'].includes(d.file.type)||d.file.size>2097152||!d.file.size)throw new Error('Revisá nombre, descripción y captura de cada drop (máximo 2 MB).');}
+        const drops=[];for(const d of entries){evGuard(version);const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[d.file.type];const path=userId+'/'+crypto.randomUUID()+'.'+ext;setMessage('evFormMessage','Subiendo capturas...');const {error}=await supabase.storage.from('event-drops').upload(path,d.file,{upsert:false,contentType:d.file.type});if(error)throw error;uploads.push(path);drops.push({item_name:d.item_name,description:d.description,screenshot_path:path});}
+        evGuard(version);if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');evGuard(version);setMessage('evFormMessage','Guardando evento...');rpcStarted=true;const id=await evRpc('create_clan_event',{p_event_type_id:type,p_event_date:date,p_participants:participants,p_observations:notes||null,p_drops:drops});evGuard(version);$('evDialog').close();$('evDrops').innerHTML='';await evLoad();await evShowDetail(id);setMessage('evMessage','Evento registrado correctamente.','success');
+      }catch(err){if(version===interfaceVersion){if(uploads.length&&!rpcStarted){try{await supabase.storage.from('event-drops').remove(uploads);}catch(_){}}setMessage('evFormMessage',evError(err)+(rpcStarted?' Revisá el listado antes de volver a guardar.':''),'error');}}finally{evBusy=false;$('evSave').disabled=false;$('evFormClose').disabled=false;}
+    }
+    async function evCancel(e){if(evBusy||!await verifyAccess(true)||!isMaster)return;const reason=prompt('Motivo obligatorio de anulación de '+evCode(e));if(!reason?.trim()||!confirm('¿Anular este evento? Sus puntos dejarán de ser válidos.'))return;evBusy=true;try{await evRpc('cancel_clan_event',{p_event_id:e.id,p_reason:reason.trim()});await evLoad();await evShowDetail(e.id);setMessage('evMessage','Evento anulado.','success');}catch(err){setMessage('evMessage',evError(err),'error');}finally{evBusy=false;}}
+    function evCatalogFields(){const t=evTypes.find(x=>x.id===$('evCatalogSelect').value);$('evCatalogName').value=t?.name||'';$('evCatalogPoints').value=t?.points??'';}
+    function evCatalogOptions(selected=''){$('evCatalogSelect').replaceChildren(new Option('Nuevo tipo',''),...evTypes.map(t=>new Option(t.name+' · '+t.points+' pts',t.id)));$('evCatalogSelect').value=selected;evCatalogFields();}
+    async function evOpenCatalog(){if(evBusy||!await verifyAccess(true))return;const version=interfaceVersion;try{evTypes=await evLoadTypes();evGuard(version);if(!isAdmin)return;evCatalogOptions();setMessage('evCatalogMessage','');$('evCatalogDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}}
+    $('evCatalogForm').onsubmit=async e=>{e.preventDefault();if(evBusy)return;evBusy=true;$('evCatalogSave').disabled=true;$('evCatalogClose').disabled=true;const version=interfaceVersion;try{if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');const points=Number($('evCatalogPoints').value),name=$('evCatalogName').value.trim();if(!name||$('evCatalogPoints').value===''||!Number.isInteger(points)||points<0||points>2147483647)throw new Error('Datos inválidos.');const id=await evRpc('save_event_type',{p_name:name,p_points:points,p_id:$('evCatalogSelect').value||null});evGuard(version);evTypes=await evLoadTypes();evGuard(version);evCatalogOptions(id);setMessage('evCatalogMessage','Tipo guardado correctamente.','success');}catch(err){setMessage('evCatalogMessage',evError(err),'error');}finally{evBusy=false;$('evCatalogSave').disabled=false;$('evCatalogClose').disabled=false;}};
+    $('evView').onclick=()=>evLoad();$('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>{evRequest++;evDetailRequest++;hide('eventsPanel');hide('evDetail');$('evDetail').innerHTML='';};$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
 
     supabase.auth.onAuthStateChange((event, session) => {
 
