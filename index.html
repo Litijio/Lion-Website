@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -140,14 +141,14 @@
       <div id="adminMessage" class="status"></div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Usuario (UID de Discord/Supabase)</th><th>Semana</th><th>CP</th><th>Biotraje</th><th>Última carga</th><th>Acción</th></tr></thead>
+          <thead><tr><th>Nickname de Discord</th><th>Semana</th><th>CP</th><th>Biotraje</th><th>Última carga</th><th>Acción</th></tr></thead>
           <tbody id="allRecords"><tr><td colspan="6">Cargando registros...</td></tr></tbody>
         </table>
       </div>
       <h3 style="margin-top:28px">Historial de correcciones administrativas</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Registro</th><th>CP anterior</th><th>CP nuevo</th><th>Biotraje anterior</th><th>Biotraje nuevo</th><th>Modificado por</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>Integrante corregido</th><th>CP anterior</th><th>CP nuevo</th><th>Biotraje anterior</th><th>Biotraje nuevo</th><th>Modificado por</th><th>Fecha</th></tr></thead>
           <tbody id="auditHistory"><tr><td colspan="7">Cargando auditoría...</td></tr></tbody>
         </table>
       </div>
@@ -171,8 +172,10 @@
     const memberPanel = $('memberPanel');
     const adminPanel = $('adminPanel');
     const bios = ['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
+
     let currentUser = null;
     let isAdmin = false;
+    let currentDiscordName = 'Miembro';
 
     function localDateParts(date = new Date()) {
       const parts = new Intl.DateTimeFormat('en-CA', {
@@ -211,8 +214,77 @@
       el.className = 'status ' + kind;
     }
 
+    function getDiscordNickname(user) {
+      const metadata = user?.user_metadata || {};
+      const candidates = [
+        metadata.global_name,
+        metadata.preferred_username,
+        metadata.user_name,
+        metadata.username,
+        metadata.full_name,
+        metadata.name,
+        metadata.nickname
+      ];
+
+      for (const candidate of candidates) {
+        if (typeof candidate === 'string' && candidate.trim()) {
+          return candidate.trim();
+        }
+      }
+
+      return null;
+    }
+
+    async function saveMemberProfile(user) {
+      const nickname = getDiscordNickname(user);
+
+      if (!nickname) {
+        console.warn('Discord no proporcionó un nickname reconocible en user_metadata.');
+        return null;
+      }
+
+      const { error } = await supabase
+        .from('member_profiles')
+        .upsert({
+          user_id: user.id,
+          discord_nickname: nickname,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+      if (error) {
+        console.error('No se pudo guardar el perfil de Discord:', error);
+        return null;
+      }
+
+      return nickname;
+    }
+
+    async function loadProfiles(userIds) {
+      const uniqueIds = [...new Set((userIds || []).filter(Boolean))];
+      const profileMap = new Map();
+
+      if (uniqueIds.length === 0) return profileMap;
+
+      const { data, error } = await supabase
+        .from('member_profiles')
+        .select('user_id, discord_nickname')
+        .in('user_id', uniqueIds);
+
+      if (error) {
+        console.error('No se pudieron consultar los perfiles:', error);
+        return profileMap;
+      }
+
+      (data || []).forEach(profile => {
+        profileMap.set(profile.user_id, profile.discord_nickname);
+      });
+
+      return profileMap;
+    }
+
     async function loadMemberData() {
       if (!currentUser) return;
+
       const week = currentWeekStart();
       $('weekLabel').textContent = 'Semana actual desde el lunes ' + formatDate(week) + ' (hora de Argentina).';
       $('myHistory').innerHTML = '<tr><td colspan="4">Cargando historial...</td></tr>';
@@ -245,6 +317,7 @@
         $('myHistory').innerHTML = '<tr><td colspan="4">Error al cargar el historial.</td></tr>';
         return;
       }
+
       $('myHistory').innerHTML = history.length
         ? history.map(r => `<tr><td>${formatDate(r.week_start)}</td><td>${Number(r.cp).toLocaleString('es-AR')}</td><td>${escapeHtml(r.biotraje)}</td><td>${formatDate(r.created_at)}</td></tr>`).join('')
         : '<tr><td colspan="4">Todavía no tenés registros.</td></tr>';
@@ -254,13 +327,34 @@
       const { data: records, error } = await supabase
         .from('cp_records').select('*').order('week_start', { ascending: false })
         .order('created_at', { ascending: false });
+
       if (error) {
         setMessage('adminMessage', 'No se pudieron cargar los registros: ' + error.message, 'error');
         return;
       }
-      $('allRecords').innerHTML = records.length ? records.map(r => `
+
+      const adminRecords = records || [];
+      const { data: audit, error: auditError } = await supabase
+        .from('cp_history').select('*').order('changed_at', { ascending: false }).limit(100);
+
+      const allUserIds = [
+        ...adminRecords.map(r => r.user_id),
+        ...(audit || []).map(a => a.changed_by)
+      ];
+
+      const profileMap = await loadProfiles(allUserIds);
+
+      const recordOwnerMap = new Map();
+      adminRecords.forEach(record => {
+        recordOwnerMap.set(
+          record.id,
+          profileMap.get(record.user_id) || 'Perfil pendiente'
+        );
+      });
+
+      $('allRecords').innerHTML = adminRecords.length ? adminRecords.map(r => `
         <tr>
-          <td style="max-width:210px;overflow-wrap:anywhere">${escapeHtml(r.user_id)}</td>
+          <td>${escapeHtml(profileMap.get(r.user_id) || 'Perfil pendiente')}</td>
           <td>${formatDate(r.week_start)}</td>
           <td>${Number(r.cp).toLocaleString('es-AR')}</td>
           <td>${escapeHtml(r.biotraje)}</td>
@@ -269,93 +363,129 @@
         </tr>`).join('') : '<tr><td colspan="6">Todavía no hay registros.</td></tr>';
 
       $('allRecords').querySelectorAll('.editRecord').forEach(button => {
-        button.addEventListener('click', () => correctRecord(button.dataset.user, button.dataset.week, button.dataset.cp, button.dataset.bio));
+        button.addEventListener('click', () => correctRecord(
+          button.dataset.user,
+          button.dataset.week,
+          button.dataset.cp,
+          button.dataset.bio
+        ));
       });
 
-      const { data: audit, error: auditError } = await supabase
-        .from('cp_history').select('*').order('changed_at', { ascending: false }).limit(100);
       if (auditError) {
         $('auditHistory').innerHTML = `<tr><td colspan="7">No se pudo cargar la auditoría: ${escapeHtml(auditError.message)}</td></tr>`;
       } else {
         $('auditHistory').innerHTML = audit.length ? audit.map(a => `
           <tr>
-            <td>${escapeHtml(a.record_id)}</td><td>${Number(a.old_cp).toLocaleString('es-AR')}</td>
-            <td>${Number(a.new_cp).toLocaleString('es-AR')}</td><td>${escapeHtml(a.old_biotraje)}</td>
-            <td>${escapeHtml(a.new_biotraje)}</td><td style="overflow-wrap:anywhere">${escapeHtml(a.changed_by)}</td>
+            <td>${escapeHtml(recordOwnerMap.get(a.record_id) || 'Registro sin perfil')}</td>
+            <td>${Number(a.old_cp).toLocaleString('es-AR')}</td>
+            <td>${Number(a.new_cp).toLocaleString('es-AR')}</td>
+            <td>${escapeHtml(a.old_biotraje)}</td>
+            <td>${escapeHtml(a.new_biotraje)}</td>
+            <td>${escapeHtml(profileMap.get(a.changed_by) || 'Administrador')}</td>
             <td>${formatDate(a.changed_at)}</td>
           </tr>`).join('') : '<tr><td colspan="7">Todavía no hay correcciones registradas.</td></tr>';
       }
+
+      setMessage('adminMessage', 'Registros y perfiles actualizados.', 'success');
     }
 
     async function correctRecord(userId, week, oldCp, oldBio) {
       const cpText = prompt('Nuevo valor de CP para este registro:', oldCp);
       if (cpText === null) return;
+
       const cp = Number(cpText);
       if (!Number.isInteger(cp) || cp <= 0) {
         setMessage('adminMessage', 'El CP debe ser un número entero mayor que cero.', 'error');
         return;
       }
+
       const bioText = prompt('Biotraje (' + bios.join(', ') + '):', oldBio);
       if (bioText === null) return;
+
       if (!bios.includes(bioText)) {
         setMessage('adminMessage', 'El nombre del biotraje no coincide con las opciones permitidas.', 'error');
         return;
       }
+
       if (cp === Number(oldCp) && bioText === oldBio) {
         setMessage('adminMessage', 'No se realizaron cambios.', 'warning');
         return;
       }
+
       const { error } = await supabase.from('cp_records')
         .update({ cp, biotraje: bioText })
         .eq('user_id', userId).eq('week_start', week);
+
       if (error) {
         setMessage('adminMessage', 'No se pudo corregir el registro: ' + error.message, 'error');
         return;
       }
-      setMessage('adminMessage', 'Corrección guardada. La base de datos debe registrar el cambio en la auditoría.', 'success');
+
+      setMessage('adminMessage', 'Corrección guardada y enviada a la auditoría.', 'success');
       await loadAdminData();
     }
 
     async function updateInterface(session) {
       currentUser = session?.user ?? null;
+
       if (!currentUser) {
         isAdmin = false;
+        currentDiscordName = 'Miembro';
         welcome.textContent = 'Bienvenido, guerrero.';
         status.textContent = 'Conectate para acceder al clan.';
         loginButton.classList.remove('hidden');
+        loginButton.disabled = false;
         logoutButton.classList.add('hidden');
+        logoutButton.disabled = false;
         memberPanel.classList.add('hidden');
         adminPanel.classList.add('hidden');
         return;
       }
 
-      const discordName = currentUser.user_metadata?.global_name ||
-        currentUser.user_metadata?.full_name || currentUser.user_metadata?.name ||
-        currentUser.user_metadata?.preferred_username || currentUser.email || 'Guerrero';
-      welcome.textContent = 'Bienvenido, ' + discordName;
-      status.textContent = 'Conectado como: ' + discordName;
       loginButton.classList.add('hidden');
       logoutButton.classList.remove('hidden');
       memberPanel.classList.remove('hidden');
-      setMessage('memberMessage', 'Consultando tu registro semanal...');
+
+      setMessage('memberMessage', 'Actualizando tu perfil de Discord...');
+
+      const savedNickname = await saveMemberProfile(currentUser);
+      currentDiscordName = savedNickname || getDiscordNickname(currentUser) || 'Miembro';
+
+      welcome.textContent = 'Bienvenido, ' + currentDiscordName;
+      status.textContent = 'Conectado como: ' + currentDiscordName;
+
+      if (!savedNickname) {
+        setMessage(
+          'memberMessage',
+          'No se pudo actualizar tu nickname de Discord. El resto del panel seguirá disponible.',
+          'warning'
+        );
+      }
 
       const { data: adminResult, error: adminError } = await supabase.rpc('is_clan_admin');
       isAdmin = !adminError && adminResult === true;
+
       if (isAdmin) adminPanel.classList.remove('hidden');
       else adminPanel.classList.add('hidden');
 
       await loadMemberData();
+
       if (isAdmin) await loadAdminData();
-      if (adminError) setMessage('memberMessage', 'No se pudo verificar el permiso de administrador: ' + adminError.message, 'warning');
+
+      if (adminError) {
+        setMessage('memberMessage', 'No se pudo verificar el permiso de administrador: ' + adminError.message, 'warning');
+      }
     }
 
     loginButton.addEventListener('click', async () => {
       loginButton.disabled = true;
       status.textContent = 'Conectando con Discord...';
+
       const redirectTo = window.location.origin + window.location.pathname;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'discord', options: { redirectTo }
       });
+
       if (error) {
         status.textContent = 'No se pudo iniciar sesión: ' + error.message;
         loginButton.disabled = false;
@@ -365,6 +495,7 @@
     logoutButton.addEventListener('click', async () => {
       logoutButton.disabled = true;
       const { error } = await supabase.auth.signOut();
+
       if (error) {
         status.textContent = 'Error al cerrar sesión: ' + error.message;
         logoutButton.disabled = false;
@@ -374,19 +505,28 @@
     $('cpForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!currentUser) return;
+
       const cp = Number($('cpInput').value);
       const biotraje = $('bioInput').value;
+
       if (!Number.isInteger(cp) || cp <= 0 || !bios.includes(biotraje)) {
         setMessage('memberMessage', 'Ingresá un CP entero mayor que cero y seleccioná un biotraje.', 'error');
         return;
       }
+
       const button = $('saveCpButton');
       button.disabled = true;
       setMessage('memberMessage', 'Guardando tu CP...');
+
       const { error } = await supabase.from('cp_records').insert({
-        user_id: currentUser.id, cp, biotraje, week_start: currentWeekStart()
+        user_id: currentUser.id,
+        cp,
+        biotraje,
+        week_start: currentWeekStart()
       });
+
       button.disabled = false;
+
       if (error) {
         if (error.code === '23505') {
           setMessage('memberMessage', 'Ya existe un registro para esta semana. El formulario quedará bloqueado.', 'warning');
@@ -398,6 +538,7 @@
         $('bioInput').value = '';
         setMessage('memberMessage', 'CP guardado correctamente.', 'success');
       }
+
       await loadMemberData();
       if (isAdmin) await loadAdminData();
     });
@@ -407,8 +548,12 @@
     });
 
     const { data, error } = await supabase.auth.getSession();
-    if (error) status.textContent = 'No se pudo verificar la sesión: ' + error.message;
-    else await updateInterface(data.session);
+
+    if (error) {
+      status.textContent = 'No se pudo verificar la sesión: ' + error.message;
+    } else {
+      await updateInterface(data.session);
+    }
   </script>
 </body>
 </html>
