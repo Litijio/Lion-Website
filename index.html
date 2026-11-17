@@ -53,22 +53,10 @@
             box-shadow: 0 0 35px #000;
         }
 
-        h1 {
-            font-size: 36px;
-            letter-spacing: 7px;
-            color: #55aaff;
-            margin: 0 0 10px;
-        }
-
-        .subtitle {
-            color: #aab8cc;
-            letter-spacing: 3px;
-            font-size: 13px;
-        }
-
         .description {
-            margin: 30px 0;
+            margin: 10px 0 30px;
             color: #d0d8e5;
+            font-size: 17px;
             line-height: 1.6;
         }
 
@@ -142,12 +130,10 @@
     </div>
 
     <main class="container">
-        <h1>LIONS</h1>
-        <div class="subtitle">RF ONLINE NEXT</div>
 
         <div class="description">
             <p>Panel de gestión del clan</p>
-            <p>Bienvenido, guerrero.</p>
+            <p id="welcome">Bienvenido, guerrero.</p>
         </div>
 
         <button id="loginButton">
@@ -163,6 +149,7 @@
         <footer>
             LIONS CLAN MANAGEMENT SYSTEM
         </footer>
+
     </main>
 
     <script type="module">
@@ -183,6 +170,34 @@
         const loginButton = document.getElementById('loginButton');
         const logoutButton = document.getElementById('logoutButton');
         const status = document.getElementById('status');
+        const welcome = document.getElementById('welcome');
+
+        function updateInterface(session) {
+            const user = session?.user;
+
+            if (user) {
+                const discordName =
+                    user.user_metadata?.full_name ||
+                    user.user_metadata?.name ||
+                    user.user_metadata?.preferred_username ||
+                    user.email ||
+                    'Guerrero';
+
+                welcome.textContent = 'Bienvenido, ' + discordName;
+                status.textContent = 'Conectado como: ' + discordName;
+
+                loginButton.hidden = true;
+                logoutButton.hidden = false;
+            } else {
+                welcome.textContent = 'Bienvenido, guerrero.';
+                status.textContent = 'Conectate para acceder al clan.';
+
+                loginButton.hidden = false;
+                loginButton.disabled = false;
+                logoutButton.hidden = true;
+                logoutButton.disabled = false;
+            }
+        }
 
         loginButton.addEventListener('click', async () => {
             loginButton.disabled = true;
@@ -217,44 +232,18 @@
             }
         });
 
-        async function updateSession() {
-            const { data, error } = await supabase.auth.getSession();
-
-            if (error) {
-                status.textContent =
-                    'No se pudo verificar la sesión: ' + error.message;
-                return;
-            }
-
-            const user = data.session?.user;
-
-            if (user) {
-                const discordName =
-                    user.user_metadata?.full_name ||
-                    user.user_metadata?.name ||
-                    user.user_metadata?.preferred_username ||
-                    user.email ||
-                    'Guerrero';
-
-                status.textContent = 'Conectado como: ' + discordName;
-
-                loginButton.hidden = true;
-                logoutButton.hidden = false;
-            } else {
-                status.textContent = 'Conectate para acceder al clan.';
-
-                loginButton.hidden = false;
-                loginButton.disabled = false;
-                logoutButton.hidden = true;
-                logoutButton.disabled = false;
-            }
-        }
-
-        supabase.auth.onAuthStateChange(() => {
-            updateSession();
+        supabase.auth.onAuthStateChange((event, session) => {
+            updateInterface(session);
         });
 
-        updateSession();
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+            status.textContent =
+                'No se pudo verificar la sesión: ' + error.message;
+        } else {
+            updateInterface(data.session);
+        }
     </script>
 
 </body>
