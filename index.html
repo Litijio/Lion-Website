@@ -423,7 +423,10 @@
       opacity: 1;
       cursor: pointer;
     }
-  </style>
+  
+    .language-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .language-heading select {width:auto;max-width:100%;margin:0;font-size:13px;}
+    </style>
 </head>
 
 <body>
@@ -436,7 +439,7 @@
 
     <section class="panel">
 
-      <h1>Panel de gestión del clan</h1>
+      <div class="language-heading"><h1>Panel de gestión del clan</h1><select id="languageSelect" aria-label="Language / Idioma"><option value="es">🇦🇷 Español</option><option value="en">🇺🇸 English</option><option value="pt">🇧🇷 Português (BR)</option></select></div>
 
       <p class="description" id="welcome">
         Bienvenido, guerrero.
@@ -449,14 +452,14 @@
         <button id="skillsView" type="button" class="hidden secondary" data-admin-module="skills" aria-pressed="false">HABILIDADES</button>
         <button id="salesView" type="button" class="hidden secondary" disabled title="Próximamente">VENTAS</button>
         <button id="fanArtView" type="button" class="hidden secondary" disabled title="Próximamente">FAN ART</button>
-        <button id="loginButton">Acceder con Discord</button>
+        <button id="loginButton" disabled>Acceder con Discord</button>
         <button id="logoutButton" class="secondary hidden">
           CERRAR SESIÓN
         </button>
       </div>
 
       <div id="status" class="status">
-        Conectate para acceder al clan.
+        Recuperando sesión... 
       </div>
 
     </section>
@@ -969,7 +972,7 @@
       </div>
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4.5</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.5.0</footer>
 
   </main>
 
@@ -1048,10 +1051,38 @@
 
     const supabase = createClient(
       'https://itlooiobdrmfmxbxwggp.supabase.co',
-      'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua'
+      'sb_publishable_drzTLoO_X9qLdn1OX1ehkQ_0WUe29Ua',
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
     );
 
     const $ = id => document.getElementById(id);
+    
+    const translations = {"Panel de gestión del clan":["Clan management panel","Painel de gestão do clã"],"Bienvenido, guerrero.":["Welcome, warrior.","Bem-vindo, guerreiro."],"INTEGRANTES":["MEMBERS","MEMBROS"],"EVENTOS":["EVENTS","EVENTOS"],"SUBASTA":["AUCTIONS","LEILÕES"],"HABILIDADES":["SKILLS","HABILIDADES"],"VENTAS":["SALES","VENDAS"],"Acceder con Discord":["Sign in with Discord","Entrar com Discord"],"CERRAR SESIÓN":["LOG OUT","SAIR"],"Conectate para acceder al clan.":["Sign in to access the clan.","Entre para acessar o clã."],"Cuenta inactiva":["Inactive account","Conta inativa"],"Tu acceso a las funciones del clan LIONS se encuentra deshabilitado.":["Your access to LIONS clan features is disabled.","Seu acesso aos recursos do clã LIONS está desativado."],"Motivo de desactivación:":["Deactivation reason:","Motivo da desativação:"],"Fecha:":["Date:","Data:"],"Tus registros anteriores se conservan. Contactá al Maestro para solicitar tu reactivación.":["Your previous records are kept. Contact the Master to request reactivation.","Seus registros anteriores são mantidos. Contate o Mestre para solicitar a reativação."],"Registro de personaje":["Character registration","Cadastro de personagem"],"Registrá el nombre de tu personaje. Debe coincidir con tu alias dentro del servidor de Discord LIONS. Solamente un administrador autorizado podrá modificarlo posteriormente.":["Register your character name. It must match your alias on the LIONS Discord server. Only an authorized administrator can change it later.","Cadastre o nome do seu personagem. Ele deve corresponder ao seu apelido no servidor Discord LIONS. Somente um administrador autorizado poderá alterá-lo depois."],"Nombre del personaje":["Character name","Nome do personagem"],"Registrar personaje":["Register character","Cadastrar personagem"],"Personaje:":["Character:","Personagem:"],"Rol:":["Role:","Cargo:"],"Integrante":["Member","Membro"],"Estado:":["Status:","Status:"],"Activo":["Active","Ativo"],"Registro semanal de CP":["Weekly CP registration","Registro semanal de CP"],"Cargá tu CP semanal. Elegí tu biotraje solo en el primer registro; después, únicamente el Maestro puede cambiarlo. Se permite un registro por semana.":["Enter your weekly CP. Choose your biosuit only on your first registration; afterward only the Master can change it. One registration per week is allowed.","Informe seu CP semanal. Escolha seu biotraje apenas no primeiro registro; depois, somente o Mestre poderá alterá-lo. É permitido um registro por semana."],"Poder de combate (CP)":["Combat power (CP)","Poder de combate (CP)"],"Biotraje":["Biosuit","Biotraje"],"Seleccionar biotraje":["Select biosuit","Selecionar biotraje"],"Consultando biotraje…":["Checking biosuit…","Consultando biotraje…"],"Guardar CP de esta semana":["Save this week's CP","Salvar CP desta semana"],"Mi historial de CP":["My CP history","Meu histórico de CP"],"Semana":["Week","Semana"],"Fecha de carga":["Submission date","Data de registro"],"Eventos LIONS":["LIONS Events","Eventos LIONS"],"Todos los estados":["All statuses","Todos os status"],"Abiertos":["Open","Abertos"],"Cerrados":["Closed","Encerrados"],"Anulados":["Cancelled","Cancelados"],"Actualizar":["Refresh","Atualizar"],"Cerrar listado":["Close list","Fechar lista"],"Código":["Code","Código"],"Evento":["Event","Evento"],"Fecha":["Date","Data"],"Puntos":["Points","Pontos"],"Estado":["Status","Status"],"Acción":["Action","Ação"],"Anterior":["Previous","Anterior"],"Siguiente":["Next","Próximo"],"Subastas LIONS · Tier S":["LIONS Auctions · Tier S","Leilões LIONS · Tier S"],"Duración: 24 horas. Las ofertas son simbólicas. Retiro permitido hasta 4 horas antes del cierre. Modalidad libre: mayor oferta elegible. Modalidad por puntuación: gana el mayor puntaje.":["Duration: 24 hours. Bids are symbolic. Withdrawal is allowed until 4 hours before closing. Free mode: highest eligible bid. Scored mode: highest score wins.","Duração: 24 horas. Os lances são simbólicos. Retirada permitida até 4 horas antes do encerramento. Modo livre: maior lance elegível. Modo por pontuação: vence a maior pontuação."],"Todas":["All","Todas"],"Activas o pendientes de adjudicación":["Active or awaiting award","Ativos ou aguardando adjudicação"],"Finalizadas":["Finished","Finalizados"],"Sin adjudicación":["No winner","Sem vencedor"],"Crear subasta":["Create auction","Criar leilão"],"Publicar subasta Tier S":["Publish Tier S auction","Publicar leilão Tier S"],"Drop de evento":["Event drop","Drop de evento"],"Seleccioná un drop pendiente o elegí la carga manual.":["Select a pending drop or choose manual entry.","Selecione um drop pendente ou escolha o cadastro manual."],"Objeto":["Item","Item"],"Descripción":["Description","Descrição"],"Captura (hasta 2 MB)":["Screenshot (up to 2 MB)","Captura (até 2 MB)"],"Categoría":["Category","Categoria"],"Otro objeto":["Other item","Outro item"],"Libro de habilidad":["Skillbook","Livro de habilidade"],"Precio techo en diamantes":["Price ceiling in diamonds","Preço máximo em diamantes"],"Buscar habilidad":["Search skill","Buscar habilidade"],"Habilidad del catálogo":["Catalog skill","Habilidade do catálogo"],"Seleccioná una habilidad registrada. Su identificador es permanente.":["Select a registered skill. Its identifier is permanent.","Selecione uma habilidade cadastrada. Seu identificador é permanente."],"+ Registrar nueva habilidad":["+ Register new skill","+ Cadastrar nova habilidade"],"Condición de biotraje":["Biosuit condition","Condição de biotraje"],"Ninguna":["None","Nenhuma"],"Prioridad":["Priority","Prioridade"],"Obligatorio":["Required","Obrigatório"],"Biotrajes":["Biosuits","Biotrajes"],"Marcá o desmarcá los biotrajes con un clic.":["Select or deselect biosuits with one click.","Marque ou desmarque os biotrajes com um clique."],"Publicar por 24 horas":["Publish for 24 hours","Publicar por 24 horas"],"Cerrar":["Close","Fechar"],"Panel de administración":["Administration panel","Painel administrativo"],"Nivel de acceso:":["Access level:","Nível de acesso:"],"Gestión de eventos":["Event management","Gestão de eventos"],"Configurar evento nuevo":["Configure new event","Configurar novo evento"],"Configurar tipos y puntos":["Configure types and points","Configurar tipos e pontos"],"Catálogo de habilidades":["Skill catalog","Catálogo de habilidades"],"Administrá las habilidades registradas y sus identificadores permanentes.":["Manage registered skills and their permanent identifiers.","Gerencie as habilidades cadastradas e seus identificadores permanentes."],"Abrir catálogo de habilidades":["Open skill catalog","Abrir catálogo de habilidades"],"Buscar":["Search","Buscar"],"Administración de integrantes":["Member administration","Administração de membros"],"Filtrar integrantes":["Filter members","Filtrar membros"],"Todos":["All","Todos"],"Activos":["Active","Ativos"],"Inactivos":["Inactive","Inativos"],"Administradores":["Administrators","Administradores"],"Seleccionar integrante":["Select member","Selecionar membro"],"Guardar personaje":["Save character","Salvar personagem"],"Desactivar integrante":["Deactivate member","Desativar membro"],"Designar administrador":["Appoint administrator","Designar administrador"],"Cambio de biotraje · Solo Maestro":["Change biosuit · Master only","Alterar biotraje · Somente Mestre"],"Nuevo biotraje":["New biosuit","Novo biotraje"],"Guardar biotraje":["Save biosuit","Salvar biotraje"],"Modifica el último registro de CP y conserva la auditoría.":["Updates the latest CP record and preserves the audit trail.","Altera o último registro de CP e preserva a auditoria."],"Registros semanales del clan":["Weekly clan records","Registros semanais do clã"],"Integrantes activos actuales":["Current active members","Membros ativos atuais"],"Activos que cargaron CP":["Active members who submitted CP","Ativos que registraram CP"],"Activos pendientes":["Active members pending","Ativos pendentes"],"Ordenar por":["Sort by","Ordenar por"],"Mayor CP":["Highest CP","Maior CP"],"Menor CP":["Lowest CP","Menor CP"],"Personaje A-Z":["Character A-Z","Personagem A-Z"],"Última carga":["Last submission","Último registro"],"Buscar integrante":["Search member","Buscar membro"],"Filtrar biotraje":["Filter biosuit","Filtrar biotraje"],"Todos los biotrajes":["All biosuits","Todos os biotrajes"],"Personaje":["Character","Personagem"],"Página 1 de 1":["Page 1 of 1","Página 1 de 1"],"Integrantes pendientes de cargar CP":["Members pending CP submission","Membros com CP pendente"],"Historial de correcciones administrativas":["Administrative correction history","Histórico de correções administrativas"],"Últimas 100 correcciones registradas.":["Last 100 recorded corrections.","Últimas 100 correções registradas."],"Integrante corregido":["Corrected member","Membro corrigido"],"CP anterior":["Previous CP","CP anterior"],"CP nuevo":["New CP","Novo CP"],"Biotraje anterior":["Previous biosuit","Biotraje anterior"],"Biotraje nuevo":["New biosuit","Novo biotraje"],"Modificado por":["Modified by","Alterado por"],"Motivo de desactivación (obligatorio)":["Deactivation reason (required)","Motivo da desativação (obrigatório)"],"El integrante podrá leer este mensaje al iniciar sesión. Sus datos e historial se conservarán.":["The member can read this message when signing in. Their data and history will be kept.","O membro poderá ler esta mensagem ao entrar. Seus dados e histórico serão mantidos."],"Cancelar":["Cancel","Cancelar"],"Desactivar":["Deactivate","Desativar"],"Nuevo evento":["New event","Novo evento"],"Tipo de evento":["Event type","Tipo de evento"],"Observaciones (opcional)":["Notes (optional)","Observações (opcional)"],"Participantes":["Participants","Participantes"],"Marcar visibles":["Select visible","Marcar visíveis"],"Desmarcar todos":["Deselect all","Desmarcar todos"],"Si no agregás drops, el evento se cerrará al guardarse.":["If you add no drops, the event will close when saved.","Se não adicionar drops, o evento será encerrado ao salvar."],"+ Agregar drop":["+ Add drop","+ Adicionar drop"],"Motivo de corrección":["Correction reason","Motivo da correção"],"Guardar evento":["Save event","Salvar evento"],"Tipos de eventos y puntajes":["Event types and scores","Tipos de eventos e pontuações"],"Los cambios solo afectan eventos futuros.":["Changes affect future events only.","As alterações afetam apenas eventos futuros."],"Tipo":["Type","Tipo"],"Nombre":["Name","Nome"],"Puntos por participante":["Points per participant","Pontos por participante"],"Guardar tipo":["Save type","Salvar tipo"],"Próximamente":["Coming soon","Em breve"],"Ingresá tu personaje":["Enter your character","Informe seu personagem"],"Nombre, identificador o nombre anterior":["Name, identifier or previous name","Nome, identificador ou nome anterior"],"Maestro":["Master","Mestre"],"Administrador":["Administrator","Administrador"],"Miembro":["Member","Membro"],"Pendiente":["Pending","Pendente"],"Inactivo":["Inactive","Inativo"],"Abierto":["Open","Aberto"],"Cerrado":["Closed","Encerrado"],"Anulado":["Cancelled","Cancelado"],"Vendido":["Sold","Vendido"],"Activa":["Active","Ativo"],"Finalizada":["Finished","Finalizado"],"Anulada":["Cancelled","Cancelado"],"Ver captura":["View screenshot","Ver captura"],"Ocultar captura":["Hide screenshot","Ocultar captura"],"Cargando...":["Loading...","Carregando..."],"Ver detalle":["View details","Ver detalhes"],"Editar":["Edit","Editar"],"Ofertar":["Place bid","Dar lance"],"Retirar oferta":["Withdraw bid","Retirar lance"],"Anular subasta":["Cancel auction","Cancelar leilão"],"Corregir asistencia":["Correct attendance","Corrigir presença"],"Anular evento":["Cancel event","Cancelar evento"],"Guardar corrección":["Save correction","Salvar correção"],"Modificar nombre":["Change name","Alterar nome"],"Ver historial":["View history","Ver histórico"],"Nuevo tipo":["New type","Novo tipo"],"Sin evento (carga manual)":["No event (manual entry)","Sem evento (cadastro manual)"],"Seleccioná una habilidad":["Select a skill","Selecione uma habilidade"],"Sin evento":["No event","Sem evento"],"Modalidad libre":["Free mode","Modo livre"],"Modalidad por puntuación":["Scored mode","Modo por pontuação"],"Personaje no disponible":["Character unavailable","Personagem indisponível"],"Sin dato":["No data","Sem dados"],"Alta":["Created","Cadastro"],"Creación":["Creation","Criação"],"Corrección de asistencia":["Attendance correction","Correção de presença"],"Anulación":["Cancellation","Cancelamento"],"No se registró un motivo de desactivación.":["No deactivation reason was recorded.","Nenhum motivo de desativação foi registrado."],"Cuenta inactiva.":["Inactive account.","Conta inativa."],"No se pudieron verificar tus permisos.":["Your permissions could not be verified.","Não foi possível verificar suas permissões."],"No se confirmó el registro.":["Registration was not confirmed.","O registro não foi confirmado."],"Personaje registrado correctamente.":["Character registered successfully.","Personagem cadastrado com sucesso."],"Ese personaje ya está registrado.":["That character is already registered.","Esse personagem já está cadastrado."],"Semana desde el lunes":["Week starting Monday","Semana a partir de segunda-feira"],"Ya registraste esta semana:":["You already submitted this week:","Você já registrou nesta semana:"],". Nueva carga disponible el próximo lunes.":[". Next submission available next Monday.",". Novo registro disponível na próxima segunda-feira."],"Biotraje bloqueado. Solicitá cualquier cambio al Maestro.":["Biosuit locked. Request changes from the Master.","Biotraje bloqueado. Solicite alterações ao Mestre."],"Elegí tu biotraje inicial. Después quedará bloqueado.":["Choose your initial biosuit. It will then be locked.","Escolha seu biotraje inicial. Depois ficará bloqueado."],"No se pudo verificar tu biotraje. Volvé a iniciar sesión.":["Could not verify your biosuit. Sign in again.","Não foi possível verificar seu biotraje. Entre novamente."],"Error al cargar historial.":["Could not load history.","Erro ao carregar histórico."],"Sin registros.":["No records.","Sem registros."],"Ingresá datos válidos.":["Enter valid data.","Informe dados válidos."],"Ya existe un registro para esta semana.":["A record already exists for this week.","Já existe um registro para esta semana."],"CP guardado correctamente.":["CP saved successfully.","CP salvo com sucesso."],"Sin verificar":["Unverified","Não verificado"],"Seleccionar integrante (":["Select member (","Selecionar membro ("],"Sin nickname":["No nickname","Sem apelido"],"Sin motivo registrado.":["No reason recorded.","Nenhum motivo registrado."],"Reactivar integrante":["Reactivate member","Reativar membro"],"Quitar administrador":["Remove administrator","Remover administrador"],"Consultando biotraje actual…":["Checking current biosuit…","Consultando biotraje atual…"],"El integrante todavía no registró su CP inicial.":["The member has not registered initial CP yet.","O membro ainda não registrou seu CP inicial."],"Biotraje actual:":["Current biosuit:","Biotraje atual:"],"Cambiar el biotraje de":["Change the biosuit of","Alterar o biotraje de"],"Biotraje actualizado correctamente.":["Biosuit updated successfully.","Biotraje atualizado com sucesso."],"No tenés permiso para modificar este integrante.":["You cannot modify this member.","Você não tem permissão para alterar este membro."],"Ingresá un nombre de hasta 40 caracteres.":["Enter a name of up to 40 characters.","Informe um nome de até 40 caracteres."],"Modificación no autorizada.":["Unauthorized change.","Alteração não autorizada."],"Personaje actualizado correctamente.":["Character updated successfully.","Personagem atualizado com sucesso."],"¿Reactivar a":["Reactivate","Reativar"],"Debés ingresar un motivo válido.":["Enter a valid reason.","Informe um motivo válido."],"No podés modificar tu propio estado.":["You cannot change your own status.","Você não pode alterar seu próprio status."],"No tenés permiso para modificar este estado.":["You cannot change this status.","Você não tem permissão para alterar este status."],"El motivo es obligatorio.":["A reason is required.","O motivo é obrigatório."],"No se confirmó el cambio de estado.":["The status change was not confirmed.","A alteração de status não foi confirmada."],"El estado cambió, pero no se confirmó el motivo. Revisá Supabase.":["Status changed, but the reason was not confirmed. Check Supabase.","O status mudou, mas o motivo não foi confirmado. Verifique o Supabase."],"Integrante reactivado correctamente.":["Member reactivated successfully.","Membro reativado com sucesso."],"Integrante desactivado. Motivo registrado.":["Member deactivated. Reason recorded.","Membro desativado. Motivo registrado."],"¿Designar administrador a":["Appoint administrator:","Designar administrador:"],"¿Quitar administrador a":["Remove administrator rights from","Remover administrador de"],"Solo el Maestro puede gestionar administradores.":["Only the Master can manage administrators.","Somente o Mestre pode gerenciar administradores."],"Administrador designado.":["Administrator appointed.","Administrador designado."],"Permisos administrativos retirados.":["Administrator permissions removed.","Permissões administrativas removidas."],"· Semana actual":["· Current week","· Semana atual"],"Cargando registros...":["Loading records...","Carregando registros..."],"registros en la semana seleccionada.":["records in the selected week.","registros na semana selecionada."],"Error al cargar registros.":["Could not load records.","Erro ao carregar registros."],"No se pudieron calcular los pendientes.":["Could not calculate pending members.","Não foi possível calcular os pendentes."],"Resumen histórico calculado sobre los integrantes activos actualmente.":["Historical summary based on currently active members.","Resumo histórico calculado com base nos membros atualmente ativos."],"Las cuentas inactivas no se incluyen en los pendientes.":["Inactive accounts are excluded from pending members.","Contas inativas não são incluídas nos pendentes."],"Personaje pendiente":["Character pending","Personagem pendente"],"No hay integrantes activos pendientes.":["No active members pending.","Nenhum membro ativo pendente."],"Perfil pendiente":["Profile pending","Perfil pendente"],"No hay registros para esta selección.":["No records for this selection.","Sem registros para esta seleção."],"Página":["Page","Página"],"Error al consultar auditoría.":["Could not load audit history.","Erro ao consultar auditoria."],"No hay correcciones.":["No corrections.","Sem correções."],"Nuevo valor de CP:":["New CP value:","Novo valor de CP:"],"CP inválido.":["Invalid CP.","CP inválido."],"No hay cambios.":["No changes.","Sem alterações."],"Corrección no autorizada.":["Unauthorized correction.","Correção não autorizada."],"Corrección guardada correctamente.":["Correction saved successfully.","Correção salva com sucesso."],"Verificando perfil y permisos...":["Checking profile and permissions...","Verificando perfil e permissões..."],"No se pudo cargar el perfil.":["Could not load profile.","Não foi possível carregar o perfil."],"Conectado como:":["Signed in as:","Conectado como:"],"Registrá tu personaje para continuar.":["Register your character to continue.","Cadastre seu personagem para continuar."],"No se pudo verificar el acceso:":["Could not verify access:","Não foi possível verificar o acesso:"],"Conectando con Discord...":["Connecting to Discord...","Conectando ao Discord..."],"La sesión cambió.":["The session changed.","A sessão mudou."],"Cargando eventos...":["Loading events...","Carregando eventos..."],"eventos registrados.":["events recorded.","eventos registrados."],"Sin eventos.":["No events.","Sem eventos."],"Cargando detalle...":["Loading details...","Carregando detalhes..."],"puntos por participante":["points per participant","pontos por participante"],"Puntos no válidos. Motivo:":["Invalid points. Reason:","Pontos inválidos. Motivo:"],"Sin observaciones.":["No notes.","Sem observações."],"Sin participantes":["No participants","Sem participantes"],"Captura del drop":["Drop screenshot","Captura do drop"],"No se pudo cargar la captura.":["Could not load screenshot.","Não foi possível carregar a captura."],"Captura no disponible.":["Screenshot unavailable.","Captura indisponível."],"Sin drops.":["No drops.","Sem drops."],"Auditoría del evento":["Event audit","Auditoria do evento"],"· Comprador:":["· Buyer:","· Comprador:"],"diamantes":["diamonds","diamantes"],"participantes seleccionados":["participants selected","participantes selecionados"],"puntos por participante.":["points per participant.","pontos por participante."],"Corregir asistencia ·":["Correct attendance ·","Corrigir presença ·"],"Nombre del objeto":["Item name","Nome do item"],"Captura (JPG, PNG, WEBP, hasta 2 MB)":["Screenshot (JPG, PNG, WEBP, up to 2 MB)","Captura (JPG, PNG, WEBP, até 2 MB)"],"Quitar drop":["Remove drop","Remover drop"],"Acceso no autorizado.":["Unauthorized access.","Acesso não autorizado."],"Acceso no autorizado":["Unauthorized access","Acesso não autorizado"],"Seleccioná al menos un participante.":["Select at least one participant.","Selecione pelo menos um participante."],"Solo el Maestro puede corregir asistencia.":["Only the Master can correct attendance.","Somente o Mestre pode corrigir presença."],"Indicá el motivo.":["Enter the reason.","Informe o motivo."],"Asistencia corregida.":["Attendance corrected.","Presença corrigida."],"Seleccioná tipo y fecha válidos.":["Select a valid type and date.","Selecione tipo e data válidos."],"Revisá nombre, descripción y captura de cada drop (máximo 2 MB).":["Check the name, description and screenshot of each drop (max 2 MB).","Confira nome, descrição e captura de cada drop (máximo 2 MB)."],"Subiendo capturas...":["Uploading screenshots...","Enviando capturas..."],"Guardando evento...":["Saving event...","Salvando evento..."],"Evento registrado correctamente.":["Event registered successfully.","Evento cadastrado com sucesso."],"Revisá el listado antes de volver a guardar.":["Check the list before saving again.","Confira a lista antes de salvar novamente."],"Motivo obligatorio de anulación de":["Required cancellation reason for","Motivo obrigatório de cancelamento de"],"¿Anular este evento? Sus puntos dejarán de ser válidos.":["Cancel this event? Its points will no longer be valid.","Cancelar este evento? Seus pontos deixarão de ser válidos."],"Evento anulado.":["Event cancelled.","Evento cancelado."],"Datos inválidos.":["Invalid data.","Dados inválidos."],"Tipo guardado correctamente.":["Type saved successfully.","Tipo salvo com sucesso."],"Vencida · pendiente de adjudicación":["Expired · awaiting award","Expirado · aguardando adjudicação"],"Cargando subastas...":["Loading auctions...","Carregando leilões..."],"Habilidad · uso obligatorio · sin reventa":["Skill · mandatory use · no resale","Habilidade · uso obrigatório · sem revenda"],"Precio techo:":["Price ceiling:","Preço máximo:"],"Sin condición de biotraje":["No biosuit condition","Sem condição de biotraje"],"Captura del objeto":["Item screenshot","Captura do item"],"Ofertas activas (no indican ganador)":["Active bids (do not indicate winner)","Lances ativos (não indicam vencedor)"],"Sin ofertas activas.":["No active bids.","Sem lances ativos."],"Tu última oferta:":["Your last bid:","Seu último lance:"],"Habilidad ya adquirida: no podés volver a ofertar.":["Skill already acquired: you cannot bid again.","Habilidade já adquirida: você não pode dar outro lance."],"Puntuaciones congeladas (historial)":["Frozen scores (history)","Pontuações congeladas (histórico)"],"· Participación:":["· Participation:","· Participação:"],"Desempate pendiente del Maestro":["Tie awaiting Master decision","Desempate pendente do Mestre"],"Invalidado: habilidad adquirida":["Invalidated: skill acquired","Invalidado: habilidade adquirida"],"Candidato elegible":["Eligible candidate","Candidato elegível"],"No elegible":["Ineligible","Não elegível"],"Adjudicar a":["Award to","Adjudicar a"],"¿Confirmar adjudicación a":["Confirm award to","Confirmar adjudicação a"],"Sin candidatos elegibles. Se puede solicitar el cierre sin ganador.":["No eligible candidates. Closing without a winner can be requested.","Sem candidatos elegíveis. É possível solicitar encerramento sem vencedor."],"Cerrar sin ganador":["Close without winner","Encerrar sem vencedor"],"¿Revalidar el empate y cerrar si no existen candidatos elegibles?":["Revalidate the tie and close if there are no eligible candidates?","Revalidar o empate e encerrar se não houver candidatos elegíveis?"],"Cerrada sin ganador.":["Closed without winner.","Encerrado sem vencedor."],"El drop puede republicarse en modalidad libre si continúa pendiente.":["The drop can be republished in free mode if still pending.","O drop pode ser republicado em modo livre se continuar pendente."],"Objeto sin adjudicar.":["Item not awarded.","Item sem adjudicação."],"Republicar drop":["Republish drop","Republicar drop"],"· Uso libre":["· Unrestricted use","· Uso livre"],"Oferta en diamantes (mínimo":["Bid in diamonds (minimum","Lance em diamantes (mínimo"],"Oferta inválida.":["Invalid bid.","Lance inválido."],"¿Retirar tu oferta?":["Withdraw your bid?","Retirar seu lance?"],"Motivo obligatorio de anulación":["Required cancellation reason","Motivo obrigatório de cancelamento"],"¿Anular la subasta y todas sus ofertas activas?":["Cancel the auction and all active bids?","Cancelar o leilão e todos os lances ativos?"],"Subastas actualizadas.":["Auctions updated.","Leilões atualizados."],"Desempate cerrado sin ganador.":["Tie closed without winner.","Desempate encerrado sem vencedor."],"Adjudicación confirmada.":["Award confirmed.","Adjudicação confirmada."],"Estado actualizado; revisá el listado.":["Status updated; check the list.","Status atualizado; confira a lista."],"El drop ya no está disponible para republicar.":["The drop is no longer available for republication.","O drop não está mais disponível para republicação."],"Republicación en modalidad libre. Revisá los datos antes de publicar.":["Republication in free mode. Check the data before publishing.","Republicação em modo livre. Confira os dados antes de publicar."],"Seleccioná una habilidad del catálogo":["Select a skill from the catalog","Selecione uma habilidade do catálogo"],"Seleccioná biotrajes":["Select biosuits","Selecione biotrajes"],"Precio techo inválido":["Invalid price ceiling","Preço máximo inválido"],"Captura PNG, JPG o WEBP de hasta 2 MB":["PNG, JPG or WEBP screenshot up to 2 MB","Captura PNG, JPG ou WEBP de até 2 MB"],"Revisá el listado antes de reintentar.":["Check the list before retrying.","Confira a lista antes de tentar novamente."],"No se encontraron habilidades.":["No skills found.","Nenhuma habilidade encontrada."],"Nombres reservados:":["Reserved names:","Nomes reservados:"],"Catálogo actualizado.":["Catalog updated.","Catálogo atualizado."],"Nombre de la nueva habilidad":["New skill name","Nome da nova habilidade"],"Nombre inválido (1 a 150 caracteres).":["Invalid name (1 to 150 characters).","Nome inválido (1 a 150 caracteres)."],"Habilidad registrada.":["Skill registered.","Habilidade cadastrada."],"Nuevo nombre (el identificador no cambia)":["New name (identifier remains unchanged)","Novo nome (o identificador não muda)"],"Nombre actualizado.":["Name updated.","Nome atualizado."],"Sin modificaciones registradas.":["No recorded changes.","Sem alterações registradas."],"Buscar evento o código":["Search event or code","Buscar evento ou código"],"Personaje o nickname de Discord":["Character or Discord nickname","Personagem ou apelido do Discord"],"Explicá el motivo de desactivación...":["Explain the deactivation reason...","Explique o motivo da desativação..."],"Buscar personaje o Discord":["Search character or Discord","Buscar personagem ou Discord"],"Bienvenido,":["Welcome,","Bem-vindo,"],"Sí":["Yes","Sim"],"No":["No","Não"],"Ganador:":["Winner:","Vencedor:"],"Cierre:":["Closing:","Encerramento:"],"Autor:":["Author:","Autor:"],"Antes:":["Before:","Antes:"],"Después:":["After:","Depois:"],"Corregir":["Correct","Corrigir"],"registros":["records","registros"],"de":["of","de"],"a":["to","para"],"· Inactivo":["· Inactive","· Inativo"],"· Diamantes:":["· Diamonds:","· Diamantes:"],"· Rango:":["· Rank:","· Rank:"],"· Asistencia:":["· Attendance:","· Presença:"],"· Clase:":["· Class:","· Classe:"],"Recuperando sesión...":["Restoring session...","Restaurando sessão..."],"Cambiar idioma recargará la página y descartará los cambios sin guardar. ¿Continuar?":["Changing language reloads the page and discards unsaved changes. Continue?","Alterar o idioma recarregará a página e descartará as alterações não salvas. Continuar?"],"La habilidad ya existe. Seleccionala del catalogo":["Skill already exists. Select it from the catalog.","A habilidade já existe. Selecione-a no catálogo."],"Ya tienes registrada esta habilidad":["You already own this skill","Você já possui esta habilidade"],"La habilidad no existe en el catalogo. Selecciona o registra una habilidad":["Skill not in catalog. Select or register a skill.","Habilidade fora do catálogo. Selecione ou cadastre uma habilidade."],"El nombre pertenece a otra habilidad del catalogo":["The name belongs to another catalog skill","O nome pertence a outra habilidade do catálogo"],"Ya existe otra habilidad con ese nombre":["Another skill already has that name","Já existe outra habilidade com esse nome"],"La habilidad no existe":["Skill does not exist","A habilidade não existe"]};
+    function readPreference(key) { try { return localStorage.getItem(key); } catch { return null; } }
+    function writePreference(key,value) { try { localStorage.setItem(key,value); } catch {} }
+    const language = ['es','en','pt'].includes(readPreference('lions-language')) ? readPreference('lions-language') : 'es';
+    const locale = {es:'es-AR',en:'en-US',pt:'pt-BR'}[language];
+    function tr(value) {
+      if (language==='es' || typeof value !== 'string') return value;
+      const key=value.trim().replace(/\s+/g,' '), translated=translations[key]?.[language==='en'?0:1];
+      if (!translated) return value;
+      return value.match(/^\s*/)[0]+translated+value.match(/\s*$/)[0];
+    }
+    document.documentElement.lang=language==='pt'?'pt-BR':language;
+    const staticWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    let staticNode;
+    while ((staticNode=staticWalker.nextNode())) {
+      if (staticNode.parentElement.closest('script,style,#languageSelect')) continue;
+      if (staticNode.parentElement.tagName==='OPTION'&&!staticNode.parentElement.hasAttribute('value')) staticNode.parentElement.value=staticNode.parentElement.value;
+      staticNode.nodeValue=tr(staticNode.nodeValue);
+    }
+    for (const el of document.querySelectorAll('[placeholder],[title],[aria-label]')) for(const attr of ['placeholder','title','aria-label']) if(el.hasAttribute(attr)) el.setAttribute(attr,tr(el.getAttribute(attr)));
+    $('languageSelect').value=language;
+    $('languageSelect').addEventListener('change',()=>{
+      if (!confirm(tr('Cambiar idioma recargará la página y descartará los cambios sin guardar. ¿Continuar?'))) { $('languageSelect').value=language; return; }
+      writePreference('lions-language',$('languageSelect').value); location.reload();
+    });
+
 
     const bios = [
       'Punisher', 'Phantom', 'Executor', 'Psypher',
@@ -1096,7 +1127,7 @@
     }
 
     function setMessage(id, message, kind = '') {
-      $(id).textContent = message;
+      $(id).textContent = tr(message);
       $(id).className = 'status ' + kind;
     }
 
@@ -1114,7 +1145,7 @@
     }
 
     function formatNumber(value) {
-      return Number(value).toLocaleString('es-AR');
+      return Number(value).toLocaleString(locale);
     }
 
     function currentWeekStart() {
@@ -1154,7 +1185,7 @@
         dateOnly ? value + 'T12:00:00Z' : value
       );
 
-      return new Intl.DateTimeFormat('es-AR', {
+      return new Intl.DateTimeFormat(locale, {
         timeZone: 'America/Argentina/Buenos_Aires',
         dateStyle: 'short',
         timeStyle: dateOnly ? undefined : 'short'
@@ -1177,7 +1208,7 @@
 
       return candidates.find(
         v => typeof v === 'string' && v.trim()
-      )?.trim() || 'Miembro';
+      )?.trim() || tr("Miembro");
     }
 
     async function fetchOwnProfile(userId) {
@@ -1285,14 +1316,14 @@
 
       $('inactiveReason').textContent =
         profile?.deactivation_reason ||
-        'No se registró un motivo de desactivación.';
+        tr("No se registró un motivo de desactivación.");
 
       $('inactiveDate').textContent =
         formatDate(profile?.deactivated_at);
 
       show('inactivePanel');
 
-      setMessage('status', 'Cuenta inactiva.', 'error');
+      setMessage('status', tr("Cuenta inactiva."), 'error');
     }
 
     async function verifyAccess(requireAdmin = false) {
@@ -1348,7 +1379,7 @@
 
         setMessage(
           'status',
-          'No se pudieron verificar tus permisos.',
+          tr("No se pudieron verificar tus permisos."),
           'error'
         );
 
@@ -1374,7 +1405,7 @@
       $('auditHistory').innerHTML = '';
 
       $('memberSelector').innerHTML =
-        '<option value="">Seleccionar integrante</option>';
+        ("<option value=\"\">"+tr("Seleccionar integrante")+"</option>");
 
       $('weekFilter').innerHTML = '';
       $('pendingList').textContent = '';
@@ -1432,16 +1463,16 @@
     function showMemberContent(profile) {
 
       $('memberDiscordName').textContent =
-        profile.discord_nickname || 'Miembro';
+        profile.discord_nickname || tr("Miembro");
 
       $('memberCharacterName').textContent =
-        profile.character_name || 'Pendiente';
+        profile.character_name || tr("Pendiente");
 
       const role = $('memberRole');
 
       role.textContent = isMaster
-        ? 'Maestro'
-        : isAdmin ? 'Administrador' : 'Integrante';
+        ? tr("Maestro")
+        : isAdmin ? tr("Administrador") : tr("Integrante");
 
       role.className = 'tag ' + (
         isMaster ? 'tag-master' :
@@ -1486,7 +1517,7 @@
           if (error) throw error;
 
           if (!data) {
-            throw new Error('No se confirmó el registro.');
+            throw new Error(tr("No se confirmó el registro."));
           }
 
           currentProfile = data;
@@ -1496,7 +1527,7 @@
 
           setMessage(
             'memberMessage',
-            'Personaje registrado correctamente.',
+            tr("Personaje registrado correctamente."),
             'success'
           );
 
@@ -1510,7 +1541,7 @@
           setMessage(
             'characterMessage',
             error.code === '23505'
-              ? 'Ese personaje ya está registrado.'
+              ? tr("Ese personaje ya está registrado.")
               : error.message,
             'error'
           );
@@ -1537,10 +1568,10 @@
       const request = ++memberDataRequest;
       $('bioInput').disabled = true;
       $('saveCpButton').disabled = true;
-      $('bioHint').textContent = 'Consultando biotraje…';
+      $('bioHint').textContent = tr("Consultando biotraje…");
 
       $('weekLabel').textContent =
-        'Semana desde el lunes ' + formatDate(week);
+        tr("Semana desde el lunes ") + formatDate(week);
 
       const { data: current, error: currentError } =
         await supabase
@@ -1571,10 +1602,10 @@
         show('lockedMessage');
 
         $('lockedMessage').textContent =
-          'Ya registraste esta semana: ' +
+          tr("Ya registraste esta semana: ") +
           formatNumber(current.cp) + ' CP · ' +
           current.biotraje +
-          '. Nueva carga disponible el próximo lunes.';
+          tr(". Nueva carga disponible el próximo lunes.");
 
       } else {
 
@@ -1598,15 +1629,15 @@
         $('bioInput').disabled = !!latest;
         $('saveCpButton').disabled = !!latest && !bios.includes(latest.biotraje);
         $('bioHint').textContent = latest
-          ? 'Biotraje bloqueado. Solicitá cualquier cambio al Maestro.'
-          : 'Elegí tu biotraje inicial. Después quedará bloqueado.';
+          ? tr("Biotraje bloqueado. Solicitá cualquier cambio al Maestro.")
+          : tr("Elegí tu biotraje inicial. Después quedará bloqueado.");
       } else if (error && !current) {
-        $('bioHint').textContent = 'No se pudo verificar tu biotraje. Volvé a iniciar sesión.';
+        $('bioHint').textContent = tr("No se pudo verificar tu biotraje. Volvé a iniciar sesión.");
       }
 
       $('myHistory').innerHTML = error
 
-        ? '<tr><td colspan="4">Error al cargar historial.</td></tr>'
+        ? ("<tr><td colspan=\"4\">"+tr("Error al cargar historial.")+"</td></tr>")
 
         : (data || []).length
 
@@ -1619,7 +1650,7 @@
             </tr>
           `).join('')
 
-          : '<tr><td colspan="4">Sin registros.</td></tr>';
+          : ("<tr><td colspan=\"4\">"+tr("Sin registros.")+"</td></tr>");
     }
 
     $('cpForm').addEventListener('submit', async event => {
@@ -1639,7 +1670,7 @@
 
       if (!Number.isInteger(cp) || cp <= 0 || !bios.includes(biotraje)) {
 
-        setMessage('memberMessage', 'Ingresá datos válidos.', 'error');
+        setMessage('memberMessage', tr("Ingresá datos válidos."), 'error');
         return;
       }
 
@@ -1664,7 +1695,7 @@
           setMessage(
             'memberMessage',
             error.code === '23505'
-              ? 'Ya existe un registro para esta semana.'
+              ? tr("Ya existe un registro para esta semana.")
               : error.message,
             'error'
           );
@@ -1676,7 +1707,7 @@
 
           setMessage(
             'memberMessage',
-            'CP guardado correctamente.',
+            tr("CP guardado correctamente."),
             'success'
           );
         }
@@ -1785,11 +1816,11 @@
 
     function getRole(profile) {
 
-      if (profile.is_master) return 'Maestro';
-      if (!profile.role_known) return 'Sin verificar';
-      if (profile.is_admin) return 'Administrador';
+      if (profile.is_master) return tr("Maestro");
+      if (!profile.role_known) return tr("Sin verificar");
+      if (profile.is_admin) return tr("Administrador");
 
-      return 'Integrante';
+      return tr("Integrante");
     }
 
     function renderMemberSelector(previousId = '') {
@@ -1809,7 +1840,7 @@
       selector.innerHTML = '';
 
       selector.add(new Option(
-        'Seleccionar integrante (' + profiles.length + ')',
+        tr("Seleccionar integrante (") + profiles.length + ')',
         ''
       ));
 
@@ -1817,8 +1848,8 @@
 
         selector.add(new Option(
 
-          (p.discord_nickname || 'Sin nickname') +
-          ' / ' + (p.character_name || 'Pendiente') +
+          (p.discord_nickname || tr("Sin nickname")) +
+          ' / ' + (p.character_name || tr("Pendiente")) +
           ' · ' + getRole(p) +
           (p.is_active ? '' : ' · INACTIVO'),
 
@@ -1851,10 +1882,10 @@
       show('selectedMemberPanel');
 
       $('selectedDiscord').textContent =
-        p.discord_nickname || 'Sin nickname';
+        p.discord_nickname || tr("Sin nickname");
 
       $('selectedCharacter').textContent =
-        p.character_name || 'Pendiente';
+        p.character_name || tr("Pendiente");
 
       $('adminCharacterInput').value =
         p.character_name || '';
@@ -1867,7 +1898,7 @@
       );
 
       $('selectedState').textContent =
-        p.is_active ? 'Activo' : 'Inactivo';
+        p.is_active ? tr("Activo") : tr("Inactivo");
 
       $('selectedState').className = 'tag ' + (
         p.is_active ? 'tag-active' : 'tag-inactive'
@@ -1876,7 +1907,7 @@
       if (!p.is_active) {
 
         $('selectedReason').textContent =
-          p.deactivation_reason || 'Sin motivo registrado.';
+          p.deactivation_reason || tr("Sin motivo registrado.");
 
         $('selectedInactiveDate').textContent =
           formatDate(p.deactivated_at);
@@ -1905,8 +1936,8 @@
       const stateButton = $('toggleMemberButton');
 
       stateButton.textContent = p.is_active
-        ? 'Desactivar integrante'
-        : 'Reactivar integrante';
+        ? tr("Desactivar integrante")
+        : tr("Reactivar integrante");
 
       stateButton.className =
         p.is_active ? 'danger' : 'positive';
@@ -1919,8 +1950,8 @@
         show('toggleAdminButton');
 
         $('toggleAdminButton').textContent = p.is_admin
-          ? 'Quitar administrador'
-          : 'Designar administrador';
+          ? tr("Quitar administrador")
+          : tr("Designar administrador");
 
         $('toggleAdminButton').disabled =
           adminBusy ||
@@ -1942,7 +1973,7 @@
       $('masterBioInput').replaceChildren();
       if (!isMaster || !target?.is_active) return;
       show('masterBioBox');
-      $('masterBioCurrent').textContent = 'Consultando biotraje actual…';
+      $('masterBioCurrent').textContent = tr("Consultando biotraje actual…");
       try {
         const { data, error } = await supabase.from('cp_records')
           .select('biotraje').eq('user_id', target.user_id)
@@ -1952,10 +1983,10 @@
         if (request !== bioRequest || version !== interfaceVersion || !isMaster) return;
         if (error) throw error;
         if (!data) {
-          $('masterBioCurrent').textContent = 'El integrante todavía no registró su CP inicial.';
+          $('masterBioCurrent').textContent = tr("El integrante todavía no registró su CP inicial.");
           return;
         }
-        $('masterBioCurrent').textContent = 'Biotraje actual: ' + data.biotraje;
+        $('masterBioCurrent').textContent = tr("Biotraje actual: ") + data.biotraje;
         bios.forEach(b => $('masterBioInput').add(new Option(b, b)));
         $('masterBioInput').value = data.biotraje;
         $('masterBioInput').dataset.current = data.biotraje;
@@ -1979,7 +2010,7 @@
       const old = $('masterBioInput').dataset.current;
       const version = interfaceVersion;
       if (masterBioBusy || !isMaster || !target?.is_active || !bios.includes(bio) || bio === old) return;
-      if (!confirm('Cambiar el biotraje de ' + (target.character_name || target.discord_nickname) + ' de ' + old + ' a ' + bio + '?')) return;
+      if (!confirm(tr("Cambiar el biotraje de ") + (target.character_name || target.discord_nickname) + tr(" de ") + old + tr(" a ") + bio + '?')) return;
       masterBioBusy = true;
       $('masterBioSave').disabled = true;
       $('masterBioInput').disabled = true;
@@ -1988,7 +2019,7 @@
         const { error } = await supabase.rpc('set_member_biotraje', {p_user_id: target.user_id, p_biotraje: bio});
         if (error) throw error;
         if (version !== interfaceVersion) return;
-        setMessage('masterBioMessage', 'Biotraje actualizado correctamente.', 'success');
+        setMessage('masterBioMessage', tr("Biotraje actualizado correctamente."), 'success');
         await loadWeeklyRecords();
         await loadAudit();
         await loadMemberData();
@@ -2031,7 +2062,7 @@
         setMessage(
           'profileAdminMessage',
           error.code === '23505'
-            ? 'Ese personaje ya está registrado.'
+            ? tr("Ese personaje ya está registrado.")
             : error.message,
           'error'
         );
@@ -2071,14 +2102,14 @@
           if (!await verifyTarget(target)) {
 
             throw new Error(
-              'No tenés permiso para modificar este integrante.'
+              tr("No tenés permiso para modificar este integrante.")
             );
           }
 
           if (!name || name.length > 40) {
 
             throw new Error(
-              'Ingresá un nombre de hasta 40 caracteres.'
+              tr("Ingresá un nombre de hasta 40 caracteres.")
             );
           }
 
@@ -2095,7 +2126,7 @@
           if (error) throw error;
 
           if (!data) {
-            throw new Error('Modificación no autorizada.');
+            throw new Error(tr("Modificación no autorizada."));
           }
 
           if (data.user_id === currentUser?.id) {
@@ -2111,7 +2142,7 @@
 
           setMessage(
             'profileAdminMessage',
-            'Personaje actualizado correctamente.',
+            tr("Personaje actualizado correctamente."),
             'success'
           );
         });
@@ -2136,8 +2167,8 @@
           deactivationTarget = target;
 
           $('deactivationTarget').textContent =
-            (target.discord_nickname || 'Integrante') +
-            ' / ' + (target.character_name || 'Pendiente');
+            (target.discord_nickname || tr("Integrante")) +
+            ' / ' + (target.character_name || tr("Pendiente"));
 
           $('deactivationReason').value = '';
           setMessage('deactivationMessage', '');
@@ -2147,7 +2178,7 @@
         }
 
         if (!confirm(
-          '¿Reactivar a ' + target.discord_nickname + '?'
+          tr("¿Reactivar a ") + target.discord_nickname + '?'
         )) return;
 
         await runAdminAction(async () => {
@@ -2192,7 +2223,7 @@
 
         setMessage(
           'deactivationMessage',
-          'Debés ingresar un motivo válido.',
+          tr("Debés ingresar un motivo válido."),
           'error'
         );
 
@@ -2236,17 +2267,17 @@
         !currentUser ||
         target.user_id === currentUser.id
       ) {
-        throw new Error('No podés modificar tu propio estado.');
+        throw new Error(tr("No podés modificar tu propio estado."));
       }
 
       if (!await verifyTarget(target)) {
 
-        throw new Error('No tenés permiso para modificar este estado.');
+        throw new Error(tr("No tenés permiso para modificar este estado."));
       }
 
       if (!active && (!reason || !reason.trim())) {
 
-        throw new Error('El motivo es obligatorio.');
+        throw new Error(tr("El motivo es obligatorio."));
       }
 
       const { data, error } = await supabase
@@ -2267,13 +2298,13 @@
 
       if (!data || data.is_active !== active) {
 
-        throw new Error('No se confirmó el cambio de estado.');
+        throw new Error(tr("No se confirmó el cambio de estado."));
       }
 
       if (!active && data.deactivation_reason !== reason.trim()) {
 
         throw new Error(
-          'El estado cambió, pero no se confirmó el motivo. Revisá Supabase.'
+          tr("El estado cambió, pero no se confirmó el motivo. Revisá Supabase.")
         );
       }
 
@@ -2283,8 +2314,8 @@
       setMessage(
         'profileAdminMessage',
         active
-          ? 'Integrante reactivado correctamente.'
-          : 'Integrante desactivado. Motivo registrado.',
+          ? tr("Integrante reactivado correctamente.")
+          : tr("Integrante desactivado. Motivo registrado."),
         'success'
       );
     }
@@ -2304,7 +2335,7 @@
       if (makeAdmin && !target.is_active) return;
 
       if (!confirm(
-        (makeAdmin ? '¿Designar administrador a ' : '¿Quitar administrador a ') +
+        (makeAdmin ? tr("¿Designar administrador a ") : tr("¿Quitar administrador a ")) +
         target.discord_nickname + '?'
       )) return;
 
@@ -2313,7 +2344,7 @@
         if (!await verifyAccess(true) || !isMaster) {
 
           throw new Error(
-            'Solo el Maestro puede gestionar administradores.'
+            tr("Solo el Maestro puede gestionar administradores.")
           );
         }
 
@@ -2332,8 +2363,8 @@
         setMessage(
           'profileAdminMessage',
           makeAdmin
-            ? 'Administrador designado.'
-            : 'Permisos administrativos retirados.',
+            ? tr("Administrador designado.")
+            : tr("Permisos administrativos retirados."),
           'success'
         );
 
@@ -2377,7 +2408,7 @@
           $('weekFilter').add(new Option(
 
             formatDate(week) +
-            (week === thisWeek ? ' · Semana actual' : ''),
+            (week === thisWeek ? tr(" · Semana actual") : ''),
 
             week
 
@@ -2407,7 +2438,7 @@
       weeklyRecords = [];
 
       $('allRecords').innerHTML =
-        '<tr><td colspan="6">Cargando registros...</td></tr>';
+        ("<tr><td colspan=\"6\">"+tr("Cargando registros...")+"</td></tr>");
 
       $('previousPage').disabled = true;
       $('nextPage').disabled = true;
@@ -2416,7 +2447,7 @@
         id => $(id).textContent = '—'
       );
 
-      $('pendingList').textContent = 'Cargando...';
+      $('pendingList').textContent = tr("Cargando...");
 
       try {
 
@@ -2441,7 +2472,7 @@
 
         setMessage(
           'adminMessage',
-          data.length + ' registros en la semana seleccionada.',
+          data.length + tr(" registros en la semana seleccionada."),
           'success'
         );
 
@@ -2453,10 +2484,10 @@
         ) return;
 
         $('allRecords').innerHTML =
-          '<tr><td colspan="6">Error al cargar registros.</td></tr>';
+          ("<tr><td colspan=\"6\">"+tr("Error al cargar registros.")+"</td></tr>");
 
         $('pendingList').textContent =
-          'No se pudieron calcular los pendientes.';
+          tr("No se pudieron calcular los pendientes.");
 
         setMessage('adminMessage', error.message, 'error');
       }
@@ -2488,18 +2519,18 @@
 
       $('statsNote').textContent =
         selectedWeek && selectedWeek !== currentWeekStart()
-          ? 'Resumen histórico calculado sobre los integrantes activos actualmente.'
-          : 'Las cuentas inactivas no se incluyen en los pendientes.';
+          ? tr("Resumen histórico calculado sobre los integrantes activos actualmente.")
+          : tr("Las cuentas inactivas no se incluyen en los pendientes.");
 
       $('pendingList').textContent = pending.length
 
         ? pending.map(p =>
             p.character_name ||
             p.discord_nickname ||
-            'Personaje pendiente'
+            tr("Personaje pendiente")
           ).join(' · ')
 
-        : 'No hay integrantes activos pendientes.';
+        : tr("No hay integrantes activos pendientes.");
     }
 
     function renderWeeklyTable() {
@@ -2575,10 +2606,10 @@
           return `
             <tr>
               <td>
-                ${escapeHtml(p?.discord_nickname || 'Perfil pendiente')}
+                ${escapeHtml(p?.discord_nickname || tr("Perfil pendiente"))}
               </td>
               <td>
-                ${escapeHtml(p?.character_name || 'Pendiente')}
+                ${escapeHtml(p?.character_name || tr("Pendiente"))}
               </td>
               <td>${formatNumber(r.cp)}</td>
               <td>${escapeHtml(r.biotraje)}</td>
@@ -2590,7 +2621,7 @@
                   data-week="${escapeHtml(r.week_start)}"
                   data-cp="${escapeHtml(r.cp)}"
                   data-bio="${escapeHtml(r.biotraje)}">
-                  Corregir
+                  ${tr("Corregir")}
                 </button>
               </td>
             </tr>
@@ -2598,11 +2629,11 @@
 
         }).join('')
 
-        : '<tr><td colspan="6">No hay registros para esta selección.</td></tr>';
+        : ("<tr><td colspan=\"6\">"+tr("No hay registros para esta selección.")+"</td></tr>");
 
       $('pageInfo').textContent =
-        'Página ' + currentPage + ' de ' + pages +
-        ' · ' + records.length + ' registros';
+        tr("Página ") + currentPage + tr(" de ") + pages +
+        ' · ' + records.length + tr(" registros");
 
       $('previousPage').disabled = currentPage <= 1;
 
@@ -2672,7 +2703,7 @@
       if (error) {
 
         $('auditHistory').innerHTML =
-          '<tr><td colspan="7">Error al consultar auditoría.</td></tr>';
+          ("<tr><td colspan=\"7\">"+tr("Error al consultar auditoría.")+"</td></tr>");
 
         return;
       }
@@ -2719,29 +2750,29 @@
           return `
             <tr>
               <td>
-                ${escapeHtml(owner?.discord_nickname || 'Integrante')}
+                ${escapeHtml(owner?.discord_nickname || tr("Integrante"))}
                 /
-                ${escapeHtml(owner?.character_name || 'Pendiente')}
+                ${escapeHtml(owner?.character_name || tr("Pendiente"))}
               </td>
               <td>${formatNumber(a.old_cp)}</td>
               <td>${formatNumber(a.new_cp)}</td>
               <td>${escapeHtml(a.old_biotraje)}</td>
               <td>${escapeHtml(a.new_biotraje)}</td>
-              <td>${escapeHtml(admin?.discord_nickname || 'Administrador')}</td>
+              <td>${escapeHtml(admin?.character_name || tr("Personaje no disponible"))}</td>
               <td>${formatDate(a.changed_at)}</td>
             </tr>
           `;
 
         }).join('')
 
-        : '<tr><td colspan="7">No hay correcciones.</td></tr>';
+        : ("<tr><td colspan=\"7\">"+tr("No hay correcciones.")+"</td></tr>");
     }
 
     async function correctRecord(userId, week, oldCp, oldBio) {
 
       if (!await verifyAccess(true)) return;
 
-      const cpText = prompt('Nuevo valor de CP:', oldCp);
+      const cpText = prompt(tr("Nuevo valor de CP:"), oldCp);
 
       if (cpText === null) return;
 
@@ -2749,13 +2780,13 @@
 
       if (!Number.isInteger(cp) || cp <= 0) {
 
-        setMessage('adminMessage', 'CP inválido.', 'error');
+        setMessage('adminMessage', tr("CP inválido."), 'error');
         return;
       }
 
       if (cp === Number(oldCp)) {
 
-        setMessage('adminMessage', 'No hay cambios.', 'warning');
+        setMessage('adminMessage', tr("No hay cambios."), 'warning');
         return;
       }
 
@@ -2773,7 +2804,7 @@
 
         setMessage(
           'adminMessage',
-          error?.message || 'Corrección no autorizada.',
+          error?.message || tr("Corrección no autorizada."),
           'error'
         );
 
@@ -2786,7 +2817,7 @@
 
       setMessage(
         'adminMessage',
-        'Corrección guardada correctamente.',
+        tr("Corrección guardada correctamente."),
         'success'
       );
     }
@@ -2796,6 +2827,7 @@
       const version = ++interfaceVersion;
 
       currentUser = session?.user || null;
+      if (currentUser) writePreference('lions-discord-authorized', '1');
       currentProfile = null;
 
       isAdmin = false;
@@ -2812,9 +2844,9 @@
 
       if (!currentUser) {
 
-        $('welcome').textContent = 'Bienvenido, guerrero.';
+        $('welcome').textContent = tr("Bienvenido, guerrero.");
 
-        setMessage('status', 'Conectate para acceder al clan.');
+        setMessage('status', tr("Conectate para acceder al clan."));
 
         show('loginButton');
         hide('logoutButton');
@@ -2831,7 +2863,7 @@
       show('logoutButton');
       $('logoutButton').disabled = false;
 
-      setMessage('status', 'Verificando perfil y permisos...');
+      setMessage('status', tr("Verificando perfil y permisos..."));
 
       try {
 
@@ -2840,7 +2872,7 @@
         if (version !== interfaceVersion) return;
 
         if (!profile) {
-          throw new Error('No se pudo cargar el perfil.');
+          throw new Error(tr("No se pudo cargar el perfil."));
         }
 
         const permissions = await readPermissions(user.id);
@@ -2854,7 +2886,7 @@
         const nickname = profile.discord_nickname ||
           getDiscordNickname(user);
 
-        $('welcome').textContent = 'Bienvenido, ' + nickname;
+        $('welcome').textContent = tr("Bienvenido, ") + nickname;
 
         if (!isActive && !isMaster) {
 
@@ -2866,12 +2898,12 @@
         }
 
         const role = isMaster
-          ? 'Maestro'
-          : isAdmin ? 'Administrador' : 'Integrante';
+          ? tr("Maestro")
+          : isAdmin ? tr("Administrador") : tr("Integrante");
 
         setMessage(
           'status',
-          'Conectado como: ' + nickname + ' | ' + role,
+          tr("Conectado como: ") + nickname + ' | ' + role,
           'success'
         );
 
@@ -2885,7 +2917,7 @@
 
             setMessage(
               'characterMessage',
-              'Registrá tu personaje para continuar.',
+              tr("Registrá tu personaje para continuar."),
               'warning'
             );
 
@@ -2931,29 +2963,32 @@
 
         setMessage(
           'status',
-          'No se pudo verificar el acceso: ' + error.message,
+          tr("No se pudo verificar el acceso: ") + error.message,
           'error'
         );
       }
     }
 
+    const oauthParams = new URLSearchParams(location.search.replace(/^\?/, '') + '&' + location.hash.replace(/^#/, ''));
+    let oauthNeedsConsent = Boolean(oauthParams.get('error') || oauthParams.get('error_code')) || !readPreference('lions-discord-authorized');
     $('loginButton').addEventListener('click', async () => {
 
       $('loginButton').disabled = true;
 
-      setMessage('status', 'Conectando con Discord...');
+      setMessage('status', tr("Conectando con Discord..."));
 
       const redirectTo =
         window.location.origin + window.location.pathname;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'discord',
-        options: { redirectTo }
+        options: { redirectTo, queryParams: { prompt: oauthNeedsConsent ? 'consent' : 'none' } }
       });
 
       if (error) {
 
-        setMessage('status', error.message, 'error');
+        oauthNeedsConsent = true;
+        setMessage('status', tr(error.message), 'error');
         $('loginButton').disabled = false;
       }
     });
@@ -2974,10 +3009,10 @@
     // V3.0 — Eventos LIONS
     let evList=[], evTypes=[], evRoster=[], evSelected=new Set(), evPageNumber=1, evEditing=null, evBusy=false, evRequest=0, evDetailRequest=0;
     let evDetailId=null;
-    const evLabels={open:'Abierto',closed:'Cerrado',cancelled:'Anulado',pending:'Pendiente',sold:'Vendido'};
+    const evLabels={open:tr("Abierto"),closed:tr("Cerrado"),cancelled:tr("Anulado"),pending:tr("Pendiente"),sold:tr("Vendido")};
     const evCode=e=>'LIONS-'+String(e.event_number).padStart(6,'0');
     const evToday=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Argentina/Buenos_Aires'}).format(new Date());
-    const evName=id=>{const p=evRoster.find(x=>x.user_id===id);return p?.character_name||p?.discord_nickname||'Integrante'};
+    const evName=id=>{const p=evRoster.find(x=>x.user_id===id);return p?.character_name||p?.discord_nickname||tr("Integrante")};
     const evError=e=>e?.message||String(e);
     let clanSection = null;
     function syncTopNavigation() {
@@ -3047,62 +3082,62 @@
     async function evRpc(name,args={}){const {data,error}=await supabase.rpc(name,args);if(error)throw error;return data;}
     async function evLoadTypes(){return fetchAllRows(()=>supabase.from('event_types').select('*').order('name').order('id'));}
     async function evLoadRoster(){return await evRpc('get_event_members')||[];}
-    function evGuard(version){if(version!==interfaceVersion||!currentUser||!(isActive||isMaster))throw new Error('La sesión cambió.');}
+    function evGuard(version){if(version!==interfaceVersion||!currentUser||!(isActive||isMaster))throw new Error(tr("La sesión cambió."));}
     async function evLoad(){
       if(clanSection!=='events'||!await verifyAccess()||clanSection!=='events')return;
-      const version=interfaceVersion,request=++evRequest;setMessage('evMessage','Cargando eventos...');
-      try{const rows=await fetchAllRows(()=>supabase.from('events').select('*').order('event_date',{ascending:false}).order('event_number',{ascending:false}));evGuard(version);if(request!==evRequest)return;evList=rows;evPageNumber=1;evRender();setMessage('evMessage',rows.length+' eventos registrados.','success');}
+      const version=interfaceVersion,request=++evRequest;setMessage('evMessage',tr("Cargando eventos..."));
+      try{const rows=await fetchAllRows(()=>supabase.from('events').select('*').order('event_date',{ascending:false}).order('event_number',{ascending:false}));evGuard(version);if(request!==evRequest)return;evList=rows;evPageNumber=1;evRender();setMessage('evMessage',rows.length+tr(" eventos registrados."),'success');}
       catch(e){if(version===interfaceVersion&&request===evRequest)setMessage('evMessage',evError(e),'error');}
     }
     function evRender(){
       const q=$('evSearch').value.toLowerCase().trim(),s=$('evStatus').value;
       const rows=evList.filter(e=>(!s||e.status===s)&&(!q||(e.event_name+' '+evCode(e)).toLowerCase().includes(q)));
       const pages=Math.max(1,Math.ceil(rows.length/10));evPageNumber=Math.min(pages,Math.max(1,evPageNumber));
-      $('evRows').innerHTML=rows.slice((evPageNumber-1)*10,evPageNumber*10).map(e=>`<tr><td>${escapeHtml(evCode(e))}</td><td>${escapeHtml(e.event_name)}</td><td>${formatDate(e.event_date)}</td><td>${formatNumber(e.points)}</td><td>${escapeHtml(evLabels[e.status]||e.status)}</td><td><button class="small-button secondary" data-event="${escapeHtml(e.id)}">Ver detalle</button></td></tr>`).join('')||'<tr><td colspan="6">Sin eventos.</td></tr>';
-      $('evPage').textContent=`Página ${evPageNumber} de ${pages}`;$('evPrev').disabled=evPageNumber===1;$('evNext').disabled=evPageNumber===pages;
+      $('evRows').innerHTML=rows.slice((evPageNumber-1)*10,evPageNumber*10).map(e=>`<tr><td>${escapeHtml(evCode(e))}</td><td>${escapeHtml(e.event_name)}</td><td>${formatDate(e.event_date)}</td><td>${formatNumber(e.points)}</td><td>${escapeHtml(evLabels[e.status]||e.status)}</td><td><button class="small-button secondary" data-event="${escapeHtml(e.id)}">${tr("Ver detalle")}</button></td></tr>`).join('')||("<tr><td colspan=\"6\">"+tr("Sin eventos.")+"</td></tr>");
+      $('evPage').textContent=`${tr("Página")} ${evPageNumber} ${tr("de")} ${pages}`;$('evPrev').disabled=evPageNumber===1;$('evNext').disabled=evPageNumber===pages;
     }
     async function evShowDetail(id){
-      if(!await verifyAccess())return;const version=interfaceVersion,request=++evDetailRequest;evDetailId=id;show('evDetail');$('evDetail').textContent='Cargando detalle...';
+      if(!await verifyAccess())return;const version=interfaceVersion,request=++evDetailRequest;evDetailId=id;show('evDetail');$('evDetail').textContent=tr("Cargando detalle...");
       try{
         const [result,attendance,drops,roster]=await Promise.all([supabase.from('events').select('*').eq('id',id).single(),fetchAllRows(()=>supabase.from('event_attendance').select('*').eq('event_id',id).order('user_id')),fetchAllRows(()=>supabase.from('event_drops').select('*').eq('event_id',id).order('id')),evLoadRoster()]);
         if(result.error)throw result.error;evGuard(version);if(request!==evDetailRequest)return;evRoster=roster;const e=result.data;
         const names=attendance.map(a=>evName(a.user_id)).sort((a,b)=>a.localeCompare(b));
-        $('evDetail').innerHTML=`<h3>${escapeHtml(e.event_name)} · ${escapeHtml(evCode(e))}</h3><p>${formatDate(e.event_date)} · ${escapeHtml(evLabels[e.status])} · ${formatNumber(e.points)} puntos por participante</p>${e.status==='cancelled'?`<p class="error">Puntos no válidos. Motivo: ${escapeHtml(e.cancellation_reason)}</p>`:''}<p class="event-note">${escapeHtml(e.observations||'Sin observaciones.')}</p><h3>Participantes (${names.length})</h3><div class="event-members">${names.map(n=>`<div>${escapeHtml(n)}</div>`).join('')||'Sin participantes'}</div><h3 style="margin-top:20px">Drops Tier S (${drops.length})</h3><div id="evDetailDrops"></div>`;
-        for(const d of drops){const node=document.createElement('div');node.className='event-drop';node.innerHTML=`<strong>${escapeHtml(d.item_name)}</strong><p class="event-note">${escapeHtml(d.description)}</p><p class="muted">${escapeHtml(evLabels[d.status]||d.status)}${d.status==='sold'?` · Comprador: ${escapeHtml(evName(d.buyer_id))} · ${formatNumber(d.sale_price)} diamantes · ${formatDate(d.sold_at)}`:''}</p>`;if(d.screenshot_path&&!d.screenshot_deleted_at){const b=document.createElement('button');b.className='secondary small-button';b.textContent='Ver captura';let capture=null;b.onclick=async()=>{if(b.disabled)return;if(capture){capture.remove();capture=null;b.textContent='Ver captura';return;}b.disabled=true;b.textContent='Cargando...';try{if(!await verifyAccess())return;const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(d.screenshot_path,60);if(error)throw error;if(version!==interfaceVersion||request!==evDetailRequest||!node.isConnected)return;const img=document.createElement('img');img.className='event-image';img.alt='Captura del drop';capture=img;img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;b.textContent='Ver captura';if(node.isConnected)setMessage('evMessage','No se pudo cargar la captura.','error');};img.src=data.signedUrl;node.append(img);b.textContent='Ocultar captura';}catch(e){if(version===interfaceVersion&&node.isConnected)setMessage('evMessage',evError(e),'error');}finally{b.disabled=false;if(!capture)b.textContent='Ver captura';}};node.append(b);}else{const p=document.createElement('p');p.className='muted';p.textContent='Captura no disponible.';node.append(p);}$('evDetailDrops').append(node);}
-        if(!drops.length)$('evDetailDrops').textContent='Sin drops.';
-        if(isMaster&&e.status!=='cancelled'){const actions=document.createElement('div');actions.className='management-actions ev-master';const edit=document.createElement('button');edit.textContent='Corregir asistencia';edit.onclick=()=>evOpenForm(e,attendance);const cancel=document.createElement('button');cancel.className='danger';cancel.textContent='Anular evento';cancel.onclick=()=>evCancel(e);actions.append(edit,cancel);$('evDetail').append(actions);}
-        if(isMaster){const audit=document.createElement('details');audit.className='ev-master';audit.innerHTML='<summary>Auditoría del evento</summary>';audit.addEventListener('toggle',async()=>{if(!audit.open||!await verifyAccess(true)||!isMaster)return;try{const rows=await fetchAllRows(()=>supabase.from('event_audit').select('*').eq('event_id',id).order('changed_at',{ascending:false}).order('id'));if(request!==evDetailRequest)return;audit.querySelectorAll('p').forEach(x=>x.remove());for(const a of rows){const p=document.createElement('p');p.className='muted';p.textContent=`${formatDate(a.changed_at)} · ${evName(a.changed_by)} · ${ {event_created:'Creación',attendance_corrected:'Corrección de asistencia',event_cancelled:'Anulación'}[a.action]||a.action}${a.reason?' · '+a.reason:''}`;if(a.action==='attendance_corrected'){const before=(a.previous_data||[]).map(x=>evName(x.user_id));const after=(a.new_data||[]).map(x=>evName(x.user_id));p.textContent+=' | Antes: '+before.join(', ')+' | Después: '+after.join(', ');}audit.append(p);}}catch(err){setMessage('evMessage',evError(err),'error');}});$('evDetail').append(audit);}
+        $('evDetail').innerHTML=`<h3>${escapeHtml(e.event_name)} · ${escapeHtml(evCode(e))}</h3><p>${formatDate(e.event_date)} · ${escapeHtml(evLabels[e.status])} · ${formatNumber(e.points)} ${tr("puntos por participante")}</p>${e.status==='cancelled'?`<p class="error">${tr("Puntos no válidos. Motivo:")} ${escapeHtml(e.cancellation_reason)}</p>`:''}<p class="event-note">${escapeHtml(e.observations||tr("Sin observaciones."))}</p><h3>${tr("Participantes")} (${names.length})</h3><div class="event-members">${names.map(n=>`<div>${escapeHtml(n)}</div>`).join('')||tr("Sin participantes")}</div><h3 style="margin-top:20px">Drops Tier S (${drops.length})</h3><div id="evDetailDrops"></div>`;
+        for(const d of drops){const node=document.createElement('div');node.className='event-drop';node.innerHTML=`<strong>${escapeHtml(d.item_name)}</strong><p class="event-note">${escapeHtml(d.description)}</p><p class="muted">${escapeHtml(evLabels[d.status]||d.status)}${d.status==='sold'?` ${tr("· Comprador:")} ${escapeHtml(evName(d.buyer_id))} · ${formatNumber(d.sale_price)} ${tr("diamantes")} · ${formatDate(d.sold_at)}`:''}</p>`;if(d.screenshot_path&&!d.screenshot_deleted_at){const b=document.createElement('button');b.className='secondary small-button';b.textContent=tr("Ver captura");let capture=null;b.onclick=async()=>{if(b.disabled)return;if(capture){capture.remove();capture=null;b.textContent=tr("Ver captura");return;}b.disabled=true;b.textContent=tr("Cargando...");try{if(!await verifyAccess())return;const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(d.screenshot_path,60);if(error)throw error;if(version!==interfaceVersion||request!==evDetailRequest||!node.isConnected)return;const img=document.createElement('img');img.className='event-image';img.alt=tr("Captura del drop");capture=img;img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;b.textContent=tr("Ver captura");if(node.isConnected)setMessage('evMessage',tr("No se pudo cargar la captura."),'error');};img.src=data.signedUrl;node.append(img);b.textContent=tr("Ocultar captura");}catch(e){if(version===interfaceVersion&&node.isConnected)setMessage('evMessage',evError(e),'error');}finally{b.disabled=false;if(!capture)b.textContent=tr("Ver captura");}};node.append(b);}else{const p=document.createElement('p');p.className='muted';p.textContent=tr("Captura no disponible.");node.append(p);}$('evDetailDrops').append(node);}
+        if(!drops.length)$('evDetailDrops').textContent=tr("Sin drops.");
+        if(isMaster&&e.status!=='cancelled'){const actions=document.createElement('div');actions.className='management-actions ev-master';const edit=document.createElement('button');edit.textContent=tr("Corregir asistencia");edit.onclick=()=>evOpenForm(e,attendance);const cancel=document.createElement('button');cancel.className='danger';cancel.textContent=tr("Anular evento");cancel.onclick=()=>evCancel(e);actions.append(edit,cancel);$('evDetail').append(actions);}
+        if(isMaster){const audit=document.createElement('details');audit.className='ev-master';audit.innerHTML=("<summary>"+tr("Auditoría del evento")+"</summary>");audit.addEventListener('toggle',async()=>{if(!audit.open||!await verifyAccess(true)||!isMaster)return;try{const rows=await fetchAllRows(()=>supabase.from('event_audit').select('*').eq('event_id',id).order('changed_at',{ascending:false}).order('id'));if(request!==evDetailRequest)return;audit.querySelectorAll('p').forEach(x=>x.remove());for(const a of rows){const p=document.createElement('p');p.className='muted';p.textContent=`${formatDate(a.changed_at)} · ${evName(a.changed_by)} · ${ {event_created:tr("Creación"),attendance_corrected:tr("Corrección de asistencia"),event_cancelled:tr("Anulación")}[a.action]||a.action}${a.reason?' · '+a.reason:''}`;if(a.action==='attendance_corrected'){const before=(a.previous_data||[]).map(x=>evName(x.user_id));const after=(a.new_data||[]).map(x=>evName(x.user_id));p.textContent+=' | Antes: '+before.join(', ')+' | Después: '+after.join(', ');}audit.append(p);}}catch(err){setMessage('evMessage',evError(err),'error');}});$('evDetail').append(audit);}
         $('evDetail').scrollIntoView({block:'nearest'});
       }catch(err){if(version===interfaceVersion&&request===evDetailRequest)$('evDetail').textContent=evError(err);}
     }
     function evEligible(){return evRoster.filter(p=>(p.is_active&&p.character_name)|| (evEditing&&evEditing.original.has(p.user_id)));}
     function evVisibleMembers(){const q=$('evMemberSearch').value.toLowerCase().trim();return evEligible().filter(p=>((p.character_name||'')+' '+(p.discord_nickname||'')).toLowerCase().includes(q));}
     function evRenderMembers(){
-      $('evMembers').innerHTML='';for(const p of evVisibleMembers()){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=evSelected.has(p.user_id);check.onchange=()=>{if(check.checked)evSelected.add(p.user_id);else evSelected.delete(p.user_id);$('evCount').textContent=evSelected.size+' participantes seleccionados';};label.append(check,document.createTextNode((p.character_name||p.discord_nickname||'Integrante')+(p.is_active?'':' · Inactivo')));$('evMembers').append(label);}$('evCount').textContent=evSelected.size+' participantes seleccionados';
+      $('evMembers').innerHTML='';for(const p of evVisibleMembers()){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=evSelected.has(p.user_id);check.onchange=()=>{if(check.checked)evSelected.add(p.user_id);else evSelected.delete(p.user_id);$('evCount').textContent=evSelected.size+tr(" participantes seleccionados");};label.append(check,document.createTextNode((p.character_name||p.discord_nickname||tr("Integrante"))+(p.is_active?'':tr(" · Inactivo"))));$('evMembers').append(label);}$('evCount').textContent=evSelected.size+tr(" participantes seleccionados");
     }
-    function evRenderPoints(){const t=evTypes.find(x=>x.id===$('evType').value);$('evPoints').textContent=t?formatNumber(t.points)+' puntos por participante.':'';}
+    function evRenderPoints(){const t=evTypes.find(x=>x.id===$('evType').value);$('evPoints').textContent=t?formatNumber(t.points)+tr(" puntos por participante."):'';}
     async function evOpenForm(e=null,attendance=[]){
       if(evBusy||!await verifyAccess(true)||(e&&!isMaster))return;const version=interfaceVersion;
-      try{const [types,roster]=await Promise.all([evLoadTypes(),evLoadRoster()]);evGuard(version);if(!isAdmin||(e&&!isMaster))return;evTypes=types;evRoster=roster;evEditing=e?{id:e.id,original:new Set(attendance.map(a=>a.user_id))}:null;evSelected=new Set(evEditing?.original||[]);$('evForm').reset();$('evDrops').innerHTML='';$('evDialogTitle').textContent=e?'Corregir asistencia · '+evCode(e):'Configurar evento nuevo';$('evType').replaceChildren(...evTypes.filter(t=>t.is_active).map(t=>new Option(t.name,t.id)));$('evDate').value=evToday();$('evDate').max=evToday();$('evType').required=!e;$('evDate').required=!e;$('evReason').required=!!e;for(const id of ['evNewFields','evDropFields'])e?hide(id):show(id);e?show('evReasonFields'):hide('evReasonFields');$('evSave').textContent=e?'Guardar corrección':'Guardar evento';evRenderPoints();evRenderMembers();setMessage('evFormMessage','');if(!$('evDialog').open)$('evDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}
+      try{const [types,roster]=await Promise.all([evLoadTypes(),evLoadRoster()]);evGuard(version);if(!isAdmin||(e&&!isMaster))return;evTypes=types;evRoster=roster;evEditing=e?{id:e.id,original:new Set(attendance.map(a=>a.user_id))}:null;evSelected=new Set(evEditing?.original||[]);$('evForm').reset();$('evDrops').innerHTML='';$('evDialogTitle').textContent=e?tr("Corregir asistencia · ")+evCode(e):tr("Configurar evento nuevo");$('evType').replaceChildren(...evTypes.filter(t=>t.is_active).map(t=>new Option(t.name,t.id)));$('evDate').value=evToday();$('evDate').max=evToday();$('evType').required=!e;$('evDate').required=!e;$('evReason').required=!!e;for(const id of ['evNewFields','evDropFields'])e?hide(id):show(id);e?show('evReasonFields'):hide('evReasonFields');$('evSave').textContent=e?tr("Guardar corrección"):tr("Guardar evento");evRenderPoints();evRenderMembers();setMessage('evFormMessage','');if(!$('evDialog').open)$('evDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}
     }
-    function evAddDrop(){const node=document.createElement('div');node.className='event-drop';node.innerHTML='<label>Nombre del objeto<input class="ev-item" maxlength="150" required></label><label>Descripción<textarea class="ev-description" maxlength="3000" required></textarea></label><label>Captura (JPG, PNG, WEBP, hasta 2 MB)<input class="ev-file" type="file" accept="image/jpeg,image/png,image/webp" required></label><button type="button" class="danger small-button">Quitar drop</button>';node.querySelector('button').onclick=()=>node.remove();$('evDrops').append(node);}
+    function evAddDrop(){const node=document.createElement('div');node.className='event-drop';node.innerHTML=("<label>"+tr("Nombre del objeto")+"<input class=\"ev-item\" maxlength=\"150\" required></label><label>"+tr("Descripción")+"<textarea class=\"ev-description\" maxlength=\"3000\" required></textarea></label><label>"+tr("Captura (JPG, PNG, WEBP, hasta 2 MB)")+"<input class=\"ev-file\" type=\"file\" accept=\"image/jpeg,image/png,image/webp\" required></label><button type=\"button\" class=\"danger small-button\">"+tr("Quitar drop")+"</button>");node.querySelector('button').onclick=()=>node.remove();$('evDrops').append(node);}
     async function evSubmit(event){
       event.preventDefault();if(evBusy)return;evBusy=true;$('evSave').disabled=true;$('evFormClose').disabled=true;const uploads=[];let rpcStarted=false;const version=interfaceVersion;
-      try{if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');evGuard(version);const editing=evEditing;const participants=[...evSelected];if(!participants.length)throw new Error('Seleccioná al menos un participante.');
-        if(editing){if(!isMaster)throw new Error('Solo el Maestro puede corregir asistencia.');const reason=$('evReason').value.trim();if(!reason)throw new Error('Indicá el motivo.');await evRpc('correct_event_attendance',{p_event_id:editing.id,p_participants:participants,p_reason:reason});evGuard(version);$('evDialog').close();await evLoad();await evShowDetail(editing.id);setMessage('evMessage','Asistencia corregida.','success');return;}
+      try{if(!await verifyAccess(true))throw new Error(tr("Acceso no autorizado."));evGuard(version);const editing=evEditing;const participants=[...evSelected];if(!participants.length)throw new Error(tr("Seleccioná al menos un participante."));
+        if(editing){if(!isMaster)throw new Error(tr("Solo el Maestro puede corregir asistencia."));const reason=$('evReason').value.trim();if(!reason)throw new Error(tr("Indicá el motivo."));await evRpc('correct_event_attendance',{p_event_id:editing.id,p_participants:participants,p_reason:reason});evGuard(version);$('evDialog').close();await evLoad();await evShowDetail(editing.id);setMessage('evMessage',tr("Asistencia corregida."),'success');return;}
         const type=$('evType').value,date=$('evDate').value,notes=$('evNotes').value.trim(),userId=currentUser.id;
-        if(!type||!date||date>evToday())throw new Error('Seleccioná tipo y fecha válidos.');
+        if(!type||!date||date>evToday())throw new Error(tr("Seleccioná tipo y fecha válidos."));
         const entries=[...$('evDrops').children].map(n=>({item_name:n.querySelector('.ev-item').value.trim(),description:n.querySelector('.ev-description').value.trim(),file:n.querySelector('.ev-file').files[0]}));
-        for(const d of entries){if(!d.item_name||!d.description||!d.file||!['image/jpeg','image/png','image/webp'].includes(d.file.type)||d.file.size>2097152||!d.file.size)throw new Error('Revisá nombre, descripción y captura de cada drop (máximo 2 MB).');}
-        const drops=[];for(const d of entries){evGuard(version);const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[d.file.type];const path=userId+'/'+crypto.randomUUID()+'.'+ext;setMessage('evFormMessage','Subiendo capturas...');const {error}=await supabase.storage.from('event-drops').upload(path,d.file,{upsert:false,contentType:d.file.type});if(error)throw error;uploads.push(path);drops.push({item_name:d.item_name,description:d.description,screenshot_path:path});}
-        evGuard(version);if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');evGuard(version);setMessage('evFormMessage','Guardando evento...');rpcStarted=true;const id=await evRpc('create_clan_event',{p_event_type_id:type,p_event_date:date,p_participants:participants,p_observations:notes||null,p_drops:drops});evGuard(version);$('evDialog').close();$('evDrops').innerHTML='';await evLoad();await evShowDetail(id);setMessage('evMessage','Evento registrado correctamente.','success');
-      }catch(err){if(version===interfaceVersion){if(uploads.length&&!rpcStarted){try{await supabase.storage.from('event-drops').remove(uploads);}catch(_){}}setMessage('evFormMessage',evError(err)+(rpcStarted?' Revisá el listado antes de volver a guardar.':''),'error');}}finally{evBusy=false;$('evSave').disabled=false;$('evFormClose').disabled=false;}
+        for(const d of entries){if(!d.item_name||!d.description||!d.file||!['image/jpeg','image/png','image/webp'].includes(d.file.type)||d.file.size>2097152||!d.file.size)throw new Error(tr("Revisá nombre, descripción y captura de cada drop (máximo 2 MB)."));}
+        const drops=[];for(const d of entries){evGuard(version);const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[d.file.type];const path=userId+'/'+crypto.randomUUID()+'.'+ext;setMessage('evFormMessage',tr("Subiendo capturas..."));const {error}=await supabase.storage.from('event-drops').upload(path,d.file,{upsert:false,contentType:d.file.type});if(error)throw error;uploads.push(path);drops.push({item_name:d.item_name,description:d.description,screenshot_path:path});}
+        evGuard(version);if(!await verifyAccess(true))throw new Error(tr("Acceso no autorizado."));evGuard(version);setMessage('evFormMessage',tr("Guardando evento..."));rpcStarted=true;const id=await evRpc('create_clan_event',{p_event_type_id:type,p_event_date:date,p_participants:participants,p_observations:notes||null,p_drops:drops});evGuard(version);$('evDialog').close();$('evDrops').innerHTML='';await evLoad();await evShowDetail(id);setMessage('evMessage',tr("Evento registrado correctamente."),'success');
+      }catch(err){if(version===interfaceVersion){if(uploads.length&&!rpcStarted){try{await supabase.storage.from('event-drops').remove(uploads);}catch(_){}}setMessage('evFormMessage',evError(err)+(rpcStarted?tr(" Revisá el listado antes de volver a guardar."):''),'error');}}finally{evBusy=false;$('evSave').disabled=false;$('evFormClose').disabled=false;}
     }
-    async function evCancel(e){if(evBusy||!await verifyAccess(true)||!isMaster)return;const reason=prompt('Motivo obligatorio de anulación de '+evCode(e));if(!reason?.trim()||!confirm('¿Anular este evento? Sus puntos dejarán de ser válidos.'))return;evBusy=true;try{await evRpc('cancel_clan_event',{p_event_id:e.id,p_reason:reason.trim()});await evLoad();await evShowDetail(e.id);setMessage('evMessage','Evento anulado.','success');}catch(err){setMessage('evMessage',evError(err),'error');}finally{evBusy=false;}}
+    async function evCancel(e){if(evBusy||!await verifyAccess(true)||!isMaster)return;const reason=prompt(tr("Motivo obligatorio de anulación de ")+evCode(e));if(!reason?.trim()||!confirm(tr("¿Anular este evento? Sus puntos dejarán de ser válidos.")))return;evBusy=true;try{await evRpc('cancel_clan_event',{p_event_id:e.id,p_reason:reason.trim()});await evLoad();await evShowDetail(e.id);setMessage('evMessage',tr("Evento anulado."),'success');}catch(err){setMessage('evMessage',evError(err),'error');}finally{evBusy=false;}}
     function evCatalogFields(){const t=evTypes.find(x=>x.id===$('evCatalogSelect').value);$('evCatalogName').value=t?.name||'';$('evCatalogPoints').value=t?.points??'';}
-    function evCatalogOptions(selected=''){$('evCatalogSelect').replaceChildren(new Option('Nuevo tipo',''),...evTypes.map(t=>new Option(t.name+' · '+t.points+' pts',t.id)));$('evCatalogSelect').value=selected;evCatalogFields();}
+    function evCatalogOptions(selected=''){$('evCatalogSelect').replaceChildren(new Option(tr("Nuevo tipo"),''),...evTypes.map(t=>new Option(t.name+' · '+t.points+' pts',t.id)));$('evCatalogSelect').value=selected;evCatalogFields();}
     async function evOpenCatalog(){if(evBusy||!await verifyAccess(true))return;const version=interfaceVersion;try{evTypes=await evLoadTypes();evGuard(version);if(!isAdmin)return;evCatalogOptions();setMessage('evCatalogMessage','');$('evCatalogDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}}
-    $('evCatalogForm').onsubmit=async e=>{e.preventDefault();if(evBusy)return;evBusy=true;$('evCatalogSave').disabled=true;$('evCatalogClose').disabled=true;const version=interfaceVersion;try{if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');const points=Number($('evCatalogPoints').value),name=$('evCatalogName').value.trim();if(!name||$('evCatalogPoints').value===''||!Number.isInteger(points)||points<0||points>2147483647)throw new Error('Datos inválidos.');const id=await evRpc('save_event_type',{p_name:name,p_points:points,p_id:$('evCatalogSelect').value||null});evGuard(version);evTypes=await evLoadTypes();evGuard(version);evCatalogOptions(id);setMessage('evCatalogMessage','Tipo guardado correctamente.','success');}catch(err){setMessage('evCatalogMessage',evError(err),'error');}finally{evBusy=false;$('evCatalogSave').disabled=false;$('evCatalogClose').disabled=false;}};
+    $('evCatalogForm').onsubmit=async e=>{e.preventDefault();if(evBusy)return;evBusy=true;$('evCatalogSave').disabled=true;$('evCatalogClose').disabled=true;const version=interfaceVersion;try{if(!await verifyAccess(true))throw new Error(tr("Acceso no autorizado."));const points=Number($('evCatalogPoints').value),name=$('evCatalogName').value.trim();if(!name||$('evCatalogPoints').value===''||!Number.isInteger(points)||points<0||points>2147483647)throw new Error(tr("Datos inválidos."));const id=await evRpc('save_event_type',{p_name:name,p_points:points,p_id:$('evCatalogSelect').value||null});evGuard(version);evTypes=await evLoadTypes();evGuard(version);evCatalogOptions(id);setMessage('evCatalogMessage',tr("Tipo guardado correctamente."),'success');}catch(err){setMessage('evCatalogMessage',evError(err),'error');}finally{evBusy=false;$('evCatalogSave').disabled=false;$('evCatalogClose').disabled=false;}};
     $('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>selectClanSection(null);$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
 
     // V4 — Subastas LIONS
@@ -3110,12 +3145,12 @@
     let skillRows=[], skillAliases=[], skillBusy=false, skillHistoryKey=null;
     const auBio=['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
     const auCanBid=()=>isActive&&!!currentProfile?.character_name;
-    function auReset(){skillRows=[];skillAliases=[];skillHistoryKey=null;$('skillList').replaceChildren();$('skillHistory').replaceChildren();$('auSkill').replaceChildren();$('skillSearch').value='';$('auSkillSearch').value='';if($('skillDialog').open)$('skillDialog').close();if(clanSection==='auctions')selectClanSection(null);auRequest++;auRows=[];auDrops=[];hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option('Sin evento',''));if($('auDialog').open)$('auDialog').close();}
+    function auReset(){skillRows=[];skillAliases=[];skillHistoryKey=null;$('skillList').replaceChildren();$('skillHistory').replaceChildren();$('auSkill').replaceChildren();$('skillSearch').value='';$('auSkillSearch').value='';if($('skillDialog').open)$('skillDialog').close();if(clanSection==='auctions')selectClanSection(null);auRequest++;auRows=[];auDrops=[];hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option(tr("Sin evento"),''));if($('auDialog').open)$('auDialog').close();}
     function auPermissions(){if(!isAdmin&&$('skillDialog').open)$('skillDialog').close();if(!isMaster){$('skillHistory').replaceChildren();skillHistoryKey=null;$('skillList').querySelectorAll('.skill-master').forEach(n=>n.remove());}if(isActive||isMaster)show('auView');else auReset();$('auNew').classList.toggle('hidden',!isAdmin);if(!isAdmin&&$('auDialog').open)$('auDialog').close();}
     function auNode(tag,text,parent){const n=document.createElement(tag);n.textContent=text;if(parent)parent.append(n);return n;}
     function auButton(parent,text,fn,cls='secondary'){const b=auNode('button',text,parent);b.type='button';b.className=cls+' small-button';b.onclick=fn;return b;}
-    const auState=a=>a.status==='active'?(Date.now()<Date.parse(a.ends_at)?'Activa':'Vencida · pendiente de adjudicación'):a.status==='finished'?'Finalizada':a.status==='no_bids'?'Sin adjudicación':'Anulada';
-    async function auLoad(){if(clanSection!=='auctions'||!await verifyAccess()||clanSection!=='auctions')return;const v=interfaceVersion,r=++auRequest;setMessage('auMessage','Cargando subastas...');$('auList').replaceChildren();try{
+    const auState=a=>a.status==='active'?(Date.now()<Date.parse(a.ends_at)?tr("Activa"):tr("Vencida · pendiente de adjudicación")):a.status==='finished'?tr("Finalizada"):a.status==='no_bids'?tr("Sin adjudicación"):tr("Anulada");
+    async function auLoad(){if(clanSection!=='auctions'||!await verifyAccess()||clanSection!=='auctions')return;const v=interfaceVersion,r=++auRequest;setMessage('auMessage',tr("Cargando subastas..."));$('auList').replaceChildren();try{
       const rows=await fetchAllRows(()=>supabase.from('auctions').select('*').order('auction_number',{ascending:false}));
       const bids=await fetchAllRows(()=>supabase.from('auction_bids').select('*').order('created_at',{ascending:false}).order('id'));
       const roster=await evLoadRoster();
@@ -3124,56 +3159,56 @@
       const allSkills=isMaster?await fetchAllRows(()=>supabase.from('member_skills').select('user_id,skill_key').order('id')):[];
       const scores=await fetchAllRows(()=>supabase.from('auction_result_scores').select('*').order('auction_id').order('user_id'));
       evGuard(v);if(r!==auRequest)return;auRows=rows;const names=new Map(roster.map(p=>[p.user_id,p.character_name||p.discord_nickname]));const known=new Set(skills.map(s=>s.skill_key));const ownedPairs=new Set(allSkills.map(s=>JSON.stringify([s.user_id,s.skill_key])));
-      $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop';auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,box);auNode('p',a.description,box).className='event-note';auNode('p',`${auState(a)} · Cierre: ${formatDate(a.ends_at)}`,box);auNode('p',a.item_category==='skill'?'Habilidad · uso obligatorio · sin reventa':`Precio techo: ${formatNumber(a.ceiling_price)} diamantes`,box);auNode('p',a.condition_type==='none'?'Sin condición de biotraje':`${a.condition_type==='mandatory'?'Obligatorio':'Prioridad'}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';let capture=null;const captureButton=auButton(actions,'Ver captura',async()=>{
+      $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop';auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,box);auNode('p',a.description,box).className='event-note';auNode('p',`${auState(a)} · ${tr("Cierre:")} ${formatDate(a.ends_at)}`,box);auNode('p',a.item_category==='skill'?tr("Habilidad · uso obligatorio · sin reventa"):`${tr("Precio techo:")} ${formatNumber(a.ceiling_price)} ${tr("diamantes")}`,box);auNode('p',a.condition_type==='none'?tr("Sin condición de biotraje"):`${a.condition_type==='mandatory'?tr("Obligatorio"):tr("Prioridad")}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';let capture=null;const captureButton=auButton(actions,tr("Ver captura"),async()=>{
         if(captureButton.disabled)return;
-        if(capture){capture.remove();capture=null;captureButton.textContent='Ver captura';return;}
-        captureButton.disabled=true;captureButton.textContent='Cargando...';
+        if(capture){capture.remove();capture=null;captureButton.textContent=tr("Ver captura");return;}
+        captureButton.disabled=true;captureButton.textContent=tr("Cargando...");
         try{
           if(!await verifyAccess())return;
           const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(a.screenshot_path,60);
           if(error)throw error;
           if(v!==interfaceVersion||r!==auRequest||!box.isConnected)return;
-          const img=document.createElement('img');img.className='event-image';img.alt='Captura del objeto';
+          const img=document.createElement('img');img.className='event-image';img.alt=tr("Captura del objeto");
           capture=img;
-          img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;captureButton.textContent='Ver captura';if(box.isConnected)setMessage('auMessage','No se pudo cargar la captura.','error');};
-          img.src=data.signedUrl;actions.after(img);captureButton.textContent='Ocultar captura';
+          img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;captureButton.textContent=tr("Ver captura");if(box.isConnected)setMessage('auMessage',tr("No se pudo cargar la captura."),'error');};
+          img.src=data.signedUrl;actions.after(img);captureButton.textContent=tr("Ocultar captura");
         }catch(e){if(v===interfaceVersion&&box.isConnected)setMessage('auMessage',evError(e),'error');}
-        finally{captureButton.disabled=false;if(!capture)captureButton.textContent='Ver captura';}
+        finally{captureButton.disabled=false;if(!capture)captureButton.textContent=tr("Ver captura");}
       });
-      const ab=bids.filter(b=>b.auction_id===a.id),own=ab.filter(b=>b.user_id===currentUser.id),active=ab.filter(b=>b.status==='active');auNode('h3','Ofertas activas (no indican ganador)',box);for(const b of active)auNode('p',`${names.get(b.user_id)||'Integrante'}: ${formatNumber(b.amount)} diamantes`,box);if(!active.length)auNode('p','Sin ofertas activas.',box);if(own[0])auNode('p',`Tu última oferta: ${formatNumber(own[0].amount)} · ${own[0].status}`,box);
-      auNode('p',a.adjudication_mode==='free'?'Modalidad libre':'Modalidad por puntuación',box).className='muted';
-      if(a.item_category==='skill'&&known.has(a.skill_key))auNode('p','Habilidad ya adquirida: no podés volver a ofertar.',box).className='muted';
+      const ab=bids.filter(b=>b.auction_id===a.id),own=ab.filter(b=>b.user_id===currentUser.id),active=ab.filter(b=>b.status==='active');auNode('h3',tr("Ofertas activas (no indican ganador)"),box);for(const b of active)auNode('p',`${names.get(b.user_id)||tr("Integrante")}: ${formatNumber(b.amount)} ${tr("diamantes")}`,box);if(!active.length)auNode('p',tr("Sin ofertas activas."),box);if(own[0])auNode('p',`${tr("Tu última oferta:")} ${formatNumber(own[0].amount)} · ${({active:tr('Activa'),replaced:tr('Reemplazada'),cancelled:tr('Anulada')})[own[0].status]||own[0].status}`,box);
+      auNode('p',a.adjudication_mode==='free'?tr("Modalidad libre"):tr("Modalidad por puntuación"),box).className='muted';
+      if(a.item_category==='skill'&&known.has(a.skill_key))auNode('p',tr("Habilidad ya adquirida: no podés volver a ofertar."),box).className='muted';
       const history=scores.filter(x=>x.auction_id===a.id);
-      if(history.length){const detail=auNode('details','',box);auNode('summary','Puntuaciones congeladas (historial)',detail);for(const x of history)auNode('p',`${names.get(x.user_id)||'Integrante'} · Total: ${x.total_score} · Diamantes: ${x.diamond_points} · CP: ${x.cp_points} · Rango: ${x.rank_points} · Asistencia: ${x.attendance_points} · Clase: ${x.class_points??'—'} · Participación: ${x.participation_points}`,detail);}
+      if(history.length){const detail=auNode('details','',box);auNode('summary',tr("Puntuaciones congeladas (historial)"),detail);for(const x of history)auNode('p',`${names.get(x.user_id)||tr("Integrante")} · Total: ${x.total_score} ${tr("· Diamantes:")} ${x.diamond_points} · CP: ${x.cp_points} ${tr("· Rango:")} ${x.rank_points} ${tr("· Asistencia:")} ${x.attendance_points} ${tr("· Clase:")} ${x.class_points??'—'} ${tr("· Participación:")} ${x.participation_points}`,detail);}
       const records=audit.filter(x=>x.auction_id===a.id);
       const frozen=records.find(x=>x.action==='pending_master')?.new_data?.candidates;
       if(a.status==='active'&&Array.isArray(frozen)&&frozen.length){
-        auNode('h3','Desempate pendiente del Maestro',box);
+        auNode('h3',tr("Desempate pendiente del Maestro"),box);
         const valid=frozen.filter(id=>active.some(b=>b.user_id===id)&&!(a.item_category==='skill'&&ownedPairs.has(JSON.stringify([id,a.skill_key]))));
-        for(const id of frozen){const invalid=records.some(x=>x.action==='bid_invalidated'&&x.new_data?.user_id===id)||(a.item_category==='skill'&&ownedPairs.has(JSON.stringify([id,a.skill_key])));auNode('p',`${names.get(id)||'Integrante'} · ${invalid?'Invalidado: habilidad adquirida':valid.includes(id)?'Candidato elegible':'No elegible'}`,box);}
+        for(const id of frozen){const invalid=records.some(x=>x.action==='bid_invalidated'&&x.new_data?.user_id===id)||(a.item_category==='skill'&&ownedPairs.has(JSON.stringify([id,a.skill_key])));auNode('p',`${names.get(id)||tr("Integrante")} · ${invalid?tr("Invalidado: habilidad adquirida"):valid.includes(id)?tr("Candidato elegible"):tr("No elegible")}`,box);}
         if(isMaster){
           const eligible=auNode('div','',box);eligible.className='management-actions';
-          for(const id of valid)auButton(eligible,'Adjudicar a '+(names.get(id)||'Integrante'),()=>{if(confirm('¿Confirmar adjudicación a '+(names.get(id)||'Integrante')+'?'))auAct('resolve_auction_tie',{p_auction_id:a.id,p_winner_id:id},true);},'positive');
-          if(!valid.length&&a.item_category==='skill'){auNode('p','Sin candidatos elegibles. Se puede solicitar el cierre sin ganador.',box);auButton(eligible,'Cerrar sin ganador',()=>{if(confirm('¿Revalidar el empate y cerrar si no existen candidatos elegibles?'))auAct('resolve_auction_tie',{p_auction_id:a.id,p_winner_id:frozen[0]},true);});}
+          for(const id of valid)auButton(eligible,tr("Adjudicar a ")+(names.get(id)||tr("Integrante")),()=>{if(confirm(tr("¿Confirmar adjudicación a ")+(names.get(id)||tr("Integrante"))+'?'))auAct('resolve_auction_tie',{p_auction_id:a.id,p_winner_id:id},true);},'positive');
+          if(!valid.length&&a.item_category==='skill'){auNode('p',tr("Sin candidatos elegibles. Se puede solicitar el cierre sin ganador."),box);auButton(eligible,tr("Cerrar sin ganador"),()=>{if(confirm(tr("¿Revalidar el empate y cerrar si no existen candidatos elegibles?")))auAct('resolve_auction_tie',{p_auction_id:a.id,p_winner_id:frozen[0]},true);});}
         }
       }
-      if(a.status==='no_bids'){auNode('p','Cerrada sin ganador. '+(a.drop_id?'El drop puede republicarse en modalidad libre si continúa pendiente.':'Objeto sin adjudicar.'),box);if(isAdmin&&a.drop_id&&!rows.some(x=>x.drop_id===a.drop_id&&['active','finished'].includes(x.status)))auButton(actions,'Republicar drop',()=>auOpen(a));}
-      if(a.status==='finished')auNode('p',`Ganador: ${names.get(a.winner_id)||'—'} · ${a.winning_bid==null?'—':formatNumber(a.winning_bid)} diamantes${a.unrestricted_use?' · Uso libre':''}`,box);
-      if(a.status==='active'&&Date.now()<Date.parse(a.ends_at)){if(auCanBid()&&!(a.item_category==='skill'&&known.has(a.skill_key))){const min=own[0]?Number((BigInt(own[0].amount)*105n+99n)/100n):1;auButton(actions,'Ofertar',()=>{const raw=prompt(`Oferta en diamantes (mínimo ${min})`,String(min));if(raw===null)return;if(!/^\d+$/.test(raw)||!Number.isSafeInteger(Number(raw))||Number(raw)<min){setMessage('auMessage','Oferta inválida.','error');return;}auAct('place_auction_bid',{p_auction_id:a.id,p_amount:Number(raw)});},'positive');}if(auCanBid()&&own.some(b=>b.status==='active')&&Date.now()<=Date.parse(a.ends_at)-14400000)auButton(actions,'Retirar oferta',()=>{if(confirm('¿Retirar tu oferta?'))auAct('cancel_auction_bid',{p_auction_id:a.id});});if(isMaster)auButton(actions,'Anular subasta',()=>{const reason=prompt('Motivo obligatorio de anulación');if(reason?.trim()&&confirm('¿Anular la subasta y todas sus ofertas activas?'))auAct('cancel_clan_auction',{p_auction_id:a.id,p_reason:reason.trim()},true);},'danger');}}
-      setMessage('auMessage','Subastas actualizadas.','success');}catch(e){if(v===interfaceVersion&&r===auRequest)setMessage('auMessage',evError(e),'error');}}
-    async function auAct(name,args,master=false){if(auBusy)return;auBusy=true;const v=interfaceVersion;try{if(!await verifyAccess(master)|| (master&&!isMaster))return;evGuard(v);await evRpc(name,args);evGuard(v);await auLoad();if(name==='resolve_auction_tie'&&v===interfaceVersion&&clanSection==='auctions'){const {data,error}=await supabase.from('auctions').select('status,winner_id').eq('id',args.p_auction_id).single();if(error)throw error;evGuard(v);setMessage('auMessage',data.status==='no_bids'?'Desempate cerrado sin ganador.':data.status==='finished'&&data.winner_id===args.p_winner_id?'Adjudicación confirmada.':'Estado actualizado; revisá el listado.','success');}}catch(e){if(v===interfaceVersion){await auLoad();if(v===interfaceVersion)setMessage('auMessage',evError(e),'error');}}finally{auBusy=false;}}
+      if(a.status==='no_bids'){auNode('p',tr("Cerrada sin ganador. ")+(a.drop_id?tr("El drop puede republicarse en modalidad libre si continúa pendiente."):tr("Objeto sin adjudicar.")),box);if(isAdmin&&a.drop_id&&!rows.some(x=>x.drop_id===a.drop_id&&['active','finished'].includes(x.status)))auButton(actions,tr("Republicar drop"),()=>auOpen(a));}
+      if(a.status==='finished')auNode('p',`${tr("Ganador:")} ${names.get(a.winner_id)||'—'} · ${a.winning_bid==null?'—':formatNumber(a.winning_bid)} ${tr("diamantes")}${a.unrestricted_use?tr(" · Uso libre"):''}`,box);
+      if(a.status==='active'&&Date.now()<Date.parse(a.ends_at)){if(auCanBid()&&!(a.item_category==='skill'&&known.has(a.skill_key))){const min=own[0]?Number((BigInt(own[0].amount)*105n+99n)/100n):1;auButton(actions,tr("Ofertar"),()=>{const raw=prompt(`${tr("Oferta en diamantes (mínimo")} ${min})`,String(min));if(raw===null)return;if(!/^\d+$/.test(raw)||!Number.isSafeInteger(Number(raw))||Number(raw)<min){setMessage('auMessage',tr("Oferta inválida."),'error');return;}auAct('place_auction_bid',{p_auction_id:a.id,p_amount:Number(raw)});},'positive');}if(auCanBid()&&own.some(b=>b.status==='active')&&Date.now()<=Date.parse(a.ends_at)-14400000)auButton(actions,tr("Retirar oferta"),()=>{if(confirm(tr("¿Retirar tu oferta?")))auAct('cancel_auction_bid',{p_auction_id:a.id});});if(isMaster)auButton(actions,tr("Anular subasta"),()=>{const reason=prompt(tr("Motivo obligatorio de anulación"));if(reason?.trim()&&confirm(tr("¿Anular la subasta y todas sus ofertas activas?")))auAct('cancel_clan_auction',{p_auction_id:a.id,p_reason:reason.trim()},true);},'danger');}}
+      setMessage('auMessage',tr("Subastas actualizadas."),'success');}catch(e){if(v===interfaceVersion&&r===auRequest)setMessage('auMessage',evError(e),'error');}}
+    async function auAct(name,args,master=false){if(auBusy)return;auBusy=true;const v=interfaceVersion;try{if(!await verifyAccess(master)|| (master&&!isMaster))return;evGuard(v);await evRpc(name,args);evGuard(v);await auLoad();if(name==='resolve_auction_tie'&&v===interfaceVersion&&clanSection==='auctions'){const {data,error}=await supabase.from('auctions').select('status,winner_id').eq('id',args.p_auction_id).single();if(error)throw error;evGuard(v);setMessage('auMessage',data.status==='no_bids'?tr("Desempate cerrado sin ganador."):data.status==='finished'&&data.winner_id===args.p_winner_id?tr("Adjudicación confirmada."):tr("Estado actualizado; revisá el listado."),'success');}}catch(e){if(v===interfaceVersion){await auLoad();if(v===interfaceVersion)setMessage('auMessage',evError(e),'error');}}finally{auBusy=false;}}
     function auFields(){const d=auDrops.find(d=>d.id===$('auDrop').value),linked=!!d,skill=$('auCategory').value==='skill';for(const id of ['auName','auDescription','auFile'])$(id).disabled=linked; if(d){$('auName').value=d.item_name;$('auDescription').value=d.description;} $('auFile').required=!linked;$('auName').required=!linked;$('auDescription').required=!linked;$('auCeiling').disabled=skill;$('auCeiling').required=!skill;$('auSkillField').classList.toggle('hidden',!skill);$('auSkillSearch').disabled=!skill;$('auSkill').disabled=!skill;$('auSkill').required=skill;$('auBioField').disabled=$('auCondition').value==='none';}
-    async function auOpen(previous=null){if(auBusy||skillBusy||!await verifyAccess(true))return;const v=interfaceVersion;try{const drops=await fetchAllRows(()=>supabase.from('event_drops').select('*').eq('status','pending').order('created_at',{ascending:false}).order('id'));const auctions=await fetchAllRows(()=>supabase.from('auctions').select('drop_id,status').in('status',['active','finished']).order('id'));const events=await fetchAllRows(()=>supabase.from('events').select('id,event_name,event_number,event_date,status').order('id'));evGuard(v);if(!isAdmin)return;const used=new Set(auctions.map(a=>a.drop_id));const em=new Map(events.filter(e=>e.status!=='cancelled').map(e=>[e.id,e]));auDrops=drops.filter(d=>!used.has(d.id)&&em.has(d.event_id));await skillLoad(v);evGuard(v);if(!isAdmin)return;$('auForm').reset();skillOptions('');$('auDrop').replaceChildren(new Option('Sin evento (carga manual)',''),...auDrops.map(d=>new Option(`${d.item_name} · ${em.get(d.event_id).event_name} #${em.get(d.event_id).event_number} · ${formatDate(em.get(d.event_id).event_date)}`,d.id)));if(previous?.drop_id){if(!auDrops.some(d=>d.id===previous.drop_id))throw Error('El drop ya no está disponible para republicar.');$('auDrop').value=previous.drop_id;$('auCategory').value=previous.item_category;$('auSkill').value=previous.skill_key||'';$('auCeiling').value=previous.ceiling_price??'';$('auCondition').value=previous.condition_type;for(const c of $('auBio').querySelectorAll('input'))c.checked=(previous.biotrajes||[]).includes(c.value);}auFields();setMessage('auFormMessage',previous?.drop_id?'Republicación en modalidad libre. Revisá los datos antes de publicar.':'');$('auDialog').showModal();}catch(e){setMessage('auMessage',evError(e),'error');}}
-    async function auSubmit(e){e.preventDefault();if(auBusy||skillBusy)return;auBusy=true;$('auSave').disabled=true;const v=interfaceVersion;let path=null,started=false;try{if(!await verifyAccess(true))throw Error('Acceso no autorizado');evGuard(v);const d=auDrops.find(d=>d.id===$('auDrop').value),skill=$('auCategory').value==='skill',condition=$('auCondition').value,bios=condition==='none'?[]:[...$('auBio').querySelectorAll('input:checked')].map(o=>o.value),ceiling=Number($('auCeiling').value);if(skill&&!skillRows.some(x=>x.skill_key===$('auSkill').value))throw Error('Seleccioná una habilidad del catálogo');if(condition!=='none'&&!bios.length)throw Error('Seleccioná biotrajes');if(!skill&&(!Number.isSafeInteger(ceiling)||ceiling<1))throw Error('Precio techo inválido');if(!d){const f=$('auFile').files[0],ext={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[f?.type];if(!ext||!f.size||f.size>2097152)throw Error('Captura PNG, JPG o WEBP de hasta 2 MB');path=currentUser.id+'/'+crypto.randomUUID()+'.'+ext;const {error}=await supabase.storage.from('event-drops').upload(path,f,{upsert:false,contentType:f.type});if(error){path=null;throw error;}}evGuard(v);if(!await verifyAccess(true))throw Error('Acceso no autorizado');evGuard(v);started=true;await evRpc('create_clan_auction',{p_drop_id:d?.id||null,p_item_name:$('auName').value.trim(),p_description:$('auDescription').value.trim(),p_screenshot_path:d?.screenshot_path||path,p_item_category:skill?'skill':'other',p_skill_key:skill?$('auSkill').value.trim():null,p_ceiling_price:skill?null:ceiling,p_condition_type:condition,p_biotrajes:bios});evGuard(v);$('auDialog').close();await auLoad();}catch(err){if(path&&!started&&v===interfaceVersion)await supabase.storage.from('event-drops').remove([path]);if(v===interfaceVersion)setMessage('auFormMessage',evError(err)+(started?' Revisá el listado antes de reintentar.':''),'error');}finally{auBusy=false;$('auSave').disabled=false;}}
+    async function auOpen(previous=null){if(auBusy||skillBusy||!await verifyAccess(true))return;const v=interfaceVersion;try{const drops=await fetchAllRows(()=>supabase.from('event_drops').select('*').eq('status','pending').order('created_at',{ascending:false}).order('id'));const auctions=await fetchAllRows(()=>supabase.from('auctions').select('drop_id,status').in('status',['active','finished']).order('id'));const events=await fetchAllRows(()=>supabase.from('events').select('id,event_name,event_number,event_date,status').order('id'));evGuard(v);if(!isAdmin)return;const used=new Set(auctions.map(a=>a.drop_id));const em=new Map(events.filter(e=>e.status!=='cancelled').map(e=>[e.id,e]));auDrops=drops.filter(d=>!used.has(d.id)&&em.has(d.event_id));await skillLoad(v);evGuard(v);if(!isAdmin)return;$('auForm').reset();skillOptions('');$('auDrop').replaceChildren(new Option(tr("Sin evento (carga manual)"),''),...auDrops.map(d=>new Option(`${d.item_name} · ${em.get(d.event_id).event_name} #${em.get(d.event_id).event_number} · ${formatDate(em.get(d.event_id).event_date)}`,d.id)));if(previous?.drop_id){if(!auDrops.some(d=>d.id===previous.drop_id))throw Error(tr("El drop ya no está disponible para republicar."));$('auDrop').value=previous.drop_id;$('auCategory').value=previous.item_category;$('auSkill').value=previous.skill_key||'';$('auCeiling').value=previous.ceiling_price??'';$('auCondition').value=previous.condition_type;for(const c of $('auBio').querySelectorAll('input'))c.checked=(previous.biotrajes||[]).includes(c.value);}auFields();setMessage('auFormMessage',previous?.drop_id?tr("Republicación en modalidad libre. Revisá los datos antes de publicar."):'');$('auDialog').showModal();}catch(e){setMessage('auMessage',evError(e),'error');}}
+    async function auSubmit(e){e.preventDefault();if(auBusy||skillBusy)return;auBusy=true;$('auSave').disabled=true;const v=interfaceVersion;let path=null,started=false;try{if(!await verifyAccess(true))throw Error(tr("Acceso no autorizado"));evGuard(v);const d=auDrops.find(d=>d.id===$('auDrop').value),skill=$('auCategory').value==='skill',condition=$('auCondition').value,bios=condition==='none'?[]:[...$('auBio').querySelectorAll('input:checked')].map(o=>o.value),ceiling=Number($('auCeiling').value);if(skill&&!skillRows.some(x=>x.skill_key===$('auSkill').value))throw Error(tr("Seleccioná una habilidad del catálogo"));if(condition!=='none'&&!bios.length)throw Error(tr("Seleccioná biotrajes"));if(!skill&&(!Number.isSafeInteger(ceiling)||ceiling<1))throw Error(tr("Precio techo inválido"));if(!d){const f=$('auFile').files[0],ext={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[f?.type];if(!ext||!f.size||f.size>2097152)throw Error(tr("Captura PNG, JPG o WEBP de hasta 2 MB"));path=currentUser.id+'/'+crypto.randomUUID()+'.'+ext;const {error}=await supabase.storage.from('event-drops').upload(path,f,{upsert:false,contentType:f.type});if(error){path=null;throw error;}}evGuard(v);if(!await verifyAccess(true))throw Error(tr("Acceso no autorizado"));evGuard(v);started=true;await evRpc('create_clan_auction',{p_drop_id:d?.id||null,p_item_name:$('auName').value.trim(),p_description:$('auDescription').value.trim(),p_screenshot_path:d?.screenshot_path||path,p_item_category:skill?'skill':'other',p_skill_key:skill?$('auSkill').value.trim():null,p_ceiling_price:skill?null:ceiling,p_condition_type:condition,p_biotrajes:bios});evGuard(v);$('auDialog').close();await auLoad();}catch(err){if(path&&!started&&v===interfaceVersion)await supabase.storage.from('event-drops').remove([path]);if(v===interfaceVersion)setMessage('auFormMessage',evError(err)+(started?tr(" Revisá el listado antes de reintentar."):''),'error');}finally{auBusy=false;$('auSave').disabled=false;}}
     const skillNorm=value=>String(value??'').toLowerCase().trim().replace(/[áéíóúüñ]/g,c=>'aeiouun'['áéíóúüñ'.indexOf(c)]).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    async function skillLoad(v){const [rows,aliases]=await Promise.all([fetchAllRows(()=>supabase.from('skill_catalog').select('skill_key,skill_name,normalized_name').order('skill_name').order('skill_key')),fetchAllRows(()=>supabase.from('skill_catalog_aliases').select('normalized_name,skill_key').order('normalized_name'))]);evGuard(v);if(!isAdmin)throw Error('Acceso no autorizado');skillRows=rows;skillAliases=aliases;}
+    async function skillLoad(v){const [rows,aliases]=await Promise.all([fetchAllRows(()=>supabase.from('skill_catalog').select('skill_key,skill_name,normalized_name').order('skill_name').order('skill_key')),fetchAllRows(()=>supabase.from('skill_catalog_aliases').select('normalized_name,skill_key').order('normalized_name'))]);evGuard(v);if(!isAdmin)throw Error(tr("Acceso no autorizado"));skillRows=rows;skillAliases=aliases;}
     function skillMatches(query){const q=skillNorm(query);if(!q)return skillRows;const keys=new Set(skillAliases.filter(a=>a.normalized_name.includes(q)).map(a=>a.skill_key));return skillRows.filter(a=>keys.has(a.skill_key)||skillNorm(a.skill_key).includes(q)||a.normalized_name.includes(q));}
-    function skillOptions(selected=$('auSkill').value){const rows=skillMatches($('auSkillSearch').value);const chosen=skillRows.find(x=>x.skill_key===selected);if(chosen&&!rows.some(x=>x.skill_key===selected))rows.unshift(chosen);$('auSkill').replaceChildren(new Option('Seleccioná una habilidad',''),...rows.map(x=>new Option(`${x.skill_name} · ${x.skill_key}`,x.skill_key)));$('auSkill').value=chosen?selected:'';}
-    function skillRender(){const root=$('skillList');root.replaceChildren();if(!isAdmin)return;const rows=skillMatches($('skillSearch').value);if(!rows.length)auNode('p','No se encontraron habilidades.',root);for(const x of rows){const box=auNode('article','',root);box.className='event-drop';auNode('h3',x.skill_name,box);auNode('p',`Identificador: ${x.skill_key}`,box);auNode('p',`Nombres reservados: ${skillAliases.filter(a=>a.skill_key===x.skill_key).map(a=>a.normalized_name).join(', ')}`,box).className='muted';if(isMaster){const actions=auNode('div','',box);actions.className='management-actions skill-master';auButton(actions,'Modificar nombre',()=>skillRename(x));auButton(actions,'Ver historial',()=>skillAudit(x));}}}
+    function skillOptions(selected=$('auSkill').value){const rows=skillMatches($('auSkillSearch').value);const chosen=skillRows.find(x=>x.skill_key===selected);if(chosen&&!rows.some(x=>x.skill_key===selected))rows.unshift(chosen);$('auSkill').replaceChildren(new Option(tr("Seleccioná una habilidad"),''),...rows.map(x=>new Option(`${x.skill_name} · ${x.skill_key}`,x.skill_key)));$('auSkill').value=chosen?selected:'';}
+    function skillRender(){const root=$('skillList');root.replaceChildren();if(!isAdmin)return;const rows=skillMatches($('skillSearch').value);if(!rows.length)auNode('p',tr("No se encontraron habilidades."),root);for(const x of rows){const box=auNode('article','',root);box.className='event-drop';auNode('h3',x.skill_name,box);auNode('p',`Identificador: ${x.skill_key}`,box);auNode('p',`${tr("Nombres reservados:")} ${skillAliases.filter(a=>a.skill_key===x.skill_key).map(a=>a.normalized_name).join(', ')}`,box).className='muted';if(isMaster){const actions=auNode('div','',box);actions.className='management-actions skill-master';auButton(actions,tr("Modificar nombre"),()=>skillRename(x));auButton(actions,tr("Ver historial"),()=>skillAudit(x));}}}
     async function skillOpen(){if(skillBusy||auBusy||!await verifyAccess(true))return;const v=interfaceVersion;try{await skillLoad(v);evGuard(v);$('skillSearch').value='';$('skillHistory').replaceChildren();skillHistoryKey=null;skillRender();setMessage('skillMessage','');if(!$('skillDialog').open)$('skillDialog').showModal();}catch(e){if(v===interfaceVersion)setMessage('skillAdminMessage',evError(e),'error');}}
-    async function skillRefresh(){if(skillBusy)return;const v=interfaceVersion;try{if(!await verifyAccess(true))return;await skillLoad(v);skillRender();setMessage('skillMessage','Catálogo actualizado.','success');}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}}
-    async function skillRegister(fromAuction){if(skillBusy||auBusy)return;const v=interfaceVersion,msg=fromAuction?'auFormMessage':'skillMessage';skillBusy=true;$('auSave').disabled=true;try{if(!await verifyAccess(true))return;evGuard(v);const name=prompt('Nombre de la nueva habilidad');if(name===null)return;if(!name.trim()||name.trim().length>150)throw Error('Nombre inválido (1 a 150 caracteres).');const key=await evRpc('register_clan_skill',{p_skill_name:name.trim()});await skillLoad(v);if(fromAuction){$('auSkillSearch').value='';skillOptions(key);}else{ $('skillSearch').value='';skillRender();}setMessage(msg,'Habilidad registrada.','success');}catch(e){if(v===interfaceVersion){try{await skillLoad(v);if(fromAuction)skillOptions();else skillRender();}catch{}setMessage(msg,evError(e),'error');}}finally{skillBusy=false;$('auSave').disabled=auBusy;}}
-    async function skillRename(x){if(skillBusy||auBusy)return;const v=interfaceVersion;skillBusy=true;try{if(!await verifyAccess(true)||!isMaster)return;evGuard(v);const name=prompt('Nuevo nombre (el identificador no cambia)',x.skill_name);if(name===null)return;if(!name.trim()||name.trim().length>150)throw Error('Nombre inválido (1 a 150 caracteres).');await evRpc('rename_clan_skill',{p_skill_key:x.skill_key,p_new_name:name.trim()});await skillLoad(v);skillRender();$('skillHistory').replaceChildren();skillHistoryKey=null;setMessage('skillMessage','Nombre actualizado.','success');}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}finally{skillBusy=false;}}
+    async function skillRefresh(){if(skillBusy)return;const v=interfaceVersion;try{if(!await verifyAccess(true))return;await skillLoad(v);skillRender();setMessage('skillMessage',tr("Catálogo actualizado."),'success');}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}}
+    async function skillRegister(fromAuction){if(skillBusy||auBusy)return;const v=interfaceVersion,msg=fromAuction?'auFormMessage':'skillMessage';skillBusy=true;$('auSave').disabled=true;try{if(!await verifyAccess(true))return;evGuard(v);const name=prompt(tr("Nombre de la nueva habilidad"));if(name===null)return;if(!name.trim()||name.trim().length>150)throw Error(tr("Nombre inválido (1 a 150 caracteres)."));const key=await evRpc('register_clan_skill',{p_skill_name:name.trim()});await skillLoad(v);if(fromAuction){$('auSkillSearch').value='';skillOptions(key);}else{ $('skillSearch').value='';skillRender();}setMessage(msg,tr("Habilidad registrada."),'success');}catch(e){if(v===interfaceVersion){try{await skillLoad(v);if(fromAuction)skillOptions();else skillRender();}catch{}setMessage(msg,evError(e),'error');}}finally{skillBusy=false;$('auSave').disabled=auBusy;}}
+    async function skillRename(x){if(skillBusy||auBusy)return;const v=interfaceVersion;skillBusy=true;try{if(!await verifyAccess(true)||!isMaster)return;evGuard(v);const name=prompt(tr("Nuevo nombre (el identificador no cambia)"),x.skill_name);if(name===null)return;if(!name.trim()||name.trim().length>150)throw Error(tr("Nombre inválido (1 a 150 caracteres)."));await evRpc('rename_clan_skill',{p_skill_key:x.skill_key,p_new_name:name.trim()});await skillLoad(v);skillRender();$('skillHistory').replaceChildren();skillHistoryKey=null;setMessage('skillMessage',tr("Nombre actualizado."),'success');}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}finally{skillBusy=false;}}
     async function skillAudit(x) {
       if (skillBusy) return;
       const v = interfaceVersion;
@@ -3190,10 +3225,10 @@
         const root = $('skillHistory');
         root.replaceChildren();
         auNode('h3', `Historial · ${x.skill_name}`, root);
-        if (!rows.length) auNode('p', 'Sin modificaciones registradas.', root);
+        if (!rows.length) auNode('p', tr("Sin modificaciones registradas."), root);
         for (const a of rows) {
-          const author = a.changed_by ? names.get(a.changed_by) || 'Personaje no disponible' : 'Sin dato';
-          auNode('p', `${formatDate(a.changed_at)} · ${a.action === 'created' ? 'Alta' : `${a.old_name} →`} ${a.new_name} · Autor: ${author}`, root);
+          const author = a.changed_by ? names.get(a.changed_by) || tr("Personaje no disponible") : tr("Sin dato");
+          auNode('p', `${formatDate(a.changed_at)} · ${a.action === 'created' ? tr("Alta") : `${a.old_name} →`} ${a.new_name} · ${tr("Autor:")} ${author}`, root);
         }
       } catch (e) {
         if (v === interfaceVersion && skillHistoryKey === x.skill_key) setMessage('skillMessage', evError(e), 'error');
