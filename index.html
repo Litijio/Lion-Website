@@ -963,7 +963,7 @@
       </div>
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4.3</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4.4</footer>
 
   </main>
 
@@ -2977,7 +2977,8 @@
     function syncTopNavigation() {
       const allowed = isActive || isMaster;
       $('membersView').classList.toggle('hidden', !allowed);
-      for (const id of ['skillsView','salesView','fanArtView']) $(id).classList.toggle('hidden', !isAdmin);
+      $('skillsView').classList.toggle('hidden', !isAdmin);
+      for (const id of ['salesView','fanArtView']) $(id).classList.toggle('hidden', !allowed);
       if (!isAdmin && clanSection === 'skills') selectClanSection(null);
     }
     function renderAdminModule(key) {
