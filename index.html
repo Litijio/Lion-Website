@@ -395,6 +395,11 @@
     #auForm .management-actions { margin-top: 0; }
     @media(max-width: 650px) { #auForm .au-grid { grid-template-columns: 1fr; } #auBio label { padding: 8px 5px; font-size: 12px; } }
   
+    .admin-tabs { display: grid; grid-template-columns: repeat(auto-fit,minmax(125px,1fr)); gap: 9px; margin: 20px 0; }
+    .admin-tabs button { width: 100%; font-size: 13px; }
+    .admin-tabs button.section-active { background: #5865f2; box-shadow: inset 0 -3px 0 #aebdff; }
+    .admin-tabs button:disabled { opacity: .45; cursor: not-allowed; }
+    .admin-module > .panel { margin: 16px 0 0; }
     #evView.section-active, #auView.section-active {
       background: #5865f2;
       box-shadow: inset 0 -3px 0 #aebdff;
@@ -612,6 +617,7 @@
 
     </section>
 
+    <div id="publicEventsAnchor" hidden></div>
     <section id="eventsPanel" class="panel hidden">
       <h2>Eventos LIONS</h2>
       <div class="form-grid"><input id="evSearch" type="search" placeholder="Buscar evento o código"><select id="evStatus"><option value="">Todos los estados</option><option value="open">Abiertos</option><option value="closed">Cerrados</option><option value="cancelled">Anulados</option></select></div>
@@ -622,6 +628,7 @@
       <div id="evDetail" class="management-box hidden"></div>
     </section>
 
+    <div id="publicAuctionsAnchor" hidden></div>
     <section id="auPanel" class="panel hidden"><h2>Subastas LIONS · Tier S</h2><p class="muted">Duración: 24 horas. Las ofertas son simbólicas. Retiro permitido hasta 4 horas antes del cierre. Modalidad libre: mayor oferta elegible. Modalidad por puntuación: gana el mayor puntaje.</p><label for="auStatus">Estado</label><select id="auStatus"><option value="">Todas</option><option value="active">Activas o pendientes de adjudicación</option><option value="finished">Finalizadas</option><option value="cancelled">Anuladas</option><option value="no_bids">Sin adjudicación</option></select><div class="management-actions"><button id="auRefresh" class="secondary">Actualizar</button><button id="auNew" class="hidden">Crear subasta</button><button id="auHide" class="secondary">Cerrar listado</button></div><div id="auMessage" class="status"></div><div id="auList"></div></section>
 <dialog id="auDialog" class="event-dialog">
   <h2>Publicar subasta Tier S</h2>
@@ -651,14 +658,28 @@
         <span id="adminRole" class="tag"></span>
       </p>
 
+      <nav class="admin-tabs" aria-label="Módulos de administración">
+        <button type="button" class="secondary section-active" data-admin-module="members" aria-pressed="true">INTEGRANTES</button>
+        <button type="button" class="secondary" data-admin-module="events" aria-pressed="false">EVENTOS</button>
+        <button type="button" class="secondary" data-admin-module="auctions" aria-pressed="false">SUBASTA</button>
+        <button type="button" class="secondary" data-admin-module="skills" aria-pressed="false">HABILIDADES</button>
+        <button type="button" class="secondary" disabled title="Próximamente">VENTAS</button>
+        <button type="button" class="secondary" disabled title="Próximamente">FAN ART</button>
+      </nav>
+      <div id="adminEventsModule" class="admin-module hidden">
       <div class="management-box">
         <h3>Gestión de eventos</h3>
         <div class="management-actions"><button id="evNew">Configurar evento nuevo</button><button id="evCatalog" class="secondary">Configurar tipos y puntos</button></div>
         <div id="evAdminMessage" class="status"></div>
       </div>
 
+      </div>
+      <div id="adminAuctionsModule" class="admin-module hidden"></div>
+      <div id="adminSkillsModule" class="admin-module hidden">
       <div class="management-box"><h3>Catálogo de habilidades</h3><p class="muted">Administrá las habilidades registradas y sus identificadores permanentes.</p><button id="skillManage" type="button" class="secondary">Abrir catálogo de habilidades</button><div id="skillAdminMessage" class="status"></div></div>
       <dialog id="skillDialog" class="event-dialog"><h2>Catálogo de habilidades</h2><label for="skillSearch">Buscar</label><input id="skillSearch" type="search" placeholder="Nombre, identificador o nombre anterior"><div class="management-actions"><button id="skillRegister" type="button">+ Registrar nueva habilidad</button><button id="skillRefresh" type="button" class="secondary">Actualizar</button><button id="skillClose" type="button" class="secondary">Cerrar</button></div><div id="skillMessage" class="status" role="status"></div><div id="skillList"></div><div id="skillHistory"></div></dialog>
+      </div>
+      <div id="adminMembersModule" class="admin-module">
       <h3 style="margin-top:25px">
         Administración de integrantes
       </h3>
@@ -930,9 +951,10 @@
 
       </details>
 
+      </div>
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.3</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4</footer>
 
   </main>
 
@@ -1234,6 +1256,7 @@
         (permissions.admin && isActive);
       evPermissions();
       auPermissions();
+      syncAdminLayout();
       if (!isMaster) { bioRequest++; hide('masterBioBox'); }
     }
 
@@ -1359,6 +1382,8 @@
     }
 
     function clearProtectedData() {
+      syncAdminLayout();
+      renderAdminModule("members");
       evReset();
       auReset();
 
@@ -2938,7 +2963,24 @@
     const evName=id=>{const p=evRoster.find(x=>x.user_id===id);return p?.character_name||p?.discord_nickname||'Integrante'};
     const evError=e=>e?.message||String(e);
     let clanSection = null;
-    function selectClanSection(section) {
+    function renderAdminModule(key) {
+      const modules = {members:'adminMembersModule',events:'adminEventsModule',auctions:'adminAuctionsModule',skills:'adminSkillsModule'};
+      for (const [name,id] of Object.entries(modules)) $(id).classList.toggle('hidden',name!==key);
+      for (const b of document.querySelectorAll('[data-admin-module]')) {
+        const active=b.dataset.adminModule===key;
+        b.classList.toggle('section-active',active);
+        b.setAttribute('aria-pressed',String(active));
+      }
+    }
+    function syncAdminLayout() {
+      for (const [panel,module,anchor] of [['eventsPanel','adminEventsModule','publicEventsAnchor'],['auPanel','adminAuctionsModule','publicAuctionsAnchor']]) {
+        const node=$(panel);
+        if(isAdmin) { if(node.parentElement!==$(module)) $(module).append(node); }
+        else if(node.previousElementSibling!==$(anchor)) $(anchor).after(node);
+      }
+    }
+    function selectClanSection(section, adminModule = null) {
+      if(isAdmin) renderAdminModule(adminModule || section || 'members');
       clanSection = section;
       if (section !== 'events') {
         evRequest++; evDetailRequest++;
@@ -2956,6 +2998,13 @@
       if (section === 'events') show('eventsPanel');
       if (section === 'auctions') show('auPanel');
     }
+    for (const b of document.querySelectorAll('[data-admin-module]')) b.onclick=()=>{
+      if(!isAdmin)return;
+      const key=b.dataset.adminModule;
+      selectClanSection(key==='events'||key==='auctions'?key:null,key);
+      if(key==='events')evLoad();
+      if(key==='auctions')auLoad();
+    };
     function evReset(){
       if(clanSection==='events') selectClanSection(null);
       evRequest++;evDetailRequest++;evDetailId=null;evList=[];evRoster=[];evTypes=[];evSelected.clear();evEditing=null;
@@ -2991,7 +3040,7 @@
         if(result.error)throw result.error;evGuard(version);if(request!==evDetailRequest)return;evRoster=roster;const e=result.data;
         const names=attendance.map(a=>evName(a.user_id)).sort((a,b)=>a.localeCompare(b));
         $('evDetail').innerHTML=`<h3>${escapeHtml(e.event_name)} · ${escapeHtml(evCode(e))}</h3><p>${formatDate(e.event_date)} · ${escapeHtml(evLabels[e.status])} · ${formatNumber(e.points)} puntos por participante</p>${e.status==='cancelled'?`<p class="error">Puntos no válidos. Motivo: ${escapeHtml(e.cancellation_reason)}</p>`:''}<p class="event-note">${escapeHtml(e.observations||'Sin observaciones.')}</p><h3>Participantes (${names.length})</h3><div class="event-members">${names.map(n=>`<div>${escapeHtml(n)}</div>`).join('')||'Sin participantes'}</div><h3 style="margin-top:20px">Drops Tier S (${drops.length})</h3><div id="evDetailDrops"></div>`;
-        for(const d of drops){const node=document.createElement('div');node.className='event-drop';node.innerHTML=`<strong>${escapeHtml(d.item_name)}</strong><p class="event-note">${escapeHtml(d.description)}</p><p class="muted">${escapeHtml(evLabels[d.status]||d.status)}${d.status==='sold'?` · Comprador: ${escapeHtml(evName(d.buyer_id))} · ${formatNumber(d.sale_price)} diamantes · ${formatDate(d.sold_at)}`:''}</p>`;if(d.screenshot_path&&!d.screenshot_deleted_at){const b=document.createElement('button');b.className='secondary small-button';b.textContent='Ver captura';b.onclick=async()=>{if(!await verifyAccess())return;const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(d.screenshot_path,60);if(error){setMessage('evMessage',error.message,'error');return;}if(version!==interfaceVersion||request!==evDetailRequest)return;const img=document.createElement('img');img.className='event-image';img.alt='Captura del drop';img.src=data.signedUrl;img.onerror=()=>{img.remove();b.disabled=false;setMessage('evMessage','No se pudo cargar la captura.','error');};node.append(img);b.disabled=true;};node.append(b);}else{const p=document.createElement('p');p.className='muted';p.textContent='Captura no disponible.';node.append(p);}$('evDetailDrops').append(node);}
+        for(const d of drops){const node=document.createElement('div');node.className='event-drop';node.innerHTML=`<strong>${escapeHtml(d.item_name)}</strong><p class="event-note">${escapeHtml(d.description)}</p><p class="muted">${escapeHtml(evLabels[d.status]||d.status)}${d.status==='sold'?` · Comprador: ${escapeHtml(evName(d.buyer_id))} · ${formatNumber(d.sale_price)} diamantes · ${formatDate(d.sold_at)}`:''}</p>`;if(d.screenshot_path&&!d.screenshot_deleted_at){const b=document.createElement('button');b.className='secondary small-button';b.textContent='Ver captura';let capture=null;b.onclick=async()=>{if(b.disabled)return;if(capture){capture.remove();capture=null;b.textContent='Ver captura';return;}b.disabled=true;b.textContent='Cargando...';try{if(!await verifyAccess())return;const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(d.screenshot_path,60);if(error)throw error;if(version!==interfaceVersion||request!==evDetailRequest||!node.isConnected)return;const img=document.createElement('img');img.className='event-image';img.alt='Captura del drop';capture=img;img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;b.textContent='Ver captura';if(node.isConnected)setMessage('evMessage','No se pudo cargar la captura.','error');};img.src=data.signedUrl;node.append(img);b.textContent='Ocultar captura';}catch(e){if(version===interfaceVersion&&node.isConnected)setMessage('evMessage',evError(e),'error');}finally{b.disabled=false;if(!capture)b.textContent='Ver captura';}};node.append(b);}else{const p=document.createElement('p');p.className='muted';p.textContent='Captura no disponible.';node.append(p);}$('evDetailDrops').append(node);}
         if(!drops.length)$('evDetailDrops').textContent='Sin drops.';
         if(isMaster&&e.status!=='cancelled'){const actions=document.createElement('div');actions.className='management-actions ev-master';const edit=document.createElement('button');edit.textContent='Corregir asistencia';edit.onclick=()=>evOpenForm(e,attendance);const cancel=document.createElement('button');cancel.className='danger';cancel.textContent='Anular evento';cancel.onclick=()=>evCancel(e);actions.append(edit,cancel);$('evDetail').append(actions);}
         if(isMaster){const audit=document.createElement('details');audit.className='ev-master';audit.innerHTML='<summary>Auditoría del evento</summary>';audit.addEventListener('toggle',async()=>{if(!audit.open||!await verifyAccess(true)||!isMaster)return;try{const rows=await fetchAllRows(()=>supabase.from('event_audit').select('*').eq('event_id',id).order('changed_at',{ascending:false}).order('id'));if(request!==evDetailRequest)return;audit.querySelectorAll('p').forEach(x=>x.remove());for(const a of rows){const p=document.createElement('p');p.className='muted';p.textContent=`${formatDate(a.changed_at)} · ${evName(a.changed_by)} · ${ {event_created:'Creación',attendance_corrected:'Corrección de asistencia',event_cancelled:'Anulación'}[a.action]||a.action}${a.reason?' · '+a.reason:''}`;if(a.action==='attendance_corrected'){const before=(a.previous_data||[]).map(x=>evName(x.user_id));const after=(a.new_data||[]).map(x=>evName(x.user_id));p.textContent+=' | Antes: '+before.join(', ')+' | Después: '+after.join(', ');}audit.append(p);}}catch(err){setMessage('evMessage',evError(err),'error');}});$('evDetail').append(audit);}
@@ -3047,7 +3096,22 @@
       const allSkills=isMaster?await fetchAllRows(()=>supabase.from('member_skills').select('user_id,skill_key').order('id')):[];
       const scores=await fetchAllRows(()=>supabase.from('auction_result_scores').select('*').order('auction_id').order('user_id'));
       evGuard(v);if(r!==auRequest)return;auRows=rows;const names=new Map(roster.map(p=>[p.user_id,p.character_name||p.discord_nickname]));const known=new Set(skills.map(s=>s.skill_key));const ownedPairs=new Set(allSkills.map(s=>JSON.stringify([s.user_id,s.skill_key])));
-      $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop';auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,box);auNode('p',a.description,box).className='event-note';auNode('p',`${auState(a)} · Cierre: ${formatDate(a.ends_at)}`,box);auNode('p',a.item_category==='skill'?'Habilidad · uso obligatorio · sin reventa':`Precio techo: ${formatNumber(a.ceiling_price)} diamantes`,box);auNode('p',a.condition_type==='none'?'Sin condición de biotraje':`${a.condition_type==='mandatory'?'Obligatorio':'Prioridad'}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';auButton(actions,'Ver captura',async()=>{try{if(!await verifyAccess())return;const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(a.screenshot_path,60);if(error)throw error;if(v!==interfaceVersion||!box.isConnected)return;const img=auNode('img','',box);img.className='event-image';img.alt='Captura del objeto';img.src=data.signedUrl;}catch(e){setMessage('auMessage',evError(e),'error');}});
+      $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop';auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,box);auNode('p',a.description,box).className='event-note';auNode('p',`${auState(a)} · Cierre: ${formatDate(a.ends_at)}`,box);auNode('p',a.item_category==='skill'?'Habilidad · uso obligatorio · sin reventa':`Precio techo: ${formatNumber(a.ceiling_price)} diamantes`,box);auNode('p',a.condition_type==='none'?'Sin condición de biotraje':`${a.condition_type==='mandatory'?'Obligatorio':'Prioridad'}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';let capture=null;const captureButton=auButton(actions,'Ver captura',async()=>{
+        if(captureButton.disabled)return;
+        if(capture){capture.remove();capture=null;captureButton.textContent='Ver captura';return;}
+        captureButton.disabled=true;captureButton.textContent='Cargando...';
+        try{
+          if(!await verifyAccess())return;
+          const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(a.screenshot_path,60);
+          if(error)throw error;
+          if(v!==interfaceVersion||r!==auRequest||!box.isConnected)return;
+          const img=document.createElement('img');img.className='event-image';img.alt='Captura del objeto';
+          capture=img;
+          img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;captureButton.textContent='Ver captura';if(box.isConnected)setMessage('auMessage','No se pudo cargar la captura.','error');};
+          img.src=data.signedUrl;actions.after(img);captureButton.textContent='Ocultar captura';
+        }catch(e){if(v===interfaceVersion&&box.isConnected)setMessage('auMessage',evError(e),'error');}
+        finally{captureButton.disabled=false;if(!capture)captureButton.textContent='Ver captura';}
+      });
       const ab=bids.filter(b=>b.auction_id===a.id),own=ab.filter(b=>b.user_id===currentUser.id),active=ab.filter(b=>b.status==='active');auNode('h3','Ofertas activas (no indican ganador)',box);for(const b of active)auNode('p',`${names.get(b.user_id)||'Integrante'}: ${formatNumber(b.amount)} diamantes`,box);if(!active.length)auNode('p','Sin ofertas activas.',box);if(own[0])auNode('p',`Tu última oferta: ${formatNumber(own[0].amount)} · ${own[0].status}`,box);
       auNode('p',a.adjudication_mode==='free'?'Modalidad libre':'Modalidad por puntuación',box).className='muted';
       if(a.item_category==='skill'&&known.has(a.skill_key))auNode('p','Habilidad ya adquirida: no podés volver a ofertar.',box).className='muted';
@@ -3082,7 +3146,31 @@
     async function skillRefresh(){if(skillBusy)return;const v=interfaceVersion;try{if(!await verifyAccess(true))return;await skillLoad(v);skillRender();setMessage('skillMessage','Catálogo actualizado.','success');}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}}
     async function skillRegister(fromAuction){if(skillBusy||auBusy)return;const v=interfaceVersion,msg=fromAuction?'auFormMessage':'skillMessage';skillBusy=true;$('auSave').disabled=true;try{if(!await verifyAccess(true))return;evGuard(v);const name=prompt('Nombre de la nueva habilidad');if(name===null)return;if(!name.trim()||name.trim().length>150)throw Error('Nombre inválido (1 a 150 caracteres).');const key=await evRpc('register_clan_skill',{p_skill_name:name.trim()});await skillLoad(v);if(fromAuction){$('auSkillSearch').value='';skillOptions(key);}else{ $('skillSearch').value='';skillRender();}setMessage(msg,'Habilidad registrada.','success');}catch(e){if(v===interfaceVersion){try{await skillLoad(v);if(fromAuction)skillOptions();else skillRender();}catch{}setMessage(msg,evError(e),'error');}}finally{skillBusy=false;$('auSave').disabled=auBusy;}}
     async function skillRename(x){if(skillBusy||auBusy)return;const v=interfaceVersion;skillBusy=true;try{if(!await verifyAccess(true)||!isMaster)return;evGuard(v);const name=prompt('Nuevo nombre (el identificador no cambia)',x.skill_name);if(name===null)return;if(!name.trim()||name.trim().length>150)throw Error('Nombre inválido (1 a 150 caracteres).');await evRpc('rename_clan_skill',{p_skill_key:x.skill_key,p_new_name:name.trim()});await skillLoad(v);skillRender();$('skillHistory').replaceChildren();skillHistoryKey=null;setMessage('skillMessage','Nombre actualizado.','success');}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}finally{skillBusy=false;}}
-    async function skillAudit(x){if(skillBusy)return;const v=interfaceVersion;skillHistoryKey=x.skill_key;try{if(!await verifyAccess(true)||!isMaster)return;const rows=await fetchAllRows(()=>supabase.from('skill_catalog_audit').select('*').eq('skill_key',x.skill_key).order('changed_at',{ascending:false}).order('id'));evGuard(v);if(!isMaster||!$('skillDialog').open||skillHistoryKey!==x.skill_key)return;const root=$('skillHistory');root.replaceChildren();auNode('h3',`Historial · ${x.skill_name}`,root);if(!rows.length)auNode('p','Sin modificaciones registradas.',root);for(const a of rows)auNode('p',`${formatDate(a.changed_at)} · ${a.action==='created'?'Alta':`${a.old_name} →`} ${a.new_name} · Autor: ${a.changed_by||'Sin dato'}`,root);}catch(e){if(v===interfaceVersion)setMessage('skillMessage',evError(e),'error');}}
+    async function skillAudit(x) {
+      if (skillBusy) return;
+      const v = interfaceVersion;
+      skillHistoryKey = x.skill_key;
+      try {
+        if (!await verifyAccess(true) || !isMaster) return;
+        const [rows, profiles] = await Promise.all([
+          fetchAllRows(() => supabase.from('skill_catalog_audit').select('*').eq('skill_key', x.skill_key).order('changed_at', {ascending:false}).order('id')),
+          fetchAllRows(() => supabase.from('member_profiles').select('user_id,character_name').order('user_id'))
+        ]);
+        evGuard(v);
+        if (!isMaster || !$('skillDialog').open || skillHistoryKey !== x.skill_key) return;
+        const names = new Map(profiles.map(p => [p.user_id, p.character_name?.trim()]));
+        const root = $('skillHistory');
+        root.replaceChildren();
+        auNode('h3', `Historial · ${x.skill_name}`, root);
+        if (!rows.length) auNode('p', 'Sin modificaciones registradas.', root);
+        for (const a of rows) {
+          const author = a.changed_by ? names.get(a.changed_by) || 'Personaje no disponible' : 'Sin dato';
+          auNode('p', `${formatDate(a.changed_at)} · ${a.action === 'created' ? 'Alta' : `${a.old_name} →`} ${a.new_name} · Autor: ${author}`, root);
+        }
+      } catch (e) {
+        if (v === interfaceVersion && skillHistoryKey === x.skill_key) setMessage('skillMessage', evError(e), 'error');
+      }
+    }
     $('skillManage').onclick=skillOpen;$('skillRegister').onclick=()=>skillRegister(false);$('skillRefresh').onclick=skillRefresh;$('skillClose').onclick=()=>{if(!skillBusy)$('skillDialog').close();};$('skillDialog').addEventListener('cancel',e=>{if(skillBusy)e.preventDefault();});$('skillSearch').oninput=skillRender;$('auSkillSearch').oninput=()=>skillOptions();$('auSkillRegister').onclick=()=>skillRegister(true);
     $('auBio').replaceChildren(...auBio.map(b=>{const label=document.createElement('label'), input=document.createElement('input');input.type='checkbox';input.name='auBiotraje';input.value=b;label.append(input,document.createTextNode(b));return label;}));$('auView').onclick=()=>{selectClanSection('auctions');auLoad();};$('auRefresh').onclick=auLoad;$('auStatus').onchange=auLoad;$('auHide').onclick=()=>selectClanSection(null);$('auNew').onclick=()=>auOpen();$('auDrop').onchange=$('auCategory').onchange=$('auCondition').onchange=auFields;$('auForm').onsubmit=auSubmit;$('auClose').onclick=()=>{if(!auBusy&&!skillBusy)$('auDialog').close();};$('auDialog').addEventListener('cancel',e=>{if(auBusy||skillBusy)e.preventDefault();});
 
