@@ -527,7 +527,7 @@
         <h2>Registro semanal de CP</h2>
 
         <p class="muted">
-          Cargá tu CP y seleccioná tu biotraje.
+          Cargá tu CP semanal. Elegí tu biotraje solo en el primer registro; después, únicamente el Maestro puede cambiarlo.
           Se permite un registro por semana.
         </p>
 
@@ -557,7 +557,7 @@
 
                 <label for="bioInput">Biotraje</label>
 
-                <select id="bioInput" required>
+                <select id="bioInput" required disabled>
                   <option value="">Seleccionar biotraje</option>
                   <option>Punisher</option>
                   <option>Phantom</option>
@@ -568,13 +568,14 @@
                   <option>Arbiter</option>
                   <option>Demolisher</option>
                 </select>
+                <p id="bioHint" class="muted">Consultando biotraje…</p>
 
               </div>
 
             </div>
 
             <div class="form-actions">
-              <button id="saveCpButton" type="submit">
+              <button id="saveCpButton" type="submit" disabled>
                 Guardar CP de esta semana
               </button>
             </div>
@@ -751,6 +752,16 @@
 
       </div>
 
+      <div id="masterBioBox" class="management-box hidden">
+        <h3>Cambio de biotraje · Solo Maestro</h3>
+        <p id="masterBioCurrent" class="muted"></p>
+        <label for="masterBioInput">Nuevo biotraje</label>
+        <select id="masterBioInput" disabled></select>
+        <div class="management-actions"><button id="masterBioSave" disabled>Guardar biotraje</button></div>
+        <p class="muted">Modifica el último registro de CP y conserva la auditoría.</p>
+        <div id="masterBioMessage" class="status"></div>
+      </div>
+
       <div id="profileAdminMessage" class="status"></div>
 
       <h3 style="margin-top:35px">
@@ -919,7 +930,7 @@
 
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.0</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.1</footer>
 
   </main>
 
@@ -1032,6 +1043,9 @@
     let interfaceVersion = 0;
     let recordsVersion = 0;
     let adminBusy = false;
+    let bioRequest = 0;
+    let masterBioBusy = false;
+    let memberDataRequest = 0;
     let checkingPermissions = false;
 
     function show(id) {
@@ -1218,6 +1232,7 @@
         (permissions.admin && isActive);
       evPermissions();
       auPermissions();
+      if (!isMaster) { bioRequest++; hide('masterBioBox'); }
     }
 
     function displayInactive(profile) {
@@ -1303,6 +1318,8 @@
     function clearAdminData() {
 
       recordsVersion++;
+      bioRequest++;
+      hide('masterBioBox');
 
       adminProfiles = [];
       weeklyRecords = [];
@@ -1351,7 +1368,10 @@
       $('lockedMessage').textContent = '';
 
       $('cpInput').value = '';
+      memberDataRequest++;
       $('bioInput').value = '';
+      $('bioInput').disabled = true;
+      $('saveCpButton').disabled = true;
       $('characterInput').value = '';
       $('inactiveReason').textContent = '';
       $('inactiveDate').textContent = '—';
@@ -1470,6 +1490,10 @@
       const userId = currentUser.id;
       const version = interfaceVersion;
       const week = currentWeekStart();
+      const request = ++memberDataRequest;
+      $('bioInput').disabled = true;
+      $('saveCpButton').disabled = true;
+      $('bioHint').textContent = 'Consultando biotraje…';
 
       $('weekLabel').textContent =
         'Semana desde el lunes ' + formatDate(week);
@@ -1482,7 +1506,7 @@
           .eq('week_start', week)
           .maybeSingle();
 
-      if (version !== interfaceVersion || !isActive) return;
+      if (version !== interfaceVersion || request !== memberDataRequest || !isActive) return;
 
       if (currentError) {
 
@@ -1518,9 +1542,23 @@
         .from('cp_records')
         .select('cp,biotraje,week_start,created_at')
         .eq('user_id', userId)
-        .order('week_start', { ascending: false });
+        .order('week_start', { ascending: false })
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false });
 
-      if (version !== interfaceVersion || !isActive) return;
+      if (version !== interfaceVersion || request !== memberDataRequest || !isActive) return;
+
+      if (!current && !error) {
+        const latest = data?.[0];
+        $('bioInput').value = latest?.biotraje || '';
+        $('bioInput').disabled = !!latest;
+        $('saveCpButton').disabled = !!latest && !bios.includes(latest.biotraje);
+        $('bioHint').textContent = latest
+          ? 'Biotraje bloqueado. Solicitá cualquier cambio al Maestro.'
+          : 'Elegí tu biotraje inicial. Después quedará bloqueado.';
+      } else if (error && !current) {
+        $('bioHint').textContent = 'No se pudo verificar tu biotraje. Volvé a iniciar sesión.';
+      }
 
       $('myHistory').innerHTML = error
 
@@ -1550,6 +1588,7 @@
         !currentProfile?.character_name
       ) return;
 
+      if ($('saveCpButton').disabled) return;
       const cp = Number($('cpInput').value);
       const biotraje = $('bioInput').value;
       const version = interfaceVersion;
@@ -1606,8 +1645,7 @@
         }
 
       } finally {
-
-        button.disabled = false;
+        // loadMemberData determina si corresponde habilitar una nueva carga.
       }
 
     });
@@ -1759,6 +1797,7 @@
       ) || null;
 
       const p = selectedProfile;
+      void loadMasterBio(p);
 
       if (!p) {
         hide('selectedMemberPanel');
@@ -1850,6 +1889,73 @@
       }
     }
 
+    async function loadMasterBio(target) {
+      const request = ++bioRequest;
+      const version = interfaceVersion;
+      hide('masterBioBox');
+      $('masterBioSave').disabled = true;
+      $('masterBioInput').disabled = true;
+      $('masterBioInput').replaceChildren();
+      if (!isMaster || !target?.is_active) return;
+      show('masterBioBox');
+      $('masterBioCurrent').textContent = 'Consultando biotraje actual…';
+      try {
+        const { data, error } = await supabase.from('cp_records')
+          .select('biotraje').eq('user_id', target.user_id)
+          .order('week_start', { ascending: false })
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false }).limit(1).maybeSingle();
+        if (request !== bioRequest || version !== interfaceVersion || !isMaster) return;
+        if (error) throw error;
+        if (!data) {
+          $('masterBioCurrent').textContent = 'El integrante todavía no registró su CP inicial.';
+          return;
+        }
+        $('masterBioCurrent').textContent = 'Biotraje actual: ' + data.biotraje;
+        bios.forEach(b => $('masterBioInput').add(new Option(b, b)));
+        $('masterBioInput').value = data.biotraje;
+        $('masterBioInput').dataset.current = data.biotraje;
+        $('masterBioInput').disabled = masterBioBusy;
+        $('masterBioSave').disabled = true;
+      } catch (error) {
+        if (request === bioRequest && version === interfaceVersion)
+          $('masterBioCurrent').textContent = error.message;
+      }
+    }
+
+    $('masterBioInput').addEventListener('change', () => {
+      $('masterBioSave').disabled = !isMaster || masterBioBusy ||
+        !bios.includes($('masterBioInput').value) ||
+        $('masterBioInput').value === $('masterBioInput').dataset.current;
+    });
+
+    $('masterBioSave').addEventListener('click', async () => {
+      const target = selectedProfile;
+      const bio = $('masterBioInput').value;
+      const old = $('masterBioInput').dataset.current;
+      const version = interfaceVersion;
+      if (masterBioBusy || !isMaster || !target?.is_active || !bios.includes(bio) || bio === old) return;
+      if (!confirm('Cambiar el biotraje de ' + (target.character_name || target.discord_nickname) + ' de ' + old + ' a ' + bio + '?')) return;
+      masterBioBusy = true;
+      $('masterBioSave').disabled = true;
+      $('masterBioInput').disabled = true;
+      try {
+        if (!await verifyAccess(true) || !isMaster || version !== interfaceVersion || selectedProfile?.user_id !== target.user_id) return;
+        const { error } = await supabase.rpc('set_member_biotraje', {p_user_id: target.user_id, p_biotraje: bio});
+        if (error) throw error;
+        if (version !== interfaceVersion) return;
+        setMessage('masterBioMessage', 'Biotraje actualizado correctamente.', 'success');
+        await loadWeeklyRecords();
+        await loadAudit();
+        await loadMemberData();
+      } catch (error) {
+        if (version === interfaceVersion) setMessage('masterBioMessage', error.message, 'error');
+      } finally {
+        masterBioBusy = false;
+        if (version === interfaceVersion) void loadMasterBio(selectedProfile);
+      }
+    });
+
     async function verifyTarget(target) {
 
       if (!target || !await verifyAccess(true)) return false;
@@ -1903,6 +2009,7 @@
     $('memberSelector').addEventListener('change', () => {
 
       setMessage('profileAdminMessage', '');
+      setMessage('masterBioMessage', '');
       renderSelectedMember();
     });
 
@@ -2602,20 +2709,7 @@
         return;
       }
 
-      const biotraje = prompt(
-        'Biotraje (' + bios.join(', ') + '):',
-        oldBio
-      );
-
-      if (biotraje === null) return;
-
-      if (!bios.includes(biotraje)) {
-
-        setMessage('adminMessage', 'Biotraje inválido.', 'error');
-        return;
-      }
-
-      if (cp === Number(oldCp) && biotraje === oldBio) {
+      if (cp === Number(oldCp)) {
 
         setMessage('adminMessage', 'No hay cambios.', 'warning');
         return;
@@ -2625,7 +2719,7 @@
 
       const { data, error } = await supabase
         .from('cp_records')
-        .update({ cp, biotraje })
+        .update({ cp })
         .eq('user_id', userId)
         .eq('week_start', week)
         .select('user_id')
