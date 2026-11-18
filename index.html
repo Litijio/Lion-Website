@@ -116,8 +116,20 @@
     .top-actions {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      align-items: center;
+      gap: 7px;
       flex-wrap: wrap;
+    }
+
+    .top-actions > button {
+      font-size: 13px;
+      padding: 10px 11px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: 850px) {
+      .top-actions { flex-wrap: nowrap; }
     }
 
     .form-grid {
@@ -951,7 +963,7 @@
       </div>
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4.2</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4.3</footer>
 
   </main>
 
