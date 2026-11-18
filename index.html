@@ -394,6 +394,11 @@
     #auBio:disabled, #auForm fieldset:disabled { opacity: .5; }
     #auForm .management-actions { margin-top: 0; }
     @media(max-width: 650px) { #auForm .au-grid { grid-template-columns: 1fr; } #auBio label { padding: 8px 5px; font-size: 12px; } }
+  
+    #evView.section-active, #auView.section-active {
+      background: #5865f2;
+      box-shadow: inset 0 -3px 0 #aebdff;
+    }
   </style>
 </head>
 
@@ -414,8 +419,8 @@
       </p>
 
       <div class="top-actions">
-        <button id="auView" class="hidden secondary">Ver subastas</button>
-        <button id="evView" class="hidden secondary">Ver eventos</button>
+        <button id="auView" aria-pressed="false" class="hidden secondary">Ver subastas</button>
+        <button id="evView" aria-pressed="false" class="hidden secondary">Ver eventos</button>
         <button id="loginButton">Acceder con Discord</button>
         <button id="logoutButton" class="secondary hidden">
           Cerrar sesión
@@ -2836,7 +2841,27 @@
     const evToday=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Argentina/Buenos_Aires'}).format(new Date());
     const evName=id=>{const p=evRoster.find(x=>x.user_id===id);return p?.character_name||p?.discord_nickname||'Integrante'};
     const evError=e=>e?.message||String(e);
+    let clanSection = null;
+    function selectClanSection(section) {
+      clanSection = section;
+      if (section !== 'events') {
+        evRequest++; evDetailRequest++;
+        hide('eventsPanel'); hide('evDetail');
+        $('evDetail').innerHTML = '';
+      }
+      if (section !== 'auctions') {
+        auRequest++;
+        hide('auPanel'); $('auList').replaceChildren();
+      }
+      for (const [id, key] of [['evView','events'],['auView','auctions']]) {
+        $(id).classList.toggle('section-active', section === key);
+        $(id).setAttribute('aria-pressed', String(section === key));
+      }
+      if (section === 'events') show('eventsPanel');
+      if (section === 'auctions') show('auPanel');
+    }
     function evReset(){
+      if(clanSection==='events') selectClanSection(null);
       evRequest++;evDetailRequest++;evDetailId=null;evList=[];evRoster=[];evTypes=[];evSelected.clear();evEditing=null;
       hide('evView');hide('eventsPanel');hide('evDetail');$('evRows').innerHTML='';$('evDetail').innerHTML='';$('evMembers').innerHTML='';$('evDrops').innerHTML='';$('evForm').reset();$('evCatalogForm').reset();
       for(const id of ['evDialog','evCatalogDialog'])if($(id).open)$(id).close();
@@ -2851,8 +2876,8 @@
     async function evLoadRoster(){return await evRpc('get_event_members')||[];}
     function evGuard(version){if(version!==interfaceVersion||!currentUser||!(isActive||isMaster))throw new Error('La sesión cambió.');}
     async function evLoad(){
-      if(!await verifyAccess())return;
-      const version=interfaceVersion,request=++evRequest;show('eventsPanel');setMessage('evMessage','Cargando eventos...');
+      if(clanSection!=='events'||!await verifyAccess()||clanSection!=='events')return;
+      const version=interfaceVersion,request=++evRequest;setMessage('evMessage','Cargando eventos...');
       try{const rows=await fetchAllRows(()=>supabase.from('events').select('*').order('event_date',{ascending:false}).order('event_number',{ascending:false}));evGuard(version);if(request!==evRequest)return;evList=rows;evPageNumber=1;evRender();setMessage('evMessage',rows.length+' eventos registrados.','success');}
       catch(e){if(version===interfaceVersion&&request===evRequest)setMessage('evMessage',evError(e),'error');}
     }
@@ -2905,18 +2930,18 @@
     function evCatalogOptions(selected=''){$('evCatalogSelect').replaceChildren(new Option('Nuevo tipo',''),...evTypes.map(t=>new Option(t.name+' · '+t.points+' pts',t.id)));$('evCatalogSelect').value=selected;evCatalogFields();}
     async function evOpenCatalog(){if(evBusy||!await verifyAccess(true))return;const version=interfaceVersion;try{evTypes=await evLoadTypes();evGuard(version);if(!isAdmin)return;evCatalogOptions();setMessage('evCatalogMessage','');$('evCatalogDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}}
     $('evCatalogForm').onsubmit=async e=>{e.preventDefault();if(evBusy)return;evBusy=true;$('evCatalogSave').disabled=true;$('evCatalogClose').disabled=true;const version=interfaceVersion;try{if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');const points=Number($('evCatalogPoints').value),name=$('evCatalogName').value.trim();if(!name||$('evCatalogPoints').value===''||!Number.isInteger(points)||points<0||points>2147483647)throw new Error('Datos inválidos.');const id=await evRpc('save_event_type',{p_name:name,p_points:points,p_id:$('evCatalogSelect').value||null});evGuard(version);evTypes=await evLoadTypes();evGuard(version);evCatalogOptions(id);setMessage('evCatalogMessage','Tipo guardado correctamente.','success');}catch(err){setMessage('evCatalogMessage',evError(err),'error');}finally{evBusy=false;$('evCatalogSave').disabled=false;$('evCatalogClose').disabled=false;}};
-    $('evView').onclick=()=>evLoad();$('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>{evRequest++;evDetailRequest++;hide('eventsPanel');hide('evDetail');$('evDetail').innerHTML='';};$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
+    $('evView').onclick=()=>{selectClanSection('events');evLoad();};$('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>selectClanSection(null);$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
 
     // V4 — Subastas LIONS
     let auRows=[], auRequest=0, auBusy=false, auDrops=[];
     const auBio=['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
     const auCanBid=()=>isActive&&!!currentProfile?.character_name;
-    function auReset(){auRequest++;auRows=[];auDrops=[];hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option('Sin evento',''));if($('auDialog').open)$('auDialog').close();}
+    function auReset(){if(clanSection==='auctions')selectClanSection(null);auRequest++;auRows=[];auDrops=[];hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option('Sin evento',''));if($('auDialog').open)$('auDialog').close();}
     function auPermissions(){if(isActive||isMaster)show('auView');else auReset();$('auNew').classList.toggle('hidden',!isAdmin);if(!isAdmin&&$('auDialog').open)$('auDialog').close();}
     function auNode(tag,text,parent){const n=document.createElement(tag);n.textContent=text;if(parent)parent.append(n);return n;}
     function auButton(parent,text,fn,cls='secondary'){const b=auNode('button',text,parent);b.type='button';b.className=cls+' small-button';b.onclick=fn;return b;}
     const auState=a=>a.status==='active'?(Date.now()<Date.parse(a.ends_at)?'Activa':'Vencida · pendiente de adjudicación'):a.status==='finished'?'Finalizada':'Anulada';
-    async function auLoad(){if(!await verifyAccess())return;const v=interfaceVersion,r=++auRequest;show('auPanel');setMessage('auMessage','Cargando subastas...');try{
+    async function auLoad(){if(clanSection!=='auctions'||!await verifyAccess()||clanSection!=='auctions')return;const v=interfaceVersion,r=++auRequest;setMessage('auMessage','Cargando subastas...');try{
       const rows=await fetchAllRows(()=>supabase.from('auctions').select('*').order('auction_number',{ascending:false}));
       const bids=await fetchAllRows(()=>supabase.from('auction_bids').select('*').order('created_at',{ascending:false}).order('id'));
       const roster=await evLoadRoster();const skills=await fetchAllRows(()=>supabase.from('member_skills').select('skill_key').eq('user_id',currentUser.id).order('skill_key'));
@@ -2930,7 +2955,7 @@
     function auFields(){const d=auDrops.find(d=>d.id===$('auDrop').value),linked=!!d,skill=$('auCategory').value==='skill';for(const id of ['auName','auDescription','auFile'])$(id).disabled=linked; if(d){$('auName').value=d.item_name;$('auDescription').value=d.description;} $('auFile').required=!linked;$('auName').required=!linked;$('auDescription').required=!linked;$('auCeiling').disabled=skill;$('auCeiling').required=!skill;$('auSkill').disabled=!skill;$('auSkill').required=skill;$('auBioField').disabled=$('auCondition').value==='none';}
     async function auOpen(){if(auBusy||!await verifyAccess(true))return;const v=interfaceVersion;try{const drops=await fetchAllRows(()=>supabase.from('event_drops').select('*').eq('status','pending').order('created_at',{ascending:false}).order('id'));const auctions=await fetchAllRows(()=>supabase.from('auctions').select('drop_id,status').in('status',['active','finished']).order('id'));const events=await fetchAllRows(()=>supabase.from('events').select('id,event_name,event_number,event_date,status').order('id'));evGuard(v);if(!isAdmin)return;const used=new Set(auctions.map(a=>a.drop_id));const em=new Map(events.filter(e=>e.status!=='cancelled').map(e=>[e.id,e]));auDrops=drops.filter(d=>!used.has(d.id)&&em.has(d.event_id));$('auForm').reset();$('auDrop').replaceChildren(new Option('Sin evento (carga manual)',''),...auDrops.map(d=>new Option(`${d.item_name} · ${em.get(d.event_id).event_name} #${em.get(d.event_id).event_number} · ${formatDate(em.get(d.event_id).event_date)}`,d.id)));auFields();setMessage('auFormMessage','');$('auDialog').showModal();}catch(e){setMessage('auMessage',evError(e),'error');}}
     async function auSubmit(e){e.preventDefault();if(auBusy)return;auBusy=true;$('auSave').disabled=true;const v=interfaceVersion;let path=null,started=false;try{if(!await verifyAccess(true))throw Error('Acceso no autorizado');evGuard(v);const d=auDrops.find(d=>d.id===$('auDrop').value),skill=$('auCategory').value==='skill',condition=$('auCondition').value,bios=condition==='none'?[]:[...$('auBio').querySelectorAll('input:checked')].map(o=>o.value),ceiling=Number($('auCeiling').value);if(condition!=='none'&&!bios.length)throw Error('Seleccioná biotrajes');if(!skill&&(!Number.isSafeInteger(ceiling)||ceiling<1))throw Error('Precio techo inválido');if(!d){const f=$('auFile').files[0],ext={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[f?.type];if(!ext||!f.size||f.size>2097152)throw Error('Captura PNG, JPG o WEBP de hasta 2 MB');path=currentUser.id+'/'+crypto.randomUUID()+'.'+ext;const {error}=await supabase.storage.from('event-drops').upload(path,f,{upsert:false,contentType:f.type});if(error){path=null;throw error;}}evGuard(v);if(!await verifyAccess(true))throw Error('Acceso no autorizado');evGuard(v);started=true;await evRpc('create_clan_auction',{p_drop_id:d?.id||null,p_item_name:$('auName').value.trim(),p_description:$('auDescription').value.trim(),p_screenshot_path:d?.screenshot_path||path,p_item_category:skill?'skill':'other',p_skill_key:skill?$('auSkill').value.trim():null,p_ceiling_price:skill?null:ceiling,p_condition_type:condition,p_biotrajes:bios});evGuard(v);$('auDialog').close();await auLoad();}catch(err){if(path&&!started&&v===interfaceVersion)await supabase.storage.from('event-drops').remove([path]);if(v===interfaceVersion)setMessage('auFormMessage',evError(err)+(started?' Revisá el listado antes de reintentar.':''),'error');}finally{auBusy=false;$('auSave').disabled=false;}}
-    $('auBio').replaceChildren(...auBio.map(b=>{const label=document.createElement('label'), input=document.createElement('input');input.type='checkbox';input.name='auBiotraje';input.value=b;label.append(input,document.createTextNode(b));return label;}));$('auView').onclick=auLoad;$('auRefresh').onclick=auLoad;$('auStatus').onchange=auLoad;$('auHide').onclick=()=>{auRequest++;hide('auPanel');$('auList').replaceChildren();};$('auNew').onclick=auOpen;$('auDrop').onchange=$('auCategory').onchange=$('auCondition').onchange=auFields;$('auForm').onsubmit=auSubmit;$('auClose').onclick=()=>{if(!auBusy)$('auDialog').close();};$('auDialog').addEventListener('cancel',e=>{if(auBusy)e.preventDefault();});
+    $('auBio').replaceChildren(...auBio.map(b=>{const label=document.createElement('label'), input=document.createElement('input');input.type='checkbox';input.name='auBiotraje';input.value=b;label.append(input,document.createTextNode(b));return label;}));$('auView').onclick=()=>{selectClanSection('auctions');auLoad();};$('auRefresh').onclick=auLoad;$('auStatus').onchange=auLoad;$('auHide').onclick=()=>selectClanSection(null);$('auNew').onclick=auOpen;$('auDrop').onchange=$('auCategory').onchange=$('auCondition').onchange=auFields;$('auForm').onsubmit=auSubmit;$('auClose').onclick=()=>{if(!auBusy)$('auDialog').close();};$('auDialog').addEventListener('cancel',e=>{if(auBusy)e.preventDefault();});
 
     supabase.auth.onAuthStateChange((event, session) => {
 
