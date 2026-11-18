@@ -400,7 +400,8 @@
     .admin-tabs button.section-active { background: #5865f2; box-shadow: inset 0 -3px 0 #aebdff; }
     .admin-tabs button:disabled { opacity: .45; cursor: not-allowed; }
     .admin-module > .panel { margin: 16px 0 0; }
-    #evView.section-active, #auView.section-active {
+    #memberPanel.section-inactive { display: none !important; }
+    .top-actions [data-admin-module].section-active {
       background: #5865f2;
       box-shadow: inset 0 -3px 0 #aebdff;
     }
@@ -424,11 +425,15 @@
       </p>
 
       <div class="top-actions">
-        <button id="auView" aria-pressed="false" class="hidden secondary">Ver subastas</button>
-        <button id="evView" aria-pressed="false" class="hidden secondary">Ver eventos</button>
+        <button id="membersView" type="button" class="hidden secondary section-active" data-admin-module="members" aria-pressed="true">INTEGRANTES</button>
+        <button id="evView" type="button" class="hidden secondary" data-admin-module="events" aria-pressed="false">EVENTOS</button>
+        <button id="auView" type="button" class="hidden secondary" data-admin-module="auctions" aria-pressed="false">SUBASTA</button>
+        <button id="skillsView" type="button" class="hidden secondary" data-admin-module="skills" aria-pressed="false">HABILIDADES</button>
+        <button id="salesView" type="button" class="hidden secondary" disabled title="Próximamente">VENTAS</button>
+        <button id="fanArtView" type="button" class="hidden secondary" disabled title="Próximamente">FAN ART</button>
         <button id="loginButton">Acceder con Discord</button>
         <button id="logoutButton" class="secondary hidden">
-          Cerrar sesión
+          CERRAR SESIÓN
         </button>
       </div>
 
@@ -658,14 +663,6 @@
         <span id="adminRole" class="tag"></span>
       </p>
 
-      <nav class="admin-tabs" aria-label="Módulos de administración">
-        <button type="button" class="secondary section-active" data-admin-module="members" aria-pressed="true">INTEGRANTES</button>
-        <button type="button" class="secondary" data-admin-module="events" aria-pressed="false">EVENTOS</button>
-        <button type="button" class="secondary" data-admin-module="auctions" aria-pressed="false">SUBASTA</button>
-        <button type="button" class="secondary" data-admin-module="skills" aria-pressed="false">HABILIDADES</button>
-        <button type="button" class="secondary" disabled title="Próximamente">VENTAS</button>
-        <button type="button" class="secondary" disabled title="Próximamente">FAN ART</button>
-      </nav>
       <div id="adminEventsModule" class="admin-module hidden">
       <div class="management-box">
         <h3>Gestión de eventos</h3>
@@ -954,7 +951,7 @@
       </div>
     </section>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V4.4.2</footer>
 
   </main>
 
@@ -1257,6 +1254,7 @@
       evPermissions();
       auPermissions();
       syncAdminLayout();
+      syncTopNavigation();
       if (!isMaster) { bioRequest++; hide('masterBioBox'); }
     }
 
@@ -1383,9 +1381,10 @@
 
     function clearProtectedData() {
       syncAdminLayout();
-      renderAdminModule("members");
+      selectClanSection(null);
       evReset();
       auReset();
+      for (const id of ['membersView','skillsView','salesView','fanArtView']) hide(id);
 
       clearAdminData();
 
@@ -2963,7 +2962,14 @@
     const evName=id=>{const p=evRoster.find(x=>x.user_id===id);return p?.character_name||p?.discord_nickname||'Integrante'};
     const evError=e=>e?.message||String(e);
     let clanSection = null;
+    function syncTopNavigation() {
+      const allowed = isActive || isMaster;
+      $('membersView').classList.toggle('hidden', !allowed);
+      for (const id of ['skillsView','salesView','fanArtView']) $(id).classList.toggle('hidden', !isAdmin);
+      if (!isAdmin && clanSection === 'skills') selectClanSection(null);
+    }
     function renderAdminModule(key) {
+      $('memberPanel').classList.toggle('section-inactive', key !== 'members');
       const modules = {members:'adminMembersModule',events:'adminEventsModule',auctions:'adminAuctionsModule',skills:'adminSkillsModule'};
       for (const [name,id] of Object.entries(modules)) $(id).classList.toggle('hidden',name!==key);
       for (const b of document.querySelectorAll('[data-admin-module]')) {
@@ -2980,8 +2986,10 @@
       }
     }
     function selectClanSection(section, adminModule = null) {
-      if(isAdmin) renderAdminModule(adminModule || section || 'members');
-      clanSection = section;
+      const key = adminModule || section || 'members';
+      if(key === 'skills' && !isAdmin) return;
+      renderAdminModule(key);
+      clanSection = key === 'members' ? null : key;
       if (section !== 'events') {
         evRequest++; evDetailRequest++;
         hide('eventsPanel'); hide('evDetail');
@@ -2999,8 +3007,9 @@
       if (section === 'auctions') show('auPanel');
     }
     for (const b of document.querySelectorAll('[data-admin-module]')) b.onclick=()=>{
-      if(!isAdmin)return;
+      if(!(isActive || isMaster))return;
       const key=b.dataset.adminModule;
+      if(key==='skills' && !isAdmin)return;
       selectClanSection(key==='events'||key==='auctions'?key:null,key);
       if(key==='events')evLoad();
       if(key==='auctions')auLoad();
@@ -3075,7 +3084,7 @@
     function evCatalogOptions(selected=''){$('evCatalogSelect').replaceChildren(new Option('Nuevo tipo',''),...evTypes.map(t=>new Option(t.name+' · '+t.points+' pts',t.id)));$('evCatalogSelect').value=selected;evCatalogFields();}
     async function evOpenCatalog(){if(evBusy||!await verifyAccess(true))return;const version=interfaceVersion;try{evTypes=await evLoadTypes();evGuard(version);if(!isAdmin)return;evCatalogOptions();setMessage('evCatalogMessage','');$('evCatalogDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}}
     $('evCatalogForm').onsubmit=async e=>{e.preventDefault();if(evBusy)return;evBusy=true;$('evCatalogSave').disabled=true;$('evCatalogClose').disabled=true;const version=interfaceVersion;try{if(!await verifyAccess(true))throw new Error('Acceso no autorizado.');const points=Number($('evCatalogPoints').value),name=$('evCatalogName').value.trim();if(!name||$('evCatalogPoints').value===''||!Number.isInteger(points)||points<0||points>2147483647)throw new Error('Datos inválidos.');const id=await evRpc('save_event_type',{p_name:name,p_points:points,p_id:$('evCatalogSelect').value||null});evGuard(version);evTypes=await evLoadTypes();evGuard(version);evCatalogOptions(id);setMessage('evCatalogMessage','Tipo guardado correctamente.','success');}catch(err){setMessage('evCatalogMessage',evError(err),'error');}finally{evBusy=false;$('evCatalogSave').disabled=false;$('evCatalogClose').disabled=false;}};
-    $('evView').onclick=()=>{selectClanSection('events');evLoad();};$('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>selectClanSection(null);$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
+    $('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>selectClanSection(null);$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
 
     // V4 — Subastas LIONS
     let auRows=[], auRequest=0, auBusy=false, auDrops=[];
@@ -3172,7 +3181,7 @@
       }
     }
     $('skillManage').onclick=skillOpen;$('skillRegister').onclick=()=>skillRegister(false);$('skillRefresh').onclick=skillRefresh;$('skillClose').onclick=()=>{if(!skillBusy)$('skillDialog').close();};$('skillDialog').addEventListener('cancel',e=>{if(skillBusy)e.preventDefault();});$('skillSearch').oninput=skillRender;$('auSkillSearch').oninput=()=>skillOptions();$('auSkillRegister').onclick=()=>skillRegister(true);
-    $('auBio').replaceChildren(...auBio.map(b=>{const label=document.createElement('label'), input=document.createElement('input');input.type='checkbox';input.name='auBiotraje';input.value=b;label.append(input,document.createTextNode(b));return label;}));$('auView').onclick=()=>{selectClanSection('auctions');auLoad();};$('auRefresh').onclick=auLoad;$('auStatus').onchange=auLoad;$('auHide').onclick=()=>selectClanSection(null);$('auNew').onclick=()=>auOpen();$('auDrop').onchange=$('auCategory').onchange=$('auCondition').onchange=auFields;$('auForm').onsubmit=auSubmit;$('auClose').onclick=()=>{if(!auBusy&&!skillBusy)$('auDialog').close();};$('auDialog').addEventListener('cancel',e=>{if(auBusy||skillBusy)e.preventDefault();});
+    $('auBio').replaceChildren(...auBio.map(b=>{const label=document.createElement('label'), input=document.createElement('input');input.type='checkbox';input.name='auBiotraje';input.value=b;label.append(input,document.createTextNode(b));return label;}));$('auRefresh').onclick=auLoad;$('auStatus').onchange=auLoad;$('auHide').onclick=()=>selectClanSection(null);$('auNew').onclick=()=>auOpen();$('auDrop').onchange=$('auCategory').onchange=$('auCondition').onchange=auFields;$('auForm').onsubmit=auSubmit;$('auClose').onclick=()=>{if(!auBusy&&!skillBusy)$('auDialog').close();};$('auDialog').addEventListener('cancel',e=>{if(auBusy||skillBusy)e.preventDefault();});
 
     supabase.auth.onAuthStateChange((event, session) => {
 
