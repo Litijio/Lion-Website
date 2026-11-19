@@ -985,7 +985,7 @@
 <h3>Ganador del mes anterior</h3><div id="fanWinner" class="fan-grid"></div><h3 id="fanMonth"></h3><div id="fanEntries" class="fan-grid"></div><div id="fanTies"></div><details><summary>Historial de ganadores (12 meses)</summary><div id="fanHistory" class="fan-grid"></div></details></section>
 <dialog id="fanDialog" class="event-dialog"><h2 id="fanFormTitle">Publicar captura</h2><form id="fanForm"><div class="field"><label for="fanTitle">Título</label><input id="fanTitle" maxlength="150" required></div><div class="field"><label for="fanDescription">Descripción</label><textarea id="fanDescription" maxlength="3000" required></textarea></div><div class="field"><label for="fanFile">Captura (hasta 5 MB)</label><input id="fanFile" type="file" accept="image/jpeg,image/png,image/webp" required></div><div id="fanFormMessage" class="status" aria-live="polite"></div><div class="management-actions"><button id="fanSave" type="submit">Publicar captura</button><button id="fanCancel" type="button" class="secondary">Cancelar</button></div></form></dialog>
 <dialog id="fanDetail" class="event-dialog"><h2 id="fanDetailTitle"></h2><p id="fanDetailAuthor"></p><img id="fanDetailImage" class="fan-full hidden" alt=""><p id="fanDetailDescription" class="sales-description"></p><div id="fanDetailMessage" class="status" aria-live="polite"></div><button id="fanClose" type="button" class="secondary">Cerrar</button></dialog>
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.0.0</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.0.1</footer>
 
   </main>
 
@@ -2481,14 +2481,18 @@
           !isAdmin
         ) return;
 
-        weeklyRecords = data;
+        // Show only currently active members; historical CP remains unchanged.
+        const activeIds = new Set(
+          adminProfiles.filter(p => p.is_active === true).map(p => p.user_id)
+        );
+        weeklyRecords = data.filter(r => activeIds.has(r.user_id));
 
         updateStatistics();
         renderWeeklyTable();
 
         setMessage(
           'adminMessage',
-          data.length + tr(" registros en la semana seleccionada."),
+          weeklyRecords.length + tr(" registros en la semana seleccionada."),
           'success'
         );
 
