@@ -1001,7 +1001,7 @@
 <section id="rafflePanel" class="panel hidden"><h2>SORTEOS</h2><div class="management-actions"><button id="raffleNew" class="hidden" disabled>Crear sorteo</button><button id="raffleRefresh" class="secondary">Actualizar</button></div><div id="raffleMessage" class="status" aria-live="polite"></div><div id="raffleCurrent"></div><details><summary>Historial de sorteos</summary><div id="raffleHistory"></div></details></section>
 <dialog id="raffleDialog" class="event-dialog"><h2>Crear sorteo</h2><form id="raffleForm"><div class="field"><label for="raffleName">Nombre del artículo</label><input id="raffleName" maxlength="150" required></div><div class="field"><label for="raffleDescription">Descripción</label><textarea id="raffleDescription" maxlength="3000" required></textarea></div><div class="field"><label for="raffleFile">Captura (hasta 5 MB)</label><input id="raffleFile" type="file" accept="image/jpeg,image/png,image/webp" required></div><div id="raffleFormMessage" class="status" aria-live="polite"></div><div class="management-actions"><button id="raffleSave" type="submit">Crear sorteo</button><button id="raffleCancel" type="button" class="secondary">Cancelar</button></div></form></dialog>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.4.0</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.5.0</footer>
 
   </main>
 
@@ -1062,6 +1062,7 @@
       </div>
       <label for="evMemberSearch">Participantes</label><input id="evMemberSearch" type="search" placeholder="Buscar personaje o Discord">
       <div class="management-actions"><button id="evSelectAll" type="button" class="secondary small-button">Marcar visibles</button><button id="evClearAll" type="button" class="secondary small-button">Desmarcar todos</button></div>
+      <div class="management-actions"><button id="evImport" type="button" class="secondary small-button">IMPORTAR ASISTENCIA (.TXT)</button><input id="evImportFile" type="file" accept=".txt,text/plain" hidden style="display:none"></div><div id="evImportReport" class="event-note" role="status" aria-live="polite" style="white-space:pre-wrap;overflow-wrap:anywhere"></div>
       <p id="evCount" class="muted"></p><div id="evMembers" class="event-members"></div>
       <div id="evDropFields"><h3 style="margin-top:20px">Drops Tier S</h3><p class="muted">Si no agregás drops, el evento se cerrará al guardarse.</p><div id="evDrops"></div><button id="evAddDrop" type="button" class="secondary">+ Agregar drop</button></div>
       <div id="evReasonFields" class="hidden"><label for="evReason">Motivo de corrección</label><textarea id="evReason" maxlength="1000"></textarea></div>
@@ -1106,6 +1107,7 @@
       'Puntos compensatorios inválidos.':['Invalid compensatory points.','Pontos compensatórios inválidos.'],
       'El período compensatorio terminó. Cerrá y volvé a abrir el formulario.':['The compensation period has ended. Close and reopen the form.','O período compensatório terminou. Feche e reabra o formulário.']
     });
+    Object.assign(translations,{"IMPORTAR ASISTENCIA (.TXT)": ["IMPORT ATTENDANCE (.TXT)", "IMPORTAR PRESENÇA (.TXT)"], "La importación reemplaza la selección actual. ¿Continuar?": ["Import replaces the current selection. Continue?", "A importação substitui a seleção atual. Continuar?"], "Archivo inválido o sin participantes LIONS.": ["Invalid file or no LIONS participants.", "Arquivo inválido ou sem participantes LIONS."], "Seleccioná un TXT de hasta 1 MB.": ["Select a TXT up to 1 MB.", "Selecione um TXT de até 1 MB."], "Reconocidos": ["Matched", "Reconhecidos"], "Sin registrar": ["Unregistered", "Não registrados"], "Inactivos": ["Inactive", "Inativos"], "Nombres ambiguos": ["Ambiguous names", "Nomes ambíguos"], "Duplicados omitidos": ["Duplicates skipped", "Duplicados ignorados"], "Otros gremios omitidos": ["Other guilds skipped", "Outras guildas ignoradas"], "Revisá la selección y agregá integrantes manualmente si corresponde.": ["Review the selection and add members manually if needed.", "Revise a seleção e adicione integrantes manualmente se necessário."], "No se pudo leer el archivo.": ["Could not read the file.", "Não foi possível ler o arquivo."]});
     function tr(value) {
       if (language==='es' || typeof value !== 'string') return value;
       const key=value.trim().replace(/\s+/g,' '), translated=translations[key]?.[language==='en'?0:1];
@@ -3181,6 +3183,51 @@
         $('evDetail').scrollIntoView({block:'nearest'});
       }catch(err){if(version===interfaceVersion&&request===evDetailRequest)$('evDetail').textContent=evError(err);}
     }
+
+    let evImportGeneration=0;
+    function evImportReset(){evImportGeneration++;$('evImportFile').value='';$('evImportReport').textContent='';$('evImport').disabled=false;}
+    function evImportKey(s){return s.trim().normalize('NFC').toLowerCase();}
+    function evParseAttendance(buffer){
+      const b=new Uint8Array(buffer);
+      const encoding=b[0]===255&&b[1]===254?'utf-16le':b[0]===254&&b[1]===255?'utf-16be':'utf-8';
+      const text=new TextDecoder(encoding,{fatal:true}).decode(b);
+      const names=new Map();let duplicates=0,foreign=0,header=false;
+      for(const line of text.split(/\r\n|\n|\r/)){
+        const cols=line.split('\t').map(x=>x.trim());
+        if(cols.length!==2)continue;
+        const [guild,name]=cols;
+        if(evImportKey(guild)==='nombre gremio'&&evImportKey(name)==='nombre del personaje'){header=true;continue;}
+        if(!header||!guild||!name)continue;
+        if(evImportKey(guild)!=='lions'){foreign++;continue;}
+        const key=evImportKey(name);if(names.has(key)){duplicates++;continue;}names.set(key,name);
+      }
+      if(!header||!names.size)throw new Error('invalid');
+      return {names,duplicates,foreign};
+    }
+    function evMatchAttendance(parsed,roster){
+      const index=new Map(),selected=new Set(),unknown=[],inactive=[],ambiguous=[];
+      for(const p of roster){if(!p.character_name?.trim())continue;const k=evImportKey(p.character_name);if(!index.has(k))index.set(k,[]);index.get(k).push(p);}
+      for(const [k,name] of parsed.names){const matches=index.get(k)||[];if(!matches.length)unknown.push(name);else if(matches.length>1)ambiguous.push(name);else if(!matches[0].is_active)inactive.push(name);else selected.add(matches[0].user_id);}
+      return {selected,unknown,inactive,ambiguous};
+    }
+    $('evImport').onclick=()=>{if(!evBusy&&isAdmin&&(!evEditing||isMaster))$('evImportFile').click();};
+    $('evImportFile').onchange=async()=>{
+      const file=$('evImportFile').files[0];$('evImportFile').value='';if(!file||evBusy||!isAdmin||evEditing)return;
+      const generation=++evImportGeneration,version=interfaceVersion;
+      const valid=()=>generation===evImportGeneration&&version===interfaceVersion&&$('evDialog').open&&!evBusy&&isAdmin&&(!evEditing||isMaster);
+      if(!/\.txt$/i.test(file.name)||file.size>1048576||!file.size){$('evImportReport').textContent=tr('Seleccioná un TXT de hasta 1 MB.');return;}
+      $('evImport').disabled=true;
+      try{
+        let parsed;try{parsed=evParseAttendance(await file.arrayBuffer());}catch(_){if(valid())$('evImportReport').textContent=tr('Archivo inválido o sin participantes LIONS.');return;}
+        const roster=await evLoadRoster();if(!valid())return;
+        const result=evMatchAttendance(parsed,roster);
+        if(evSelected.size&&!confirm(tr('La importación reemplaza la selección actual. ¿Continuar?')))return;
+        evRoster=roster;evSelected=result.selected;$('evMemberSearch').value='';evRenderMembers();
+        $('evImportReport').textContent=[`${tr('Reconocidos')}: ${result.selected.size}`,`${tr('Sin registrar')}: ${result.unknown.length}${result.unknown.length?' — '+result.unknown.join(', '):''}`,`${tr('Inactivos')}: ${result.inactive.length}${result.inactive.length?' — '+result.inactive.join(', '):''}`,`${tr('Nombres ambiguos')}: ${result.ambiguous.length}${result.ambiguous.length?' — '+result.ambiguous.join(', '):''}`,`${tr('Duplicados omitidos')}: ${parsed.duplicates}`,`${tr('Otros gremios omitidos')}: ${parsed.foreign}`,tr('Revisá la selección y agregá integrantes manualmente si corresponde.')].join('\n');
+      }catch(_){if(valid())$('evImportReport').textContent=tr('No se pudo leer el archivo.');}finally{if(generation===evImportGeneration)$('evImport').disabled=false;}
+    };
+    $('evDialog').addEventListener('close',evImportReset);
+
     function evEligible(){return evRoster.filter(p=>(p.is_active&&p.character_name)|| (evEditing&&evEditing.original.has(p.user_id)));}
     function evVisibleMembers(){const q=$('evMemberSearch').value.toLowerCase().trim();return evEligible().filter(p=>((p.character_name||'')+' '+(p.discord_nickname||'')).toLowerCase().includes(q));}
     function evRenderMembers(){
@@ -3189,11 +3236,11 @@
     function evRenderPoints(){const t=evTypes.find(x=>x.id===$('evType').value);$('evPoints').textContent=t?formatNumber(t.points)+tr(" puntos por participante."):'';}
     async function evOpenForm(e=null,attendance=[]){
       if(evBusy||!await verifyAccess(true)||(e&&!isMaster))return;const version=interfaceVersion;
-      try{const [types,roster]=await Promise.all([evLoadTypes(),evLoadRoster()]);evGuard(version);if(!isAdmin||(e&&!isMaster))return;evTypes=types;evRoster=roster;evEditing=e?{id:e.id,original:new Set(attendance.map(a=>a.user_id))}:null;evSelected=new Set(evEditing?.original||[]);$('evForm').reset();$('evDrops').innerHTML='';$('evDialogTitle').textContent=e?tr("Corregir asistencia · ")+evCode(e):tr("Configurar evento nuevo");$('evType').replaceChildren(...evTypes.filter(t=>t.is_active).map(t=>new Option(t.name,t.id)));$('evDate').value=evToday();$('evDate').max=evToday();$('evType').required=!e;$('evDate').required=!e;$('evReason').required=!!e;for(const id of ['evNewFields','evDropFields'])e?hide(id):show(id);e?show('evReasonFields'):hide('evReasonFields');$('evSave').textContent=e?tr("Guardar corrección"):tr("Guardar evento");evRenderPoints();evRenderMembers();setMessage('evFormMessage','');if(!$('evDialog').open)$('evDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}
+      try{const [types,roster]=await Promise.all([evLoadTypes(),evLoadRoster()]);evGuard(version);if(!isAdmin||(e&&!isMaster))return;evTypes=types;evRoster=roster;evEditing=e?{id:e.id,original:new Set(attendance.map(a=>a.user_id))}:null;evSelected=new Set(evEditing?.original||[]);$('evForm').reset();evImportReset();$('evImport').classList.toggle('hidden',!!e);$('evDrops').innerHTML='';$('evDialogTitle').textContent=e?tr("Corregir asistencia · ")+evCode(e):tr("Configurar evento nuevo");$('evType').replaceChildren(...evTypes.filter(t=>t.is_active).map(t=>new Option(t.name,t.id)));$('evDate').value=evToday();$('evDate').max=evToday();$('evType').required=!e;$('evDate').required=!e;$('evReason').required=!!e;for(const id of ['evNewFields','evDropFields'])e?hide(id):show(id);e?show('evReasonFields'):hide('evReasonFields');$('evSave').textContent=e?tr("Guardar corrección"):tr("Guardar evento");evRenderPoints();evRenderMembers();setMessage('evFormMessage','');if(!$('evDialog').open)$('evDialog').showModal();}catch(err){setMessage('evAdminMessage',evError(err),'error');}
     }
     function evAddDrop(){const node=document.createElement('div');node.className='event-drop';node.innerHTML=("<label>"+tr("Nombre del objeto")+"<input class=\"ev-item\" maxlength=\"150\" required></label><label>"+tr("Descripción")+"<textarea class=\"ev-description\" maxlength=\"3000\" required></textarea></label><label>"+tr("Captura (JPG, PNG, WEBP, hasta 2 MB)")+"<input class=\"ev-file\" type=\"file\" accept=\"image/jpeg,image/png,image/webp\" required></label><button type=\"button\" class=\"danger small-button\">"+tr("Quitar drop")+"</button>");node.querySelector('button').onclick=()=>node.remove();$('evDrops').append(node);}
     async function evSubmit(event){
-      event.preventDefault();if(evBusy)return;evBusy=true;$('evSave').disabled=true;$('evFormClose').disabled=true;const uploads=[];let rpcStarted=false;const version=interfaceVersion;
+      event.preventDefault();if(evBusy||$('evImport').disabled)return;evBusy=true;$('evSave').disabled=true;$('evFormClose').disabled=true;const uploads=[];let rpcStarted=false;const version=interfaceVersion;
       try{if(!await verifyAccess(true))throw new Error(tr("Acceso no autorizado."));evGuard(version);const editing=evEditing;const participants=[...evSelected];if(!participants.length)throw new Error(tr("Seleccioná al menos un participante."));
         if(editing){if(!isMaster)throw new Error(tr("Solo el Maestro puede corregir asistencia."));const reason=$('evReason').value.trim();if(!reason)throw new Error(tr("Indicá el motivo."));await evRpc('correct_event_attendance',{p_event_id:editing.id,p_participants:participants,p_reason:reason});evGuard(version);$('evDialog').close();await evLoad();await evShowDetail(editing.id);setMessage('evMessage',tr("Asistencia corregida."),'success');return;}
         const type=$('evType').value,date=$('evDate').value,notes=$('evNotes').value.trim(),userId=currentUser.id;
