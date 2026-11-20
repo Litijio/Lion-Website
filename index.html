@@ -428,6 +428,42 @@
     .language-heading select {width:auto;max-width:100%;margin:0;font-size:13px;}
     .sales-diamond-price{color:#60d9ff;font-weight:700}.sales-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}.sales-card{min-width:0;overflow-wrap:anywhere}.sales-card h3{margin-top:0}.sales-card p{margin:8px 0}.sales-description{white-space:pre-wrap;overflow-wrap:anywhere}.sales-image{display:block;max-width:100%;max-height:65vh;object-fit:contain;margin:12px auto}.sales-image.hidden{display:none}.fan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}.fan-card{min-width:0;overflow-wrap:anywhere}.fan-thumb{width:100%;aspect-ratio:16/9;object-fit:contain;background:#101820;border-radius:6px}.fan-full{width:100%;max-height:70vh;object-fit:contain}.fan-card h3{margin:8px 0}.fan-card button{margin:4px 4px 4px 0}.fan-liked{color:#ff86a8!important;border-color:#ff86a8!important}#fanTies{margin:16px 0}#fanHistory{margin-top:12px}.cp-alert-box{padding:12px;margin-top:12px;border:1px solid #e5b94e;border-radius:8px;color:#f5d47b;white-space:pre-line}.cp-alert-box.cp-red{border-color:#ef7777;color:#ff9b9b}.cp-delta-red{color:#ff8585}.cp-delta-yellow{color:#f5d47b}.cp-delta-green{color:#79df9d}#cpAlertPanel input[type=checkbox]{width:auto;margin:0}#cpAlertPanel td{white-space:nowrap}
 #auSubnav{margin-bottom:18px}#auSubnav button[aria-pressed="true"]{box-shadow:inset 0 -3px 0 #aebdff}#auSubnav #distView{margin-left:auto}#auSubnav #distView.dist-attention{background:#3d2d16;color:#ffb74d;border:1px solid #ffb74d}
+
+    /* V7.0.0 Alpha 1 — LIONS Tactical (presentation only) */
+    :root { color-scheme: dark; --bg:#080d14; --surface:#111c28; --line:#2b4050; --cyan:#52dceb; --gold:#d4ae68; --text:#e8edf2; }
+    body { background: radial-gradient(ellipse at 85% 0%,#17313e 0%,transparent 45%), linear-gradient(145deg,#080d14,#0c1520); color:var(--text); font-family: 'Segoe UI',Arial,sans-serif; align-items:stretch; }
+    .header { max-width:1400px; width:calc(100% - 48px); padding:0; margin:24px auto 0; }
+    .header img { max-height:260px; object-position:center 49%; border-radius:8px; border:1px solid #53616b; box-shadow:0 8px 35px #0009; }
+    .container { max-width:1400px; width:calc(100% - 48px); margin:12px auto 24px; min-width:0; }
+    .panel { min-width:0; padding:24px; background:linear-gradient(135deg,#14212e,#101923); border:1px solid var(--line); border-top:2px solid #426778; border-radius:9px; box-shadow:0 12px 28px #0004; }
+    h1,h2,h3 { letter-spacing:.035em; } h1 { text-align:left; color:var(--gold); margin-bottom:0; } h2 { color:var(--cyan); } h3 { color:#dae6ed; }
+    .description { text-align:left; color:#c3d1db; } .status { color:#a9becd; }
+    button { background:linear-gradient(135deg,#166071,#164252); border:1px solid #39889a; color:#effcff; border-radius:5px; box-shadow:none; }
+    button:hover { background:#236e80; } button:focus-visible,a:focus-visible,summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+    .secondary { background:#1b2b39; border-color:#3a5262; } .secondary:hover { background:#263f50; }
+    .danger { background:#652d3a; border-color:#ac5362; } .positive { background:#22543f; border-color:#438f70; }
+    input,select,textarea { background:#0b151f; border:1px solid #395261; border-radius:5px; } input:focus,select:focus,textarea:focus { border-color:var(--cyan); box-shadow:0 0 0 2px #52dceb22; }
+    .identity-box,.management-box,.filters,details,.event-drop,.event-members { background:#0c1722; border-color:var(--line); border-radius:7px; }
+    .identity-box strong,summary { color:#a9d7e1; }
+    .stat-card { background:linear-gradient(150deg,#182a38,#0c1722); border:1px solid #395367; border-left:3px solid var(--gold); border-radius:6px; text-align:left; padding:18px; } .stat-number { font-variant-numeric:tabular-nums; }
+    th { background:#1c3040; color:#b9e5ed; } th,td { border-color:#2b4050; padding:12px 10px; } .compact-table tbody tr:hover { background:#19313e; }
+    .tag { border-radius:4px; } .tag-master { color:#ffe2a2; background:#4b3922; }
+    dialog { background:#13202c; border:1px solid #4b7483; border-top:3px solid var(--gold); border-radius:9px; max-height:90vh; overflow-y:auto; } dialog::backdrop { background:#03080dc9; }
+    #auBio label { background:#0b151f; border-color:var(--line); } #auBio input { accent-color:#52dceb; }
+    .top-actions [data-admin-module].section-active,.admin-tabs button.section-active { background:#203b43; color:var(--cyan); border-color:#4cb3bf; box-shadow:inset 3px 0 0 var(--cyan); }
+    #auSubnav button[aria-pressed="true"] { box-shadow:inset 0 -3px 0 var(--cyan); color:var(--cyan); }
+    footer { color:#94a5b4; letter-spacing:.09em; }
+    @media(min-width:1000px) {
+      body:has(.top-actions [data-admin-module]:not(.hidden)) .header, body:has(.top-actions [data-admin-module]:not(.hidden)) .container { width:calc(100% - 270px); max-width:none; margin-left:246px; margin-right:24px; }
+      .top-actions:has([data-admin-module]:not(.hidden)) { position:fixed; inset:0 auto 0 0; width:222px; padding:24px 13px; background:linear-gradient(165deg,#142431,#0a121b); border-right:1px solid #345160; z-index:5; display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:9px; overflow-y:auto; }
+      .top-actions:has([data-admin-module]:not(.hidden))::before { content:'LIONS'; color:var(--gold); font-size:30px; font-weight:800; letter-spacing:.18em; padding:8px 10px 24px; border-bottom:1px solid #38515d; margin-bottom:12px; }
+      .top-actions:has([data-admin-module]:not(.hidden)) > button { width:100%; text-align:left; white-space:normal; padding:14px; }
+      .top-actions:has([data-admin-module]:not(.hidden)) #logoutButton { margin-top:auto; }
+    }
+    @media(max-width:999px) { .top-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); } .top-actions > button { white-space:normal; } }
+    @media(max-width:650px) { .header,.container { width:calc(100% - 24px); } .header { margin-top:12px; } .header img { max-height:180px; } .panel { padding:15px; } h1 { font-size:20px; } .stat-card { padding:8px; } .top-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .management-actions button { min-width:0; } }
+    @media(prefers-reduced-motion:reduce) { button { transition:none; } }
+
 </style>
 </head>
 
@@ -1001,7 +1037,7 @@
 <section id="rafflePanel" class="panel hidden"><h2>SORTEOS</h2><div class="management-actions"><button id="raffleNew" class="hidden" disabled>Crear sorteo</button><button id="raffleRefresh" class="secondary">Actualizar</button></div><div id="raffleMessage" class="status" aria-live="polite"></div><div id="raffleCurrent"></div><details><summary>Historial de sorteos</summary><div id="raffleHistory"></div></details></section>
 <dialog id="raffleDialog" class="event-dialog"><h2>Crear sorteo</h2><form id="raffleForm"><div class="field"><label for="raffleName">Nombre del artículo</label><input id="raffleName" maxlength="150" required></div><div class="field"><label for="raffleDescription">Descripción</label><textarea id="raffleDescription" maxlength="3000" required></textarea></div><div class="field"><label for="raffleFile">Captura (hasta 5 MB)</label><input id="raffleFile" type="file" accept="image/jpeg,image/png,image/webp" required></div><div id="raffleFormMessage" class="status" aria-live="polite"></div><div class="management-actions"><button id="raffleSave" type="submit">Crear sorteo</button><button id="raffleCancel" type="button" class="secondary">Cancelar</button></div></form></dialog>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.5.2</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V7.0.0 ALPHA 1</footer>
 
   </main>
 
