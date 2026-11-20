@@ -464,6 +464,23 @@
     @media(max-width:650px) { .header,.container { width:calc(100% - 24px); } .header { margin-top:12px; } .header img { max-height:180px; } .panel { padding:15px; } h1 { font-size:20px; } .stat-card { padding:8px; } .top-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .management-actions button { min-width:0; } }
     @media(prefers-reduced-motion:reduce) { button { transition:none; } }
 
+
+    /* V7.0.0 Alpha 2 — original embedded geometric lettering */
+    @font-face { font-family:'LIONS Tactical'; src:url(data:font/woff2;base64,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) format('woff2'); font-display:swap; font-weight:400; }
+    .header { display:flex; justify-content:center; align-items:center; background:#080e16; border:1px solid #344c5b; border-radius:9px; overflow:hidden; margin-top:16px; margin-bottom:0; }
+    .header img { width:auto; max-width:100%; height:auto; max-height:320px; object-fit:contain; border:0; border-radius:0; box-shadow:none; }
+    .container { margin-top:0; }
+    .container > .panel:first-child { padding:18px 24px; margin:12px 0; }
+    .top-actions > button, button, h1,h2,h3 { font-family:'LIONS Tactical','Segoe UI',sans-serif; font-weight:400; letter-spacing:.035em; }
+    h1 { font-size:23px; } h2 { font-size:18px; } h3 { font-size:15px; }
+    button { font-size:12px; line-height:1.5; }
+    @media(min-width:1000px) {
+      .top-actions:has([data-admin-module]:not(.hidden)) { padding:20px 13px; gap:7px; }
+      .top-actions:has([data-admin-module]:not(.hidden))::before { font-family:'LIONS Tactical',sans-serif; font-weight:400; text-align:center; letter-spacing:.09em; font-size:32px; padding:10px 0 17px; margin-bottom:8px; background:linear-gradient(180deg,#fff1c8,#d4ae68 55%,#8c6938); background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+      .top-actions:has([data-admin-module]:not(.hidden)) > button { text-align:center; padding:10px 5px; font-size:12px; min-height:42px; }
+    }
+    @media(max-width:650px) { .header img { max-height:220px; } h1 { font-size:18px; } .container > .panel:first-child { padding:15px; } }
+
 </style>
 </head>
 
@@ -1037,7 +1054,7 @@
 <section id="rafflePanel" class="panel hidden"><h2>SORTEOS</h2><div class="management-actions"><button id="raffleNew" class="hidden" disabled>Crear sorteo</button><button id="raffleRefresh" class="secondary">Actualizar</button></div><div id="raffleMessage" class="status" aria-live="polite"></div><div id="raffleCurrent"></div><details><summary>Historial de sorteos</summary><div id="raffleHistory"></div></details></section>
 <dialog id="raffleDialog" class="event-dialog"><h2>Crear sorteo</h2><form id="raffleForm"><div class="field"><label for="raffleName">Nombre del artículo</label><input id="raffleName" maxlength="150" required></div><div class="field"><label for="raffleDescription">Descripción</label><textarea id="raffleDescription" maxlength="3000" required></textarea></div><div class="field"><label for="raffleFile">Captura (hasta 5 MB)</label><input id="raffleFile" type="file" accept="image/jpeg,image/png,image/webp" required></div><div id="raffleFormMessage" class="status" aria-live="polite"></div><div class="management-actions"><button id="raffleSave" type="submit">Crear sorteo</button><button id="raffleCancel" type="button" class="secondary">Cancelar</button></div></form></dialog>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V7.0.0 ALPHA 1</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V7.0.0 ALPHA 2</footer>
 
   </main>
 
