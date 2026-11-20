@@ -1001,7 +1001,7 @@
 <section id="rafflePanel" class="panel hidden"><h2>SORTEOS</h2><div class="management-actions"><button id="raffleNew" class="hidden" disabled>Crear sorteo</button><button id="raffleRefresh" class="secondary">Actualizar</button></div><div id="raffleMessage" class="status" aria-live="polite"></div><div id="raffleCurrent"></div><details><summary>Historial de sorteos</summary><div id="raffleHistory"></div></details></section>
 <dialog id="raffleDialog" class="event-dialog"><h2>Crear sorteo</h2><form id="raffleForm"><div class="field"><label for="raffleName">Nombre del artículo</label><input id="raffleName" maxlength="150" required></div><div class="field"><label for="raffleDescription">Descripción</label><textarea id="raffleDescription" maxlength="3000" required></textarea></div><div class="field"><label for="raffleFile">Captura (hasta 5 MB)</label><input id="raffleFile" type="file" accept="image/jpeg,image/png,image/webp" required></div><div id="raffleFormMessage" class="status" aria-live="polite"></div><div class="management-actions"><button id="raffleSave" type="submit">Crear sorteo</button><button id="raffleCancel" type="button" class="secondary">Cancelar</button></div></form></dialog>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.5.1</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V6.5.2</footer>
 
   </main>
 
@@ -3259,25 +3259,47 @@
     $('evRefresh').onclick=()=>evLoad();$('evHide').onclick=()=>selectClanSection(null);$('evSearch').oninput=$('evStatus').onchange=()=>{evPageNumber=1;evRender();};$('evPrev').onclick=()=>{evPageNumber--;evRender();};$('evNext').onclick=()=>{evPageNumber++;evRender();};$('evRows').onclick=e=>{const b=e.target.closest('[data-event]');if(b)evShowDetail(b.dataset.event);};$('evNew').onclick=()=>evOpenForm();$('evCatalog').onclick=evOpenCatalog;$('evCatalogSelect').onchange=evCatalogFields;$('evType').onchange=evRenderPoints;$('evMemberSearch').oninput=evRenderMembers;$('evSelectAll').onclick=()=>{evVisibleMembers().forEach(p=>evSelected.add(p.user_id));evRenderMembers();};$('evClearAll').onclick=()=>{evSelected.clear();evRenderMembers();};$('evAddDrop').onclick=evAddDrop;$('evForm').onsubmit=evSubmit;$('evFormClose').onclick=()=>{if(!evBusy)$('evDialog').close();};$('evCatalogClose').onclick=()=>{if(!evBusy)$('evCatalogDialog').close();};for(const id of ['evDialog','evCatalogDialog'])$(id).addEventListener('cancel',e=>{if(evBusy)e.preventDefault();});
 
     // V4 — Subastas LIONS
-    let auRows=[], auRequest=0, auBusy=false, auDrops=[];
+    let auRows=[], auRequest=0, auBusy=false, auDrops=[], auLoading=0, auFingerprint=null;
     let skillRows=[], skillAliases=[], skillBusy=false, skillHistoryKey=null;
     const auBio=['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
     const auCanBid=()=>isActive&&!!currentProfile?.character_name;
-    function auReset(){skillRows=[];skillAliases=[];skillHistoryKey=null;$('skillList').replaceChildren();$('skillHistory').replaceChildren();$('auSkill').replaceChildren();$('skillSearch').value='';$('auSkillSearch').value='';if($('skillDialog').open)$('skillDialog').close();if(clanSection==='auctions')selectClanSection(null);auRequest++;auRows=[];auDrops=[];auAttendanceReset();hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option(tr("Sin evento"),''));if($('auDialog').open)$('auDialog').close();}
+    function auReset(){skillRows=[];skillAliases=[];skillHistoryKey=null;$('skillList').replaceChildren();$('skillHistory').replaceChildren();$('auSkill').replaceChildren();$('skillSearch').value='';$('auSkillSearch').value='';if($('skillDialog').open)$('skillDialog').close();if(clanSection==='auctions')selectClanSection(null);auRequest++;auFingerprint=null;auRows=[];auDrops=[];auAttendanceReset();hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option(tr("Sin evento"),''));if($('auDialog').open)$('auDialog').close();}
     function auPermissions(){if(!isAdmin&&$('skillDialog').open)$('skillDialog').close();if(!isMaster){$('skillHistory').replaceChildren();skillHistoryKey=null;$('skillList').querySelectorAll('.skill-master').forEach(n=>n.remove());}if(isActive||isMaster)show('auView');else auReset();$('auNew').classList.toggle('hidden',!isAdmin);if(!isAdmin&&$('auDialog').open)$('auDialog').close();}
     function auNode(tag,text,parent){const n=document.createElement(tag);n.textContent=text;if(parent)parent.append(n);return n;}
     function auButton(parent,text,fn,cls='secondary'){const b=auNode('button',text,parent);b.type='button';b.className=cls+' small-button';b.onclick=fn;return b;}
     const auState=a=>a.status==='active'?(Date.now()<Date.parse(a.ends_at)?tr("Activa"):tr("Vencida · pendiente de adjudicación")):a.status==='finished'?tr("Finalizada"):a.status==='no_bids'?tr("Sin adjudicación"):tr("Anulada");
-    async function auLoad(){void distCountLoad();if(clanSection!=='auctions'||!await verifyAccess()||clanSection!=='auctions')return;const v=interfaceVersion,r=++auRequest;setMessage('auMessage',tr("Cargando subastas..."));$('auList').replaceChildren();try{
-      await cpLoad(false);
+    async function auRelated(ids,build){
+      const result=[];
+      for(let i=0;i<ids.length;i+=50){const chunk=ids.slice(i,i+50);result.push(...await fetchAllRows(()=>build(chunk)));}
+      return result;
+    }
+    async function auLoad(background=false){
+      background=background===true;
+      void distCountLoad();
+      if(clanSection!=='auctions'||auTab==='distribution'||(background&&(auLoading||auBusy||$('auDialog').open||document.hidden)))return;
+      const v=interfaceVersion,r=++auRequest,filter=$('auStatus').value;
+      auLoading++;
+      const valid=()=>v===interfaceVersion&&r===auRequest&&clanSection==='auctions'&&auTab!=='distribution'&&filter===$('auStatus').value;
+      if(!background){auFingerprint=null;setMessage('auMessage',tr("Cargando subastas..."));}
+      try{
+      if(!await verifyAccess()||!valid())return;
+      const uid=currentUser.id,admin=isAdmin,master=isMaster;
+      await cpLoad(false);if(!valid())return;
       const rows=await fetchAllRows(()=>supabase.from('auctions').select('*').order('auction_number',{ascending:false}));
-      const bids=await fetchAllRows(()=>supabase.from('auction_bids').select('*').order('created_at',{ascending:false}).order('id'));
-      const roster=await evLoadRoster();
-      const skills=await fetchAllRows(()=>supabase.from('member_skills').select('user_id,skill_key').eq('user_id',currentUser.id).order('skill_key'));
-      const audit=isAdmin?await fetchAllRows(()=>supabase.from('auction_audit').select('auction_id,action,new_data').in('action',['pending_master','bid_invalidated','tie_closed_without_winner']).order('id')):[];
-      const allSkills=isMaster?await fetchAllRows(()=>supabase.from('member_skills').select('user_id,skill_key').order('id')):[];
-      const scores=await fetchAllRows(()=>supabase.from('auction_result_scores').select('*').order('auction_id').order('user_id'));
-      evGuard(v);if(r!==auRequest)return;auRows=rows;const names=new Map(roster.map(p=>[p.user_id,p.character_name||p.discord_nickname]));const known=new Set(skills.map(s=>s.skill_key));const ownedPairs=new Set(allSkills.map(s=>JSON.stringify([s.user_id,s.skill_key])));
+      if(!valid())return;
+      const ids=rows.filter(a=>!filter||a.status===filter).map(a=>a.id);
+      const [bids,roster,skills,audit,allSkills,scores]=await Promise.all([
+        auRelated(ids,c=>supabase.from('auction_bids').select('auction_id,user_id,amount,status,created_at,id').in('auction_id',c).order('created_at',{ascending:false}).order('id')),
+        evLoadRoster(),
+        fetchAllRows(()=>supabase.from('member_skills').select('user_id,skill_key').eq('user_id',uid).order('skill_key')),
+        admin?auRelated(ids,c=>supabase.from('auction_audit').select('auction_id,action,new_data').in('auction_id',c).in('action',['pending_master','bid_invalidated','tie_closed_without_winner']).order('id')):[],
+        master?fetchAllRows(()=>supabase.from('member_skills').select('user_id,skill_key').order('id')):[],
+        auRelated(ids,c=>supabase.from('auction_result_scores').select('*').in('auction_id',c).order('auction_id').order('user_id'))
+      ]);
+      if(!valid()||uid!==currentUser?.id||admin!==isAdmin||master!==isMaster)return;
+      const fingerprint=JSON.stringify([filter,uid,admin,master,cpRestricted,auCanBid(),locale,rows,bids,roster,skills,audit,allSkills,scores,rows.map(a=>[Date.now()<Date.parse(a.ends_at),Date.now()<=Date.parse(a.ends_at)-14400000])]);
+      if(background&&fingerprint===auFingerprint)return;
+      auFingerprint=fingerprint;auRows=rows;const names=new Map(roster.map(p=>[p.user_id,p.character_name||p.discord_nickname]));const known=new Set(skills.map(s=>s.skill_key));const ownedPairs=new Set(allSkills.map(s=>JSON.stringify([s.user_id,s.skill_key])));
       $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop';auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,box);auNode('p',a.description,box).className='event-note';auNode('p',`${auState(a)} · ${tr("Cierre:")} ${formatDate(a.ends_at)}`,box);auNode('p',a.item_category==='skill'?tr("Habilidad · uso obligatorio · sin reventa"):`${tr("Precio techo:")} ${formatNumber(a.ceiling_price)} ${tr("diamantes")}`,box);auNode('p',a.condition_type==='none'?tr("Sin condición de biotraje"):`${a.condition_type==='mandatory'?tr("Obligatorio"):tr("Prioridad")}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';if(a.screenshot_path&&!a.screenshot_deleted_at){let capture=null;const captureButton=auButton(actions,tr("Ver captura"),async()=>{
         if(captureButton.disabled)return;
         if(capture){capture.remove();capture=null;captureButton.textContent=tr("Ver captura");return;}
@@ -3286,7 +3308,7 @@
           if(!await verifyAccess())return;
           const {data,error}=await supabase.storage.from('event-drops').createSignedUrl(a.screenshot_path,60);
           if(error||!data?.signedUrl)throw error||Error(tr("No se pudo cargar la captura."));
-          if(v!==interfaceVersion||r!==auRequest||!box.isConnected)return;
+          if(v!==interfaceVersion||!box.isConnected)return;
           const img=document.createElement('img');img.className='event-image';img.alt=tr("Captura del objeto");
           capture=img;
           img.onerror=()=>{if(capture!==img)return;img.remove();capture=null;captureButton.textContent=tr("Ver captura");if(box.isConnected)setMessage('auMessage',tr("No se pudo cargar la captura."),'error');};
@@ -3315,7 +3337,8 @@
       if(a.status==='no_bids'){auNode('p',tr("Cerrada sin ganador. ")+(a.drop_id?tr("El drop puede republicarse en modalidad libre si continúa pendiente."):tr("Objeto sin adjudicar.")),box);if(isAdmin&&a.drop_id&&!rows.some(x=>x.drop_id===a.drop_id&&['active','finished'].includes(x.status)))auButton(actions,tr("Republicar drop"),()=>auOpen(a));}
       if(a.status==='finished')auNode('p',`${tr("Ganador:")} ${names.get(a.winner_id)||'—'} · ${a.winning_bid==null?'—':formatNumber(a.winning_bid)} ${tr("diamantes")}${a.unrestricted_use?tr(" · Uso libre"):''}`,box);
       if(a.status==='active'&&Date.now()<Date.parse(a.ends_at)){if(auCanBid()&&!cpRestricted&&!(a.item_category==='skill'&&known.has(a.skill_key))){const min=own[0]?Number((BigInt(own[0].amount)*105n+99n)/100n):1;auButton(actions,tr("Ofertar"),()=>{const raw=prompt(`${tr("Oferta en diamantes (mínimo")} ${min})`,String(min));if(raw===null)return;if(!/^\d+$/.test(raw)||!Number.isSafeInteger(Number(raw))||Number(raw)<min){setMessage('auMessage',tr("Oferta inválida."),'error');return;}auAct('place_auction_bid',{p_auction_id:a.id,p_amount:Number(raw)});},'positive');}if(auCanBid()&&own.some(b=>b.status==='active')&&Date.now()<=Date.parse(a.ends_at)-14400000)auButton(actions,tr("Retirar oferta"),()=>{if(confirm(tr("¿Retirar tu oferta?")))auAct('cancel_auction_bid',{p_auction_id:a.id});});if(isMaster)auButton(actions,tr("Anular subasta"),()=>{const reason=prompt(tr("Motivo obligatorio de anulación"));if(reason?.trim()&&confirm(tr("¿Anular la subasta y todas sus ofertas activas?")))auAct('cancel_clan_auction',{p_auction_id:a.id,p_reason:reason.trim()},true);},'danger');}}
-      setMessage('auMessage',tr("Subastas actualizadas."),'success');}catch(e){if(v===interfaceVersion&&r===auRequest)setMessage('auMessage',evError(e),'error');}}
+      setMessage('auMessage',tr("Subastas actualizadas."),'success');}catch(e){auFingerprint=null;if(valid())setMessage('auMessage',evError(e),'error');}finally{auLoading--;}}
+    setInterval(()=>{if(clanSection==='auctions'&&auTab==='active'&&$('auStatus').value==='active'&&!skillBusy&&!$('skillDialog').open&&!checkingPermissions&&!cpBusy)void auLoad(true);},30000);
     async function auAct(name,args,master=false){if(auBusy)return;auBusy=true;const v=interfaceVersion;try{if(!await verifyAccess(master)|| (master&&!isMaster))return;evGuard(v);await evRpc(name,args);evGuard(v);await auLoad();if(name==='resolve_auction_tie'&&v===interfaceVersion&&clanSection==='auctions'){const {data,error}=await supabase.from('auctions').select('status,winner_id').eq('id',args.p_auction_id).single();if(error)throw error;evGuard(v);setMessage('auMessage',data.status==='no_bids'?tr("Desempate cerrado sin ganador."):data.status==='finished'&&data.winner_id===args.p_winner_id?tr("Adjudicación confirmada."):tr("Estado actualizado; revisá el listado."),'success');}}catch(e){if(v===interfaceVersion){await auLoad();if(v===interfaceVersion)setMessage('auMessage',evError(e),'error');}}finally{auBusy=false;}}
     let auAttendanceRoster=[],auAttendanceEvents=new Map(),auFreeDrops=new Set(),auAttendanceKey=null;
     const auTransitionNow=()=>Date.now()>=Date.parse('2026-11-19T00:00:00-03:00')&&Date.now()<Date.parse('2026-11-26T00:00:00-03:00');
@@ -3446,7 +3469,7 @@
         const box=$('cpPersonalAlert');box.classList.toggle('cp-red',cpRestricted||Number(a.difference)<=0);
         box.textContent=(a.low_growth?tr('Crecimiento semanal insuficiente.')+' '+cpDelta(a.difference)+' CP · '+tr('El Master puede restringir las ofertas y la distribución de diamantes.'):'')+(cpRestricted?'\n'+tr('Restricción económica activa. No podés realizar nuevas ofertas ni recibir diamantes de eventos realizados durante la restricción. Podés participar y sumar presentismo.'):'');
         box.classList.toggle('hidden',!a.low_growth&&!cpRestricted);
-        if(masterPanel&&old!==cpRestricted&&clanSection==='auctions'&&!auBusy)void auLoad();
+        if(masterPanel&&old!==cpRestricted&&clanSection==='auctions'&&!auBusy&&!auLoading&&auTab!=='distribution')void auLoad();
         if(!isMaster){cpClearMaster();return;}if(!masterPanel)return;
         show('cpAlertPanel');
         const [alerts,audit]=await Promise.all([supabase.rpc('get_clan_cp_alerts'),supabase.rpc('get_clan_cp_restriction_audit')]);
