@@ -496,6 +496,35 @@
     }
     @media(max-width:999px) { body:has(#logoutButton:not(.hidden)) .header { width:calc(100% - 48px); max-width:1400px; } }
     @media(max-width:650px) { .header { margin-top:15px; padding:0 10px; } .header img { border-radius:8px; } body:has(#logoutButton:not(.hidden)) .header { width:calc(100% - 24px); } }
+
+/* Alpha 5: approved login layout and navigation sheen */
+body:not(:has(#logoutButton:not(.hidden))) {
+ display:grid; grid-template-columns:minmax(0,1100px); grid-template-rows:auto; justify-content:center; align-content:start; align-items:stretch; padding:clamp(25px,10.55vh,95px) 16px 82px; background:#0b1018;
+}
+body:not(:has(#logoutButton:not(.hidden))) .header {grid-area:1/1; width:100%; max-width:none; margin:0; padding:0; }
+body:not(:has(#logoutButton:not(.hidden))) .header img {border:1px solid #344c5b; border-radius:14px; box-shadow:none;}
+body:not(:has(#logoutButton:not(.hidden))) .container {grid-area:1/1; width:100%; max-width:none; margin:0; position:relative; pointer-events:none;}
+body:not(:has(#logoutButton:not(.hidden))) .container > .panel:first-child {display:contents;}
+body:not(:has(#logoutButton:not(.hidden))) .language-heading h1, body:not(:has(#logoutButton:not(.hidden))) #welcome {display:none;}
+body:not(:has(#logoutButton:not(.hidden))) #languageSelect {position:absolute; z-index:2; right:1.7%; top:3%; width:auto; max-width:45%; background:#111e2a; color:#e7edf3; border:1px solid #496477; border-radius:7px; padding:12px 14px; font:15px Arial; pointer-events:auto;}
+body:not(:has(#logoutButton:not(.hidden))) .top-actions {display:contents;}
+body:not(:has(#logoutButton:not(.hidden))) #loginButton {position:absolute; z-index:2; bottom:2.8%; left:50%; transform:translateX(-50%); overflow:hidden; display:flex; align-items:center; justify-content:center; gap:12px; padding:14px 24px; background:linear-gradient(180deg,#31505e,#142c38 48%,#0b202b 52%,#1b3440); border:1px solid #63cddd; border-bottom-color:#c7a36a; border-radius:7px; box-shadow:0 0 18px #00c8ef29,inset 0 0 8px #87ebff20; color:#e7f5fa; font:19px 'LIONS Tactical',Arial; letter-spacing:.04em; white-space:nowrap; pointer-events:auto;}
+body:not(:has(#logoutButton:not(.hidden))) #loginButton::after {content:''; order:-1; width:24px; height:24px; flex:none; background:url("data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23e7f5fa%22%3E%3Cpath%20d%3D%22M19.7%205.1a18%2018%200%200%200-4.4-1.4l-.5%201a16%2016%200%200%200-5.6%200l-.5-1a18%2018%200%200%200-4.4%201.4C1.5%209.4.7%2013.6%201.1%2017.7a18%2018%200%200%200%205.4%202.7l1.1-1.8-1.7-.8.4-.3c3.7%201.7%207.7%201.7%2011.4%200l.4.3-1.7.8%201.1%201.8a18%2018%200%200%200%205.4-2.7c.5-4.8-.8-8.9-3.2-12.6ZM8.5%2015.3c-1.1%200-2-1-2-2.2s.9-2.2%202-2.2%202%201%202%202.2-.9%202.2-2%202.2Zm7%200c-1.1%200-2-1-2-2.2s.9-2.2%202-2.2%202%201%202%202.2-.9%202.2-2%202.2Z%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;}
+body:not(:has(#logoutButton:not(.hidden))) #loginButton:hover:not(:disabled) {box-shadow:0 0 26px #00d4f080; border-color:#adf6ff;}
+body:not(:has(#logoutButton:not(.hidden))) #status {position:absolute; top:100%; width:100%; margin:6px 0 0; font-size:12px;}
+body:not(:has(#logoutButton:not(.hidden))) #status:not(.error):not(.warning):not(.success) {visibility:hidden;}
+body:not(:has(#logoutButton:not(.hidden))):has(#loginButton:disabled) #status {visibility:visible;}
+body:not(:has(#logoutButton:not(.hidden))) footer {position:absolute; top:100%; width:100%; margin:28px 0 0;}
+#loginButton::before, .top-actions > [data-admin-module]::before {content:''; position:absolute; top:-40%; bottom:-40%; width:25%; left:-60%; background:linear-gradient(90deg,transparent,#b4f5ff88,#fff9,transparent); transform:skewX(-28deg); animation:lions-shine 4s infinite; pointer-events:none;}
+@keyframes lions-shine {0%,55%{left:-60%}85%,100%{left:140%}}
+.top-actions > [data-admin-module] {position:relative; overflow:hidden;}
+.top-actions > [data-admin-module]::before {animation-duration:7s; opacity:.45;}
+.top-actions > [data-admin-module]:nth-child(2)::before{animation-delay:.65s}.top-actions > [data-admin-module]:nth-child(3)::before{animation-delay:1.3s}.top-actions > [data-admin-module]:nth-child(4)::before{animation-delay:1.95s}.top-actions > [data-admin-module]:nth-child(5)::before{animation-delay:2.6s}.top-actions > [data-admin-module]:nth-child(6)::before{animation-delay:3.25s}.top-actions > [data-admin-module]:nth-child(7)::before{animation-delay:3.9s}
+.top-actions > [data-admin-module]:disabled::before,#loginButton:disabled::before {animation:none;}
+@media(min-width:1000px){.top-actions:has([data-admin-module]:not(.hidden)){gap:12px;}.top-actions:has([data-admin-module]:not(.hidden)) > button{flex-shrink:0;}}
+@media(max-width:600px){body:not(:has(#logoutButton:not(.hidden))) #loginButton{font-size:clamp(8px,2.5vw,15px);padding:4px 9px;gap:5px;}body:not(:has(#logoutButton:not(.hidden))) #loginButton::after{width:15px;height:15px;}body:not(:has(#logoutButton:not(.hidden))) #languageSelect{font-size:10px;padding:3px 5px;}}
+@media(prefers-reduced-motion:reduce){#loginButton::before,.top-actions > [data-admin-module]::before{animation:none;}}
+
 </style>
 </head>
 
@@ -1070,7 +1099,7 @@
 <section id="rafflePanel" class="panel hidden"><h2>SORTEOS</h2><div class="management-actions"><button id="raffleNew" class="hidden" disabled>Crear sorteo</button><button id="raffleRefresh" class="secondary">Actualizar</button></div><div id="raffleMessage" class="status" aria-live="polite"></div><div id="raffleCurrent"></div><details><summary>Historial de sorteos</summary><div id="raffleHistory"></div></details></section>
 <dialog id="raffleDialog" class="event-dialog"><h2>Crear sorteo</h2><form id="raffleForm"><div class="field"><label for="raffleName">Nombre del artículo</label><input id="raffleName" maxlength="150" required></div><div class="field"><label for="raffleDescription">Descripción</label><textarea id="raffleDescription" maxlength="3000" required></textarea></div><div class="field"><label for="raffleFile">Captura (hasta 5 MB)</label><input id="raffleFile" type="file" accept="image/jpeg,image/png,image/webp" required></div><div id="raffleFormMessage" class="status" aria-live="polite"></div><div class="management-actions"><button id="raffleSave" type="submit">Crear sorteo</button><button id="raffleCancel" type="button" class="secondary">Cancelar</button></div></form></dialog>
 
-    <footer>LIONS CLAN MANAGEMENT SYSTEM | V7.0.0 ALPHA 4</footer>
+    <footer>LIONS CLAN MANAGEMENT SYSTEM | V7.0.0 ALPHA 5</footer>
 
   </main>
 
