@@ -388,6 +388,17 @@
     .event-members div { padding: 5px; }
     .event-drop { border: 1px solid #34445e; border-radius: 10px; margin: 12px 0; padding: 14px; background: #101a29; }
     .event-drop input,.event-drop textarea { margin-top: 5px; }
+    /* RC5: Auction local closing time and independent live countdown. */
+    .au-auction-card { position:relative; }
+    .au-card-heading { display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:8px; }
+    .au-card-heading h3 { margin:0;flex:1 1 250px; }
+    .au-countdown { flex:0 0 auto;min-width:178px;text-align:right;padding:8px 12px;border:1px solid #a88945;border-radius:6px;background:#1a2028;color:#e5bd73;box-shadow:inset 0 0 12px #b38b2b18; }
+    .au-countdown-label { display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#b7c8d5;margin-bottom:3px; }
+    .au-countdown-value { font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;white-space:nowrap; }
+    .au-countdown.au-countdown-urgent { border-color:#e25b62;color:#ff858a;background:#2b1920; }
+    .au-countdown.au-countdown-ended { border-color:#657384;color:#a9b5c4;background:#18202a; }
+    .au-local-time-note { font-size:12px;color:#93afc1; }
+    @media(max-width:520px){.au-card-heading{gap:10px}.au-countdown{min-width:0;padding:7px 10px}.au-countdown-value{font-size:14px}}
     .event-image { display: block; max-width: 100%; max-height: 450px; margin-top: 12px; object-fit: contain; }
     .event-note { white-space: pre-wrap; overflow-wrap: anywhere; }
     /* Formulario de publicación de subastas */
@@ -1270,6 +1281,11 @@ footer.donation-preview{display:flex;align-items:center;justify-content:space-be
     });
     Object.assign(translations,{"IMPORTAR ASISTENCIA (.TXT)": ["IMPORT ATTENDANCE (.TXT)", "IMPORTAR PRESENÇA (.TXT)"], "La importación reemplaza la selección actual. ¿Continuar?": ["Import replaces the current selection. Continue?", "A importação substitui a seleção atual. Continuar?"], "Archivo inválido o sin participantes LIONS.": ["Invalid file or no LIONS participants.", "Arquivo inválido ou sem participantes LIONS."], "Seleccioná un TXT de hasta 1 MB.": ["Select a TXT up to 1 MB.", "Selecione um TXT de até 1 MB."], "Reconocidos": ["Matched", "Reconhecidos"], "Sin registrar": ["Unregistered", "Não registrados"], "Inactivos": ["Inactive", "Inativos"], "Nombres ambiguos": ["Ambiguous names", "Nomes ambíguos"], "Duplicados omitidos": ["Duplicates skipped", "Duplicados ignorados"], "Otros gremios omitidos": ["Other guilds skipped", "Outras guildas ignoradas"], "Revisá la selección y agregá integrantes manualmente si corresponde.": ["Review the selection and add members manually if needed.", "Revise a seleção e adicione integrantes manualmente se necessário."], "No se pudo leer el archivo.": ["Could not read the file.", "Não foi possível ler o arquivo."]});
     Object.assign(translations, {'Para aumentar una oferta activa, debés superar tu propia oferta anterior en al menos un 5 %. Si retirás tu oferta, podés volver a participar desde el mínimo inicial de la subasta. Las ofertas de otros participantes no afectan tu monto.':['To increase an active bid, you must raise your own previous bid by at least 5%. If you withdraw your bid, you may bid again starting from the auction’s initial minimum. Other participants’ bids do not affect your amount.','Para aumentar um lance ativo, você deve superar seu lance anterior em pelo menos 5%. Se retirar seu lance, poderá participar novamente a partir do mínimo inicial do leilão. Os lances de outros participantes não afetam seu valor.']});
+    Object.assign(translations,{
+      'Tiempo restante':['Time remaining','Tempo restante'],
+      'Subasta finalizada':['Auction ended','Leilão encerrado'],
+      'Hora local de tu dispositivo':['Your device local time','Horário local do seu dispositivo']
+    });
     function tr(value) {
       if (language==='es' || typeof value !== 'string') return value;
       const key=value.trim().replace(/\s+/g,' '), translated=translations[key]?.[language==='en'?0:1];
@@ -3458,6 +3474,35 @@ footer.donation-preview{display:flex;align-items:center;justify-content:space-be
       }catch(e){if(v===interfaceVersion&&request===auPartialRequest&&dialog.open){$('auPartialScores').replaceChildren();$('auPartialStatus').textContent=auPW(16);}}
     }
 
+    // RC5: Only auction timestamps use the viewer's local time zone.
+    // Supabase ends_at must be an absolute ISO timestamp (with Z or offset).
+    function auLocalClosing(value){
+      if(!value)return '—';
+      const d=new Date(value);
+      if(!Number.isFinite(d.getTime()))return '—';
+      return new Intl.DateTimeFormat(locale,{dateStyle:'short',timeStyle:'short'}).format(d);
+    }
+    function auCountdownText(ms){
+      const total=Math.max(0,Math.ceil(ms/1000));
+      const days=Math.floor(total/86400),hours=Math.floor(total%86400/3600);
+      const minutes=Math.floor(total%3600/60),seconds=total%60;
+      const pad=n=>String(n).padStart(2,'0');
+      return `${pad(days)}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+    }
+    function auUpdateCountdowns(){
+      if(clanSection!=='auctions')return;
+      const now=Date.now();
+      for(const node of $('auList').querySelectorAll('[data-au-countdown]')){
+        const end=Number(node.dataset.auCountdown),remaining=end-now;
+        if(!Number.isFinite(end))continue;
+        const value=node.querySelector('.au-countdown-value');
+        if(!value)continue;
+        value.textContent=remaining<=0?tr('Subasta finalizada'):auCountdownText(remaining);
+        node.classList.toggle('au-countdown-urgent',remaining>0&&remaining<3600000);
+        node.classList.toggle('au-countdown-ended',remaining<=0);
+      }
+    }
+    setInterval(auUpdateCountdowns,1000);
     function auNode(tag,text,parent){const n=document.createElement(tag);n.textContent=text;if(parent)parent.append(n);return n;}
     function auButton(parent,text,fn,cls='secondary'){const b=auNode('button',text,parent);b.type='button';b.className=cls+' small-button';b.onclick=fn;return b;}
     const auState=a=>a.status==='active'?(Date.now()<Date.parse(a.ends_at)?tr("Activa"):tr("Vencida · pendiente de adjudicación")):a.status==='finished'?tr("Finalizada"):a.status==='no_bids'?tr("Sin adjudicación"):tr("Anulada");
@@ -3493,7 +3538,21 @@ footer.donation-preview{display:flex;align-items:center;justify-content:space-be
       const fingerprint=JSON.stringify([filter,uid,admin,master,cpRestricted,auCanBid(),locale,rows,bids,roster,skills,audit,allSkills,scores,rows.map(a=>[Date.now()<Date.parse(a.ends_at),Date.now()<=Date.parse(a.ends_at)-14400000])]);
       if(background&&fingerprint===auFingerprint)return;
       auFingerprint=fingerprint;auRows=rows;const names=new Map(roster.map(p=>[p.user_id,p.character_name||p.discord_nickname]));const known=new Set(skills.map(s=>s.skill_key));const ownedPairs=new Set(allSkills.map(s=>JSON.stringify([s.user_id,s.skill_key])));
-      $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop';auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,box);auNode('p',a.description,box).className='event-note';auNode('p',`${auState(a)} · ${tr("Cierre:")} ${formatDate(a.ends_at)}`,box);auNode('p',a.item_category==='skill'?tr("Habilidad · uso obligatorio · sin reventa"):`${tr("Precio techo:")} ${formatNumber(a.ceiling_price)} ${tr("diamantes")}`,box);auNode('p',a.condition_type==='none'?tr("Sin condición de biotraje"):`${a.condition_type==='mandatory'?tr("Obligatorio"):tr("Prioridad")}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';if(a.screenshot_path&&!a.screenshot_deleted_at){let capture=null;const captureButton=auButton(actions,tr("Ver captura"),async()=>{
+      $('auList').replaceChildren();for(const a of rows){if($('auStatus').value&&a.status!==$('auStatus').value)continue;const box=auNode('article','',$('auList'));box.className='event-drop au-auction-card';
+      const heading=auNode('div','',box);heading.className='au-card-heading';
+      auNode('h3',`#${a.auction_number} · ${a.item_name} · Tier S`,heading);
+      if(a.status==='active'){
+        const end=Date.parse(a.ends_at);
+        if(Number.isFinite(end)){
+          const countdown=auNode('div','',heading);countdown.className='au-countdown';
+          countdown.dataset.auCountdown=String(end);
+          auNode('span',tr('Tiempo restante'),countdown).className='au-countdown-label';
+          auNode('span','',countdown).className='au-countdown-value';
+        }
+      }
+      auNode('p',a.description,box).className='event-note';
+      auNode('p',`${auState(a)} · ${tr("Cierre:")} ${auLocalClosing(a.ends_at)}`,box);
+      auNode('p',tr('Hora local de tu dispositivo'),box).className='au-local-time-note';auNode('p',a.item_category==='skill'?tr("Habilidad · uso obligatorio · sin reventa"):`${tr("Precio techo:")} ${formatNumber(a.ceiling_price)} ${tr("diamantes")}`,box);auNode('p',a.condition_type==='none'?tr("Sin condición de biotraje"):`${a.condition_type==='mandatory'?tr("Obligatorio"):tr("Prioridad")}: ${(a.biotrajes||[]).join(', ')}`,box);const actions=auNode('div','',box);actions.className='management-actions';if(a.screenshot_path&&!a.screenshot_deleted_at){let capture=null;const captureButton=auButton(actions,tr("Ver captura"),async()=>{
         if(captureButton.disabled)return;
         if(capture){capture.remove();capture=null;captureButton.textContent=tr("Ver captura");return;}
         captureButton.disabled=true;captureButton.textContent=tr("Cargando...");
