@@ -579,6 +579,7 @@ footer.donation-preview{display:flex;align-items:center;justify-content:space-be
 
 
 /* RC3: master-only auction preview */
+.au-partial-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.au-partial-tabs button[aria-pressed="true"]{border-color:#62cbd9;color:#7be3f0;background:#244653}
 .au-partial-button{display:inline-flex;align-items:center;gap:7px;margin:14px 0 0;background:linear-gradient(135deg,#1a303d,#182733);border:1px solid #496477;color:#e5edf2;min-height:38px}
 .au-partial-button.has-bids{background:linear-gradient(135deg,#7b5c1e,#4a3517);border-color:#d7ad50;color:#fff0b6;box-shadow:0 0 11px #d7ad5030}
 #auPartialDialog{width:min(1100px,calc(100vw - 24px));max-width:1100px;max-height:90dvh;padding:22px;overflow:auto}
@@ -1112,8 +1113,9 @@ body:has(#logoutButton:not(.hidden)) footer.donation-preview {
 <dialog id="auPartialDialog" aria-labelledby="auPartialTitle">
  <div class="au-partial-head"><div><h2 id="auPartialTitle">PUNTUACIÓN PARCIAL</h2><p id="auPartialItem" class="muted"></p></div><button id="auPartialClose" type="button" class="secondary small-button">CERRAR</button></div>
  <p id="auPartialStatus" class="au-partial-status" role="status"></p>
- <section class="au-partial-section"><h3 id="auPartialRefTitle">VALORES DE REFERENCIA</h3><div class="au-partial-scroll"><table><thead><tr><th id="auPartialRefName">Concepto</th><th id="auPartialRefValue">Puntos</th></tr></thead><tbody id="auPartialRefs"></tbody></table></div></section>
- <section class="au-partial-section"><h3 id="auPartialScoresTitle">REGISTRO DE PUNTOS · PROVISIONAL</h3><div class="au-partial-scroll"><table><thead><tr><th>#</th><th id="auPartialPlayer">Participante</th><th id="auPartialBid">Puja</th><th>CP</th><th id="auPartialRank">Rango</th><th id="auPartialAttendance">Asistencia</th><th id="auPartialClass">Clase</th><th id="auPartialParticipation">Participación</th><th id="auPartialTotal">Total</th></tr></thead><tbody id="auPartialScores"></tbody></table></div></section>
+ <div class="au-partial-tabs" role="group"><button type="button" id="auPartialTabRef" class="secondary"></button><button type="button" id="auPartialTabScores" class="secondary"></button></div>
+ <section id="auPartialRefPanel" class="au-partial-section"><h3 id="auPartialRefTitle">VALORES DE REFERENCIA</h3><div class="au-partial-scroll"><table><thead><tr><th id="auPartialRefName">Concepto</th><th id="auPartialRefValue">Puntos</th></tr></thead><tbody id="auPartialRefs"></tbody></table></div></section>
+ <section id="auPartialScoresPanel" class="au-partial-section hidden"><h3 id="auPartialScoresTitle">REGISTRO DE PUNTOS · PROVISIONAL</h3><div class="au-partial-scroll"><table><thead><tr><th>#</th><th id="auPartialPlayer">Participante</th><th id="auPartialBid">Puja</th><th id="auPartialDiamond">Pts. diamantes</th><th>CP</th><th id="auPartialRank">Rango</th><th id="auPartialAttendance">Asistencia</th><th id="auPartialClass">Clase</th><th id="auPartialParticipation">Participación</th><th id="auPartialTotal">Total</th></tr></thead><tbody id="auPartialScores"></tbody></table></div></section>
  <p id="auPartialNotice" class="muted">Consulta provisional. No adjudica ni modifica la subasta.</p>
 </dialog>
 <dialog id="auDialog" class="event-dialog">
@@ -3827,37 +3829,70 @@ body:has(#logoutButton:not(.hidden)) footer.donation-preview {
     let skillRows=[], skillAliases=[], skillBusy=false, skillHistoryKey=null;
     const auBio=['Punisher','Phantom','Executor','Psypher','Juggernaut','Technician','Arbiter','Demolisher'];
     const auCanBid=()=>isActive&&!!currentProfile?.character_name;
-    function auReset(){skillRows=[];skillAliases=[];skillHistoryKey=null;$('skillList').replaceChildren();$('skillHistory').replaceChildren();$('auSkill').replaceChildren();$('skillSearch').value='';$('auSkillSearch').value='';if($('skillDialog').open)$('skillDialog').close();if(clanSection==='auctions')selectClanSection(null);auRequest++;auFingerprint=null;auRows=[];auDrops=[];auAttendanceReset();hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option(tr("Sin evento"),''));if($('auDialog').open)$('auDialog').close();}
-    function auPermissions(){if(!isAdmin&&$('skillDialog').open)$('skillDialog').close();if(!isMaster){$('skillHistory').replaceChildren();skillHistoryKey=null;$('skillList').querySelectorAll('.skill-master').forEach(n=>n.remove());}if(isActive||isMaster)show('auView');else auReset();$('auNew').classList.toggle('hidden',!isAdmin);if(!isAdmin&&$('auDialog').open)$('auDialog').close();}
+    function auReset(){auPartialClose();skillRows=[];skillAliases=[];skillHistoryKey=null;$('skillList').replaceChildren();$('skillHistory').replaceChildren();$('auSkill').replaceChildren();$('skillSearch').value='';$('auSkillSearch').value='';if($('skillDialog').open)$('skillDialog').close();if(clanSection==='auctions')selectClanSection(null);auRequest++;auFingerprint=null;auRows=[];auDrops=[];auAttendanceReset();hide('auView');hide('auPanel');$('auList').replaceChildren();$('auForm').reset();$('auDrop').replaceChildren(new Option(tr("Sin evento"),''));if($('auDialog').open)$('auDialog').close();}
+    function auPermissions(){if(!isMaster)auPartialClose();if(!isAdmin&&$('skillDialog').open)$('skillDialog').close();if(!isMaster){$('skillHistory').replaceChildren();skillHistoryKey=null;$('skillList').querySelectorAll('.skill-master').forEach(n=>n.remove());}if(isActive||isMaster)show('auView');else auReset();$('auNew').classList.toggle('hidden',!isAdmin);if(!isAdmin&&$('auDialog').open)$('auDialog').close();}
 
     // RC3 — read-only preview. Backend RPC must be installed and authorized separately.
     let auPartialRequest=0;
     const auPartialWords={es:['PUNTUACIÓN PARCIAL','VALORES DE REFERENCIA','REGISTRO DE PUNTOS · PROVISIONAL','Concepto','Puntos','Participante','Puja','Rango','Asistencia','Clase','Participación','Total','CERRAR','Consulta provisional. No adjudica ni modifica la subasta.','Consultando puntuación oficial…','Sin ofertas activas.','El servidor todavía no dispone del cálculo parcial seguro. No se muestran puntuaciones estimadas.'],en:['PARTIAL SCORE','REFERENCE VALUES','POINTS RECORD · PRELIMINARY','Concept','Points','Participant','Bid','Rank','Attendance','Class','Participation','Total','CLOSE','Preview only. Does not award or modify the auction.','Fetching official score…','No active bids.','Secure preview calculation is not available on the server yet. No estimated scores are shown.'],pt:['PONTUAÇÃO PARCIAL','VALORES DE REFERÊNCIA','REGISTRO DE PONTOS · PROVISÓRIO','Conceito','Pontos','Participante','Lance','Cargo','Presença','Classe','Participação','Total','FECHAR','Consulta provisória. Não adjudica nem altera o leilão.','Consultando pontuação oficial…','Sem lances ativos.','O servidor ainda não disponibiliza o cálculo parcial seguro. Nenhuma pontuação estimada é exibida.']};
     const auPW=i=>(auPartialWords[language]||auPartialWords.es)[i];
-    function auPartialClose(){auPartialRequest++;if($('auPartialDialog').open)$('auPartialDialog').close();}
+    function auPartialClose(){auPartialRequest++;if($('auPartialDialog').open)$('auPartialDialog').close();$('auPartialScores').replaceChildren();$('auPartialRefs').replaceChildren();$('auPartialStatus').textContent='';}
     $('auPartialClose').onclick=auPartialClose;
     $('auPartialDialog').addEventListener('close',()=>auPartialRequest++);
     function auPartialCells(target,values){const tr=document.createElement('tr');for(const value of values){const td=document.createElement('td');td.textContent=value??'—';tr.append(td);}target.append(tr);}
-    async function auPartialOpen(a,active){
+    function auPartialTab(scores){
+      $('auPartialRefPanel').classList.toggle('hidden',scores);
+      $('auPartialScoresPanel').classList.toggle('hidden',!scores);
+      $('auPartialTabRef').setAttribute('aria-pressed',String(!scores));
+      $('auPartialTabScores').setAttribute('aria-pressed',String(scores));
+    }
+    $('auPartialTabRef').onclick=()=>auPartialTab(false);
+    $('auPartialTabScores').onclick=()=>auPartialTab(true);
+    const auPartialText=(es,en,pt)=>language==='en'?en:language==='pt'?pt:es;
+    async function auPartialRead(query){const {data,error}=await query;if(error)throw error;return data;}
+    async function auPartialOpen(a){
       if(!isMaster||!currentUser||a.status!=='active')return;
-      const v=interfaceVersion,request=++auPartialRequest;
+      const v=interfaceVersion,uid=currentUser.id,request=++auPartialRequest;
       if(!await verifyAccess(true)||!isMaster||v!==interfaceVersion||request!==auPartialRequest)return;
-      const dialog=$('auPartialDialog');$('auPartialTitle').textContent=auPW(0)+' · #'+a.auction_number;$('auPartialItem').textContent=a.item_name+' · Tier S';
+      const dialog=$('auPartialDialog');
+      const valid=()=>v===interfaceVersion&&uid===currentUser?.id&&request===auPartialRequest&&isMaster&&dialog.open;
+      $('auPartialTitle').textContent=auPW(0)+' · #'+a.auction_number;$('auPartialItem').textContent=a.item_name+' · Tier S';
       for(const [id,i] of [['auPartialRefTitle',1],['auPartialScoresTitle',2],['auPartialRefName',3],['auPartialRefValue',4],['auPartialPlayer',5],['auPartialBid',6],['auPartialRank',7],['auPartialAttendance',8],['auPartialClass',9],['auPartialParticipation',10],['auPartialTotal',11],['auPartialClose',12],['auPartialNotice',13]])$(id).textContent=auPW(i);
-      $('auPartialRefs').replaceChildren();$('auPartialScores').replaceChildren();$('auPartialStatus').textContent=auPW(14);dialog.showModal();
+      $('auPartialTabRef').textContent=auPW(1);$('auPartialTabScores').textContent=auPW(2);
+      $('auPartialDiamond').textContent=auPartialText('Pts. diamantes','Diamond pts.','Pts. diamantes');
+      $('auPartialRefs').replaceChildren();$('auPartialScores').replaceChildren();$('auPartialStatus').textContent=auPW(14);auPartialTab(false);dialog.showModal();
       try{
-        // Reference points are sourced from the existing event_types catalog.
-        const [types,result]=await Promise.allSettled([evLoadTypes(),evRpc('preview_clan_auction_scores',{p_auction_id:a.id})]);
-        if(v!==interfaceVersion||request!==auPartialRequest||!isMaster||!dialog.open)return;
-        if(types.status==='fulfilled')for(const t of types.value)auPartialCells($('auPartialRefs'),[t.name,formatNumber(t.points)]);
-        if(result.status!=='fulfilled')throw result.reason;
-        const payload=result.value;
-        if(!payload||!Array.isArray(payload.scores))throw Error('Invalid secure preview response');
-        if(Array.isArray(payload.reference_values)){$('auPartialRefs').replaceChildren();for(const ref of payload.reference_values)auPartialCells($('auPartialRefs'),[ref.name,ref.points]);}
-        const rows=payload.scores.slice().sort((a,b)=>Number(b.total_score)-Number(a.total_score));
-        for(const [i,r] of rows.entries())auPartialCells($('auPartialScores'),[i+1,r.character_name,formatNumber(r.bid_amount),formatNumber(r.cp_points),formatNumber(r.rank_points),formatNumber(r.attendance_points),formatNumber(r.class_points),formatNumber(r.participation_points),formatNumber(r.total_score)]);
-        $('auPartialStatus').textContent=rows.length?'':auPW(15);
-      }catch(e){if(v===interfaceVersion&&request===auPartialRequest&&dialog.open){$('auPartialScores').replaceChildren();$('auPartialStatus').textContent=auPW(16);}}
+        const fresh=await auPartialRead(supabase.from('auctions').select('*').eq('id',a.id).single());
+        if(!valid())return;
+        if(fresh.status!=='active'||fresh.adjudication_mode!=='scored'||Date.now()>=Date.parse(fresh.ends_at))throw Error(auPartialText('La subasta ya no está en período de puja.','Auction is no longer accepting bids.','Leilão fora do período de lances.'));
+        const drop=await auPartialRead(supabase.from('event_drops').select('event_id').eq('id',fresh.drop_id).single());
+        const event=await auPartialRead(supabase.from('events').select('status').eq('id',drop.event_id).single());
+        if(event.status==='cancelled')throw Error(auPartialText('Evento de origen anulado.','Origin event cancelled.','Evento de origem cancelado.'));
+        const [types,players,owned]=await Promise.all([evLoadTypes(),evRpc('get_auction_scoring_data',{p_auction_id:a.id}),fresh.item_category==='skill'?fetchAllRows(()=>supabase.from('member_skills').select('user_id').eq('skill_key',fresh.skill_key).order('user_id')):[]]);
+        if(!valid())return;
+        if(!Array.isArray(players))throw Error('Invalid scoring data');
+        const owners=new Set(owned.map(x=>x.user_id));
+        const eligible=players.filter(x=>!owners.has(x.user_id));
+        if(eligible.some(x=>!Number.isFinite(Number(x.cp))||Number(x.cp)<=0))throw Error(auPartialText('Participante sin CP válido.','Participant without valid CP.','Participante sem CP válido.'));
+        const refs=[['CP','≤160k: 0 · ≤200k: 1 · ≤260k: 2 · >260k: 3'],[auPW(7),'B: 0 · A: 1 · S: 2'],[auPartialText('Diamantes','Diamonds','Diamantes'),auPartialText('Primera oferta: 1; +1 si supera la anterior en más del 5%.','First bid: 1; +1 if more than 5% above previous.','Primeiro lance: 1; +1 se superar o anterior em mais de 5%.')],[auPW(9),auPartialText('Sin condición: — · Prioridad: 0/1 · Obligatoria: solo compatibles (+1)','None: — · Priority: 0/1 · Mandatory: eligible only (+1)','Sem condição: — · Prioridade: 0/1 · Obrigatória: apenas compatíveis (+1)')],[auPW(10),'0 / 1'],[auPW(8),auPartialText('Evento de origen y seis días anteriores + compensación','Origin event and six preceding days + compensation','Evento de origem e seis dias anteriores + compensação')]];
+        for(const ref of refs)auPartialCells($('auPartialRefs'),ref);
+        for(const t of types)auPartialCells($('auPartialRefs'),[t.name,formatNumber(t.points)]);
+        const selected=eligible.length?await evRpc('select_auction_participants',{p_players:eligible,p_condition:fresh.condition_type}):[];
+        if(!valid())return;
+        if(!Array.isArray(selected))throw Error('Invalid participant selection');
+        const scores=selected.length?await evRpc('calculate_auction_scores',{p_players:selected,p_condition:fresh.condition_type}):[];
+        if(!valid())return;
+        if(!Array.isArray(scores)||scores.length!==selected.length)throw Error('Invalid score response');
+        const names=new Map(selected.map(x=>[x.user_id,x]));
+        const rows=scores.slice().sort((x,y)=>Number(y.total_score)-Number(x.total_score));
+        if(rows.some(x=>!names.has(x.user_id)||x.total_score==null))throw Error('Invalid score row');
+        const latest=await auPartialRead(supabase.from('auctions').select('status,ends_at,condition_type,biotrajes,adjudication_mode').eq('id',a.id).single());
+        if(!valid())return;
+        if(latest.status!=='active'||Date.now()>=Date.parse(latest.ends_at)||latest.condition_type!==fresh.condition_type||JSON.stringify(latest.biotrajes)!==JSON.stringify(fresh.biotrajes)||latest.adjudication_mode!==fresh.adjudication_mode)throw Error(auPartialText('La subasta cambió. Volvé a consultar.','Auction changed. Query again.','Leilão alterado. Consulte novamente.'));
+        for(const r of rows){const x=names.get(r.user_id);auPartialCells($('auPartialScores'),[1+rows.findIndex(y=>Number(y.total_score)===Number(r.total_score)),x.player||auPartialText('Personaje no disponible','Character unavailable','Personagem indisponível'),formatNumber(x.diamonds),formatNumber(r.diamond_points),formatNumber(r.cp_points),formatNumber(r.rank_points),formatNumber(r.attendance_points),r.class_points==null?'—':formatNumber(r.class_points),formatNumber(r.participation_points),formatNumber(r.total_score)]);}
+        const leaders=rows.filter(x=>Number(x.total_score)===Number(rows[0]?.total_score)).map(x=>names.get(x.user_id).player||'—');
+        $('auPartialStatus').textContent=new Date().toLocaleString(locale)+' · '+(leaders.length?(leaders.length>1?auPartialText('Empate provisional: ','Provisional tie: ','Empate provisório: '):auPartialText('Líder provisional: ','Provisional leader: ','Líder provisório: '))+leaders.join(', '):players.length?auPartialText('Sin finalistas elegibles.','No eligible finalists.','Sem finalistas elegíveis.'):auPW(15))+' · '+auPartialText('Finalistas','Finalists','Finalistas')+': '+selected.length+'/'+players.length;
+      }catch(e){if(valid()){$('auPartialScores').replaceChildren();$('auPartialStatus').textContent=auPartialText('No se pudo calcular la puntuación parcial: ','Unable to calculate partial score: ','Não foi possível calcular a pontuação parcial: ')+evError(e);}}
     }
 
     // RC5: Only auction timestamps use the viewer's local time zone.
